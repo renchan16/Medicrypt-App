@@ -30,6 +30,8 @@ class Encrypt:
         self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
         self.nonce = b'\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l'
 
+        self.rand_indx = []
+
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
 
@@ -56,10 +58,10 @@ class Encrypt:
 
         return transformedHash
 
-    def rowShuffle(self, image, x0, r):
+    def rowShuffle(self, image, size, x0, r):
         x = x0
         x = r * x * (1 - x)
-        for i in range(len(image) - 1, 0, -1):
+        for i in range(size - 1, 0, -1):
             j = ceil(i * x)
 
             image[[i, j]] = image[[j, i]]
@@ -70,14 +72,16 @@ class Encrypt:
 
         return shuffled_pixels
 
-    def colShuffle(self, image, x0, r):
+    def colShuffle(self, image, size, x0, r):
         x = x0
         x = r * x * (1 - x)
-        for i in range(len(image) - 1, 0, -1):
+        self.rand_indx.append(x)
+        for i in range(size - 1, 0, -1):
             j = ceil(i * x)
 
             image[:, [i, j]] = image[:, [j, i]]
             x = r * x * (1 - x)
+            self.rand_indx.append(j)
 
         # Reshape back to original dimensions
         shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -192,8 +196,8 @@ class Encrypt:
             transform = self.transformDecimal(converted)  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
 
             # permutate
-            row_permutated = self.rowShuffle(frame, transform[1], transform[0])
-            col_permutated = self.colShuffle(row_permutated, transform[1], transform[0])  # final permutation
+            row_permutated = self.rowShuffle(frame, self.num_rows, transform[1], transform[0])
+            col_permutated = self.colShuffle(row_permutated, self.num_cols, transform[1], transform[0])  # final permutation
 
             flatten = col_permutated.reshape(-1, self.num_channels)
 
@@ -208,7 +212,7 @@ class Encrypt:
             # reshape the array into a required cv2 format
             diffuse_pixels = diffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
 
-            result.write(diffuse_pixels)
+            result.write(col_permutated)
 
             count += 1
 
@@ -266,7 +270,7 @@ class Encrypt:
             col_swap_indices = self.generateSwapIndex(self.num_cols, transform[1], transform[0])
 
             # unshuffle the undiffused frame, then the unshuffled column frame
-            col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
+            col_unshuffled = self.colUnshuffle(frame, col_swap_indices)
             row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
 
             result.write(row_unshuffled)
@@ -281,6 +285,6 @@ class Encrypt:
 if __name__ == '__main__':
     en = Encrypt()
 
-    # en.encryptVideo('C:\\Users\\Lenovo\\Documents\\GitHub\\Medicrypt-App\\tests\\testavi.avi', 'sispup')
+    en.encryptVideo('C:\\Users\\Lenovo\\Documents\\GitHub\\Medicrypt-App\\tests\\testavi.avi', 'sispup')
     # just delete the decrypted file if you want to decrypt again for testing purposes
-    # en.decryptVideo('./test_encrypt.txt', './test_encrypt.avi', 'sispup')
+    en.decryptVideo('./test_encrypt.txt', './test_encrypt.avi', 'sispup')

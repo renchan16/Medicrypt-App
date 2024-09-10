@@ -88,6 +88,37 @@ class Encrypt:
 
         return shuffled_pixels
 
+    def rowUnshuffle(self, image, swap_indices):
+        for i in range(1, self.num_rows):
+            u = swap_indices.pop(-1)
+
+            image[[i, u]] = image[[u, i]]
+
+        return image
+
+    def colUnshuffle(self, image, swap_indices):
+
+        for i in range(1, self.num_cols):
+            u = swap_indices.pop(-1)
+
+            image[:, [i, u]] = image[:, [u, i]]
+
+        return image
+
+
+    def generateSwapIndex(self, size, x0, r):
+        swap_index = []
+        x = x0
+
+        x = r * x * (1 - x)
+        swap_index.append(x)
+        for i in range(size - 1, 0, -1):
+            j = ceil(i * x)
+            x = r * x * (1 - x)
+            swap_index.append(j)
+
+        return swap_index
+
     def keystream(self, res, x0, r):
         x = x0
         ks = [x0]
@@ -195,7 +226,7 @@ class Encrypt:
         self.decryptHashes(hash_filepath, password)
 
         cap = cv2.VideoCapture(filepath)
-        result = cv2.VideoWriter('./test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
+        result = cv2.VideoWriter('./test_decrypt.mp4', cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
                                  (int(cap.get(3)), int(cap.get(4))))
 
         hash_file = open(hash_filepath, 'r')
@@ -216,29 +247,34 @@ class Encrypt:
 
             self.num_rows, self.num_cols, self.num_channels = frame.shape
 
-            hashed = lines[hash_line]
+            hashed = lines[hash_line].rstrip()
             splits = self.splitHash(hashed)
             converted = self.convertToDecimal(splits)
-            transform = self.transformDecimal(converted)  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
+            transform = self.transformDecimal(converted)  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
 
-            # permutate
-            row_permutated = self.rowShuffle(frame, transform[1], transform[0])
-            col_permutated = self.colShuffle(row_permutated, transform[1], transform[0])  # final permutation
-
-            flatten = col_permutated.reshape(-1, self.num_channels)
+            # flatten array
+            flatten = frame.reshape(-1, self.num_channels)
 
             # create keystream vector
             kv = self.keystream(self.num_rows * self.num_cols, transform[3], transform[2])
             kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
             comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
 
-            # diffuse the pixels
-            diffuse = self.xor(flatten, comb_ks)
+            # undiffuse the pixels
+            undiffuse = self.xor(flatten, comb_ks)
 
-            # reshape the array into a required cv2 format
-            diffuse_pixels = diffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
+            # rejoin channels into one frame
+            undiffused_frame = undiffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
 
-            result.write(diffuse_pixels)
+            # generate swap index array for row and column
+            row_swap_indices = self.generateSwapIndex(self.num_rows, transform[1], transform[0])
+            col_swap_indices = self.generateSwapIndex(self.num_cols, transform[1], transform[0])
+
+            # unshuffle the undiffused frame, then the unshuffled column frame
+            col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
+            row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
+
+            result.write(row_unshuffled)
 
             count += 1
             hash_line += 1
@@ -249,4 +285,5 @@ class Encrypt:
 if __name__ == '__main__':
     en =Encrypt()
 
-    en.encryptVideo('C:\'Users\'Lenovo\'Documents\'GitHub\'Medicrypt-App\\tests\\testavi.avi', 'sispup')
+    # en.encryptVideo('C:\\Users\\Lenovo\\Documents\\GitHub\\Medicrypt-App\\tests\\testavi.avi', 'sispup')
+    # en.decryptVideo('./test_encrypt.txt', './test_encrypt.avi', 'sispup')

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import Router components
-import LandingPage from './pages/LandingPage';  // Adjust the path according to your file structure
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
+import LandingPage from './pages/LandingPage';  
 import Decrypt from './pages/Decrypt';
 import Encrypt from './pages/Encrypt';
 import Explore from './pages/Explore';

@@ -1,14 +1,14 @@
 import React from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { MdArrowBackIosNew } from 'react-icons/md'; 
+import { useNavigate } from 'react-router-dom';
 
 function Encrypt() {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   return (
     <div className="relative h-full p-6">
       <button
-        onClick={() => navigate('/')} // Go back to LandingPage when clicked
+        onClick={() => navigate('/')} 
         className="absolute top-4 left-4 flex items-center text-white hover:text-gray-400 transition-colors duration-300"
       >
         <MdArrowBackIosNew className="mr-2" />

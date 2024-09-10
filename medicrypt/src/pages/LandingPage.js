@@ -1,13 +1,13 @@
 import React from 'react';
-import { HiArrowRight } from 'react-icons/hi'; // Import the icon
+import { HiArrowRight } from 'react-icons/hi'; 
 import Card from '../components/Cards';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate(); 
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-primary"> {/* Added min-h-screen for vertical centering */}
+    <div className="flex flex-col justify-center items-center min-h-screen bg-primary"> 
       <h1 className="text-3xl font-bold text-white">MediCrypt</h1>
       <p className="text-regular text-white mb-6">Where your videos go undercover</p>
       <div className="grid grid-cols-3 grid-rows-2 gap-x-3 gap-y-3">

@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import LandingPage from '../src/pages/LandingPage';  // Adjust the path according to your file structure
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; // Import Router components
+import LandingPage from './pages/LandingPage';  // Adjust the path according to your file structure
+import Decrypt from './pages/Decrypt';
+import Encrypt from './pages/Encrypt';
+import Explore from './pages/Explore';
+import HowToUse from './pages/HowToUse';
 
 function App() {
   const [message, setMessage] = useState('');
@@ -16,9 +21,17 @@ function App() {
   }, []);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <LandingPage />
-    </div>
+    <Router>
+      <div className="h-screen bg-primary">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/decrypt" element={<Decrypt />} />
+          <Route path="/encrypt" element={<Encrypt />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/howtouse" element={<HowToUse />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

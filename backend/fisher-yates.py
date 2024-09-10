@@ -188,7 +188,7 @@ class Encrypt:
 
         cap.release()
         hash_file.close()  # finally, close the file
-        self.encryptHashes(hash_file, password)     # and encrypt the hash file
+        self.encryptHashes('./test_encrypt.txt', password)     # and encrypt the hash file
 
     @time_encrypt
     def decryptVideo(self, hash_filepath, filepath, password):
@@ -247,4 +247,6 @@ class Encrypt:
         hash_file.close()  # finally, close the file
 
 if __name__ == '__main__':
-    pass
+    en =Encrypt()
+
+    en.encryptVideo('C:\'Users\'Lenovo\'Documents\'GitHub\'Medicrypt-App\\tests\\testavi.avi', 'sispup')

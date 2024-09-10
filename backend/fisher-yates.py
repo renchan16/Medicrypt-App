@@ -138,12 +138,12 @@ class Encrypt:
     @time_encrypt
     def encryptVideo(self, filepath, password):
         cap = cv2.VideoCapture(filepath)
-        result = cv2.VideoWriter('outputs/test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
+        result = cv2.VideoWriter('./test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
                                  (int(cap.get(3)), int(cap.get(4))))
 
         # open the text file that will contain the list of hashes
         # help me fix the output path so every hash file is the same name as output video, and unique
-        hash_file = open('outputs/test_encrypt.avi', 'a')
+        hash_file = open('./test_encrypt.txt', 'a')
 
         count = 1
 
@@ -195,7 +195,7 @@ class Encrypt:
         self.decryptHashes(hash_filepath, password)
 
         cap = cv2.VideoCapture(filepath)
-        result = cv2.VideoWriter('outputs/test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
+        result = cv2.VideoWriter('./test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
                                  (int(cap.get(3)), int(cap.get(4))))
 
         hash_file = open(hash_filepath, 'r')

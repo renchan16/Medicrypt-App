@@ -59,13 +59,11 @@ class Encrypt:
     def rowShuffle(self, image, x0, r):
         x = x0
         x = r * x * (1 - x)
-        # rand_indx.append(x)
         for i in range(len(image) - 1, 0, -1):
             j = ceil(i * x)
 
             image[[i, j]] = image[[j, i]]
             x = r * x * (1 - x)
-            # rand_indx.append(j)
 
         # Reshape back to original dimensions
         shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -75,13 +73,11 @@ class Encrypt:
     def colShuffle(self, image, x0, r):
         x = x0
         x = r * x * (1 - x)
-        # rand_indx.append(x)
         for i in range(len(image) - 1, 0, -1):
             j = ceil(i * x)
 
             image[:, [i, j]] = image[:, [j, i]]
             x = r * x * (1 - x)
-            # rand_indx.append(j)
 
         # Reshape back to original dimensions
         shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -104,7 +100,6 @@ class Encrypt:
             image[:, [i, u]] = image[:, [u, i]]
 
         return image
-
 
     def generateSwapIndex(self, size, x0, r):
         swap_index = []
@@ -213,7 +208,7 @@ class Encrypt:
             # reshape the array into a required cv2 format
             diffuse_pixels = diffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
 
-            result.write(diffuse_pixels)
+            result.write(col_permutated)
 
             count += 1
 
@@ -271,7 +266,7 @@ class Encrypt:
             col_swap_indices = self.generateSwapIndex(self.num_cols, transform[1], transform[0])
 
             # unshuffle the undiffused frame, then the unshuffled column frame
-            col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
+            col_unshuffled = self.colUnshuffle(frame, col_swap_indices)
             row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
 
             result.write(row_unshuffled)
@@ -280,10 +275,12 @@ class Encrypt:
             hash_line += 1
 
         cap.release()
+        self.encryptHashes('./test_encrypt.txt', password)
         hash_file.close()  # finally, close the file
 
 if __name__ == '__main__':
-    en =Encrypt()
+    en = Encrypt()
 
     # en.encryptVideo('C:\\Users\\Lenovo\\Documents\\GitHub\\Medicrypt-App\\tests\\testavi.avi', 'sispup')
+    # just delete the decrypted file if you want to decrypt again for testing purposes
     # en.decryptVideo('./test_encrypt.txt', './test_encrypt.avi', 'sispup')

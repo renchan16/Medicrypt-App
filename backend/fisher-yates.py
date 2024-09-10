@@ -30,8 +30,6 @@ class Encrypt:
         self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
         self.nonce = b'\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l'
 
-        self.rand_indx = []
-
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
 
@@ -75,13 +73,11 @@ class Encrypt:
     def colShuffle(self, image, size, x0, r):
         x = x0
         x = r * x * (1 - x)
-        self.rand_indx.append(x)
         for i in range(size - 1, 0, -1):
             j = ceil(i * x)
 
             image[:, [i, j]] = image[:, [j, i]]
             x = r * x * (1 - x)
-            self.rand_indx.append(j)
 
         # Reshape back to original dimensions
         shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -167,9 +163,12 @@ class Encrypt:
 
     @time_encrypt
     def encryptVideo(self, filepath, password):
-        cap = cv2.VideoCapture(filepath)
+        cap = cv2.VideoCapture(filepath, cv2.CAP_FFMPEG)
+
+        frame_width = int(cap.get(3))
+        frame_height = int(cap.get(4))
         result = cv2.VideoWriter('./test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
-                                 (int(cap.get(3)), int(cap.get(4))))
+                                 (frame_width, frame_height))
 
         # open the text file that will contain the list of hashes
         # help me fix the output path so every hash file is the same name as output video, and unique
@@ -197,7 +196,8 @@ class Encrypt:
 
             # permutate
             row_permutated = self.rowShuffle(frame, self.num_rows, transform[1], transform[0])
-            col_permutated = self.colShuffle(row_permutated, self.num_cols, transform[1], transform[0])  # final permutation
+            col_permutated = self.colShuffle(row_permutated, self.num_cols, transform[1],
+                                             transform[0])  # final permutation
 
             flatten = col_permutated.reshape(-1, self.num_channels)
 
@@ -205,9 +205,10 @@ class Encrypt:
             kv = self.keystream(self.num_rows * self.num_cols, transform[3], transform[2])
             kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
             comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
+            uint8_ks = comb_ks.astype(np.uint8)  # change to uint8 datatype for correct cv2 data type
 
             # diffuse the pixels
-            diffuse = self.xor(flatten, comb_ks)
+            diffuse = self.xor(flatten, uint8_ks)
 
             # reshape the array into a required cv2 format
             diffuse_pixels = diffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -218,19 +219,22 @@ class Encrypt:
 
         cap.release()
         hash_file.close()  # finally, close the file
-        self.encryptHashes('./test_encrypt.txt', password)     # and encrypt the hash file
+        self.encryptHashes('./test_encrypt.txt', password)  # and encrypt the hash file
 
     @time_encrypt
     def decryptVideo(self, hash_filepath, filepath, password):
         self.decryptHashes(hash_filepath, password)
 
-        cap = cv2.VideoCapture(filepath)
-        result = cv2.VideoWriter('./test_decrypt.mp4', cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
-                                 (int(cap.get(3)), int(cap.get(4))))
+        cap = cv2.VideoCapture(filepath, cv2.CAP_FFMPEG)
+
+        frame_width = int(cap.get(3))
+        frame_height = int(cap.get(4))
+        result = cv2.VideoWriter('./test_decrypt.avi', cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
+                                 (frame_width, frame_height))
 
         hash_file = open(hash_filepath, 'r')
         lines = hash_file.readlines()
-        hash_line = 0   # keep track of our line in the text file
+        hash_line = 0  # keep track of our line in the text file
 
         count = 1
 
@@ -258,9 +262,10 @@ class Encrypt:
             kv = self.keystream(self.num_rows * self.num_cols, transform[3], transform[2])
             kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
             comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
+            uint8_ks = comb_ks.astype(np.uint8)     # change to uint8 datatype for correct cv2 data type
 
             # undiffuse the pixels
-            undiffuse = self.xor(flatten, comb_ks)
+            undiffuse = self.xor(flatten, uint8_ks)
 
             # rejoin channels into one frame
             undiffused_frame = undiffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
@@ -281,6 +286,7 @@ class Encrypt:
         cap.release()
         self.encryptHashes('./test_encrypt.txt', password)
         hash_file.close()  # finally, close the file
+
 
 if __name__ == '__main__':
     en = Encrypt()

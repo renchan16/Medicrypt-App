@@ -16,10 +16,9 @@ function Encrypt() {
         Back to Home
       </button>
 
-      <div className="mt-4 text-center">
-        <h1 className="text-3xl font-bold text-white">Encrypt</h1>
-        <p className="text-white mt-4">Here you can encrypt your files.</p>
-        <p className='testClass'>FUCKING SHITE</p>
+      <div className="mt-16">
+        <h1 className="text-3xl font-bold text-white">Encrypt a Video</h1>
+        <h2 className="mt-6 text-sm font-normal text-white">Choose an Encryption Algorithm</h2>
       </div>
     </div>
   );

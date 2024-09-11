@@ -27,5 +27,8 @@ class FilepathParser:
     def get_tokens(self):
         return self.tokens
     
+    def get_dir_only(self):
+        return self.filepath[:len(self.filepath) - len(self.get_filename)]
+    
 
 

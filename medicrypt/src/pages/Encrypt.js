@@ -1,6 +1,7 @@
 import React from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md'; 
-import { useNavigate } from 'react-router-dom';
+import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import '../pages-css/pages.css';
 
 function Encrypt() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function Encrypt() {
       <div className="mt-4 text-center">
         <h1 className="text-3xl font-bold text-white">Encrypt</h1>
         <p className="text-white mt-4">Here you can encrypt your files.</p>
+        <p className='testClass'>FUCKING SHITE</p>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import React from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md'; 
-import { useNavigate } from 'react-router-dom';
+import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import '../pages-css/pages.css';
+import AlgoSwitch from '../components/switches/AlgoSwitch';
 
 function Encrypt() {
   const navigate = useNavigate();
@@ -15,9 +17,12 @@ function Encrypt() {
         Back to Home
       </button>
 
-      <div className="mt-4 text-center">
-        <h1 className="text-3xl font-bold text-white">Encrypt</h1>
-        <p className="text-white mt-4">Here you can encrypt your files.</p>
+      <div className="mt-16">
+        <h1 className="text-3xl font-bold text-white">Encrypt a Video</h1>
+        <h2 className="mt-6 text-xs font-semibold text-white">Choose an Encryption Algorithm</h2>
+        <AlgoSwitch />
+        <input type='text' placeholder='Enter file path or click the button' className='mt-8 w-96 h-12 rounded-lg'></input>
+        <input type='text' placeholder='Enter a password' className='mt-4 w-96 h-12 rounded-lg'></input>
       </div>
     </div>
   );

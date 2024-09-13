@@ -1,6 +1,7 @@
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 from math import ceil
+from filepath_parser import FilepathParser
 import numpy as np
 import hashlib
 import time
@@ -29,7 +30,6 @@ class Encrypt:
 
         self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
         self.nonce = b'\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l'
-
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
 
@@ -162,17 +162,22 @@ class Encrypt:
             file.write(plaintext)
 
     @time_encrypt
-    def encryptVideo(self, filepath, password):
-        cap = cv2.VideoCapture(filepath, cv2.CAP_FFMPEG)
+    def encryptVideo(self, filepath, vid_destination, key_destination, password):
+
+        fpath = FilepathParser(filepath)
+        vid_dest = FilepathParser(vid_destination)
+        key_dest = FilepathParser(key_destination)
+
+        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
-        result = cv2.VideoWriter('./test_encrypt.avi', cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
+        result = cv2.VideoWriter(vid_dest.get_posix_path(), cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
                                  (frame_width, frame_height))
 
         # open the text file that will contain the list of hashes
         # help me fix the output path so every hash file is the same name as output video, and unique
-        hash_file = open('./test_encrypt.txt', 'a')
+        hash_file = open(key_dest.get_posix_path(), 'a')
 
         count = 1
 
@@ -219,20 +224,25 @@ class Encrypt:
 
         cap.release()
         hash_file.close()  # finally, close the file
-        self.encryptHashes('./test_encrypt.txt', password)  # and encrypt the hash file
+        self.encryptHashes(key_dest.get_posix_path(), password)  # and encrypt the hash file
 
     @time_encrypt
-    def decryptVideo(self, hash_filepath, filepath, password):
-        self.decryptHashes(hash_filepath, password)
+    def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
 
-        cap = cv2.VideoCapture(filepath, cv2.CAP_FFMPEG)
+        fpath = FilepathParser(filepath)
+        vid_dest = FilepathParser(vid_destination)
+        key = FilepathParser(hash_filepath)
+
+        self.decryptHashes(key.get_posix_path(), password)
+
+        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
-        result = cv2.VideoWriter('./test_decrypt.avi', cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
+        result = cv2.VideoWriter(vid_dest.get_posix_path(), cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
                                  (frame_width, frame_height))
 
-        hash_file = open(hash_filepath, 'r')
+        hash_file = open(key.get_posix_path(), 'r')
         lines = hash_file.readlines()
         hash_line = 0  # keep track of our line in the text file
 
@@ -284,13 +294,5 @@ class Encrypt:
             hash_line += 1
 
         cap.release()
-        self.encryptHashes('./test_encrypt.txt', password)
+        self.encryptHashes(key.get_posix_path(), password)
         hash_file.close()  # finally, close the file
-
-
-if __name__ == '__main__':
-    en = Encrypt()
-
-    en.encryptVideo('C:\\Users\\Lenovo\\Documents\\GitHub\\Medicrypt-App\\tests\\testavi.avi', 'sispup')
-    # just delete the decrypted file if you want to decrypt again for testing purposes
-    en.decryptVideo('./test_encrypt.txt', './test_encrypt.avi', 'sispup')

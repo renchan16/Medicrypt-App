@@ -3,6 +3,8 @@ import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow ico
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/pages.css';
 import AlgoSwitch from '../components/switches/AlgoSwitch';
+import FilepathInput from '../components/text input/FilepathInput';
+import PasswordInput from '../components/text input/PasswordInput';
 import EncryptButton from '../components/buttons/ProcessButton';
 
 function Encrypt() {
@@ -19,10 +21,11 @@ function Encrypt() {
           Back to Home
         </button>
 
-        <div className="grid grid-cols-3 grid-rows-3 mt-16 ">
+        <div className="grid grid-cols-3 grid-rows-5 gap-y-4 mt-16">
           <h1 className="col-span-3 text-3xl font-bold text-white">Encrypt a Video</h1>
           <AlgoSwitch className="col-span-3"/>
-          <input type='text' placeholder='Enter file path or click the button' className='col-span-3 w-full h-12 mt-4 rounded-xl bg-primary-light'></input>
+          <FilepathInput className="col-span-3"/>
+          <PasswordInput className="col-span-3"/>
         </div>
       </div>
     </div>

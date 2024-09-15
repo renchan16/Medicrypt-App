@@ -8,7 +8,7 @@ export default function AlgoSwitch({ className }) {
     };
 
     return (
-        <div className={className}>
+        <div className={`${className}`}>
             <h2 className="text-sm font-semibold text-white">Choose an Encryption Algorithm</h2>
             <label htmlFor="algo" className="mt-1 w-60 h-8 relative bg-white rounded-lg cursor-pointer flex items-center overflow-hidden">
                 <input

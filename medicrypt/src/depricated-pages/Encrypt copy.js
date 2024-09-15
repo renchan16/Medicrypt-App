@@ -19,10 +19,12 @@ function Encrypt() {
           Back to Home
         </button>
 
-        <div className="grid grid-cols-3 grid-rows-3 mt-16 ">
-          <h1 className="col-span-3 text-3xl font-bold text-white">Encrypt a Video</h1>
-          <AlgoSwitch className="col-span-3"/>
-          <input type='text' placeholder='Enter file path or click the button' className='col-span-3 w-full h-12 mt-4 rounded-xl bg-primary-light'></input>
+        <div className="mt-16">
+          <h1 className="mb-6 text-3xl font-bold text-white">Encrypt a Video</h1>
+          <AlgoSwitch/>
+          <input type='text' placeholder='Enter file path or click the button' className='mt-4 w-full h-12 rounded-xl bg-primary-light'></input>
+          <input type='text' placeholder='Enter a password' className='mt-4 w-full h-12 rounded-xl bg-primary-light'></input>
+          <EncryptButton />
         </div>
       </div>
     </div>

@@ -1,4 +1,9 @@
+input[type=text]{
+    padding: 1rem;
+    color: white;
+}
+
 input::placeholder{
     color: white;
-    padding: 1rem;
 }
+

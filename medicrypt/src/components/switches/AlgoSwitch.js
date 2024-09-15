@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-export default function AlgoSwitch({ className }) {
+export default function AlgoSwitch({ className, onAlgorithmChange }) {
     const [selectedAlgo, setSelectedAlgo] = useState("FY-Logistic");
+
+    useEffect(() => {
+        onAlgorithmChange(selectedAlgo);
+    }, []);
 
     const handleChange = (event) => {
         setSelectedAlgo(event.target.checked ? "3D Cosine" : "FY-Logistic");
+        onAlgorithmChange(selectedAlgo);
     };
 
     return (

@@ -9,10 +9,9 @@ function Explore() {
     <div className="relative h-full p-6">
       <button
         onClick={() => navigate('/')}
-        className="absolute top-4 left-4 flex items-center text-white hover:text-gray-400 transition-colors duration-300"
+        className="absolute top-4 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
       >
         <MdArrowBackIosNew className="mr-2" />
-        Back to Home
       </button>
 
       <div className="mt-4 text-center">

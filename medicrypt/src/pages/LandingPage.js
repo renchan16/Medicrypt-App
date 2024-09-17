@@ -2,15 +2,19 @@ import React from 'react';
 import { HiArrowRight } from 'react-icons/hi'; 
 import Card from '../components/Cards';
 import { useNavigate } from 'react-router-dom';
+import '../pages-css/LandingPage.css';
+import logo from '../assets/MedicryptLogo.png'; // Adjust the path to your logo
 
 function LandingPage() {
   const navigate = useNavigate(); 
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-primary"> 
-      <h1 className="text-3xl font-bold text-white">MediCrypt</h1>
-      <p className="text-regular text-white mb-6">Where your videos go undercover</p>
-      <div className="grid grid-cols-3 grid-rows-2 gap-x-3 gap-y-3">
+    <div className="flex flex-col justify-center items-center min-h-screen"> 
+      <div className="flex items-center mb-6">
+        <img src={logo} alt="Medicrypt Logo" className="w-12 h-11" /> 
+        <h1 className="text-4xl font-bold text-transparent bg-clip-text gradient-text">medicrypt.</h1>
+      </div>
+      <div className="grid grid-cols-3 grid-rows-2 gap-x-4 gap-y-3">
         
         <Card width="col-span-1 row-span-5 w-full" height="h-[300px]">
           <div

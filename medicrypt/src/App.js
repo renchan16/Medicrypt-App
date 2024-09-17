@@ -6,6 +6,7 @@ import Decrypt from './pages/Decrypt';
 import Encrypt from './pages/Encrypt';
 import Explore from './pages/Explore';
 import HowToUse from './pages/HowToUse';
+import backgroundImage from './assets/background.png'; // Assuming the image is in assets folder
 
 function App() {
   const [message, setMessage] = useState('');
@@ -22,7 +23,14 @@ function App() {
 
   return (
     <Router>
-      <div className="h-screen bg-primary">
+      <div 
+        className="h-screen"
+        style={{
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/decrypt" element={<Decrypt />} />

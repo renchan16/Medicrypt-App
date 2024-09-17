@@ -6,6 +6,7 @@ import AlgoSwitch from '../components/switches/AlgoSwitch';
 import FileInput from '../components/text input/FileInput';
 import PasswordInput from '../components/text input/PasswordInput';
 import EncryptButton from '../components/buttons/ProcessButton';
+import BackgroundImage from '../assets/background.png';
 
 function Encrypt() {
   const navigate = useNavigate();

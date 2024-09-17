@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -26,5 +26,20 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
+  }
+});
+
+// Handle file dialog from renderer
+ipcMain.handle('dialog:openFile', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+      { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'mov', 'wmv'] },
+    ],
+  });
+  if (canceled) {
+    return null;
+  } else {
+    return filePaths[0];  // Return the first selected file path
   }
 });

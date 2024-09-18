@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
+import logo from '../assets/MedicryptLogo.png';
 import AlgoSwitch from '../components/switches/AlgoSwitch';
 import FileInput from '../components/text input/FileInput';
 import PasswordInput from '../components/text input/PasswordInput';
@@ -25,10 +26,12 @@ function Encrypt() {
       <div className="relative h-full w-11/12 p-6">
         <button
           onClick={() => navigate('/')} 
-          className="absolute top-4 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+          className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
           >
           <MdArrowBackIosNew className="mr-2" />
         </button>
+
+        <img src={logo} alt="Medicrypt Logo" className="absolute w-19 h-20 right-2" />
 
         <div className="grid grid-cols-3 grid-rows-5 gap-4 auto-rows-auto mt-16">
           <h1 className="col-span-3 text-3xl font-bold text-primary1 flex items-center">Encrypt a Video</h1>

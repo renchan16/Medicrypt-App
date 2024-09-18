@@ -3,10 +3,6 @@ input[type=text], input[type=password]{
     color: '#21316F';
 }
 
-input::placeholder{
-    font-weight: bold;
-}
-
 div {
     margin: 0;
     padding: 0;

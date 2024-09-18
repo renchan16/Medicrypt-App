@@ -2,7 +2,7 @@ import React from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md';
 import { useNavigate } from 'react-router-dom'; 
 import AlgoSwitch from '../components/switches/AlgoSwitch';
-import FileInput from '../components/text input/FileInput';
+import FileInput from '../components/text input/FilePathInput';
 import PasswordInput from '../components/text input/PasswordInput';
 import EncryptButton from '../components/buttons/ProcessButton';
 

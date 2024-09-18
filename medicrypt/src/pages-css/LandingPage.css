@@ -1,49 +1,49 @@
 .gradient-text {
-    background: linear-gradient(to right, #0055E1, #0272E3, #0098E4);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
+  background: linear-gradient(to right, #0055E1, #0272E3, #0098E4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .sibling-fade {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, auto);
-    gap: 0.5rem;
-  }
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 0.5rem;
+}
   
-  .sibling-fade > * {
-    transition: opacity 150ms linear 100ms, transform 150ms ease-in-out 100ms;
-  }
-  
-  .sibling-fade:hover > * {
-    opacity: 0.4;
-    transform: scale(0.9);
-  }
-  
-  .sibling-fade > *:hover {
-    opacity: 1;
-    transform: scale(1);
-    transition-delay: 0ms, 0ms;
-  }
+.sibling-fade > * {
+  transition: opacity 150ms linear 100ms, transform 150ms ease-in-out 100ms;
+}
+
+.sibling-fade:hover > * {
+  opacity: 0.4;
+  transform: scale(0.9);
+}
+
+.sibling-fade > *:hover {
+  opacity: 1;
+  transform: scale(1);
+  transition-delay: 0ms, 0ms;
+}
 
   /* Fade in and out transitions */
 .fade-enter {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .fade-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 300ms, transform 300ms;
-  }
-  .fade-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .fade-exit-active {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 300ms, transform 300ms;
-  }
+  opacity: 0;
+  transform: translateY(20px);
+}
+.fade-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.fade-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+.fade-exit-active {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 300ms, transform 300ms;
+}
   
   

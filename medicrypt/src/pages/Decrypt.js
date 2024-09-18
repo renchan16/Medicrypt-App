@@ -20,7 +20,7 @@ function Decrypt() {
         </button>
 
         <div className="grid grid-cols-3 grid-rows-6 gap-y-4 mt-16">
-          <h1 className="col-span-3 h-12 text-3xl font-bold text-white">Decrypt a Video</h1>
+          <h1 className="col-span-3 text-3xl font-bold text-primary1 flex items-center">Decrypt a Video</h1>
           
         </div>
       </div>

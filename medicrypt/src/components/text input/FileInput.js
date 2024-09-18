@@ -18,7 +18,12 @@ export default function FileInput( {className, placeholder, onFileChange} ){
     
     return (
         <div className={`relative flex items-center ${className}`}>
-            <input type='text' value={file} placeholder={`${placeholder}`} className='w-full rounded-xl bg-primary-light text-sm' onChange={handleInputChange}></input>
+            <input 
+                type='text' 
+                value={file} 
+                placeholder={`${placeholder}`} 
+                className='w-full rounded-xl bg-transparent text-sm border-2 border-primary1 placeholder:bold placeholder-primary1 placeholder-opacity-100' 
+                onChange={handleInputChange}></input>
             <button className="absolute w-10 h-10 rounded-lg bg-black right-3" onClick={handleFileChange}></button>
         </div>
     );

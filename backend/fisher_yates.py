@@ -29,7 +29,8 @@ class Encrypt:
         self.num_channels = 3
 
         self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
-        self.nonce = b'\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l'
+        self.nonce = b"\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l"
+
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
 
@@ -38,7 +39,7 @@ class Encrypt:
     def splitHash(self, hash):
         quarters = len(hash) // 4
 
-        return [hash[i:i + quarters] for i in range(0, len(hash), quarters)]
+        return [hash[i : i + quarters] for i in range(0, len(hash), quarters)]
 
     def convertToDecimal(self, hashes):
         into_decimal = [int(hash, 16) for hash in hashes]
@@ -93,7 +94,6 @@ class Encrypt:
         return image
 
     def colUnshuffle(self, image, swap_indices):
-
         for i in range(1, self.num_cols):
             u = swap_indices.pop(-1)
 
@@ -129,8 +129,8 @@ class Encrypt:
         ks_array = np.array(ks)
 
         # produce keystream vector
-        kv = np.floor(ks_array * 10 ** 16) % 256
-        kv = kv.astype(dtype='int16')
+        kv = np.floor(ks_array * 10**16) % 256
+        kv = kv.astype(dtype="int16")
 
         return kv
 
@@ -141,29 +141,28 @@ class Encrypt:
         key = PBKDF2(password, self.salt, dkLen=32)
         cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
 
-        with open(hash_filepath, 'rb') as file:
+        with open(hash_filepath, "rb") as file:
             plain = file.read()
 
         ciphertext = cipher.encrypt(plain)
 
-        with open(hash_filepath, 'wb') as enc_file:
+        with open(hash_filepath, "wb") as enc_file:
             enc_file.write(ciphertext)
 
     def decryptHashes(self, hash_filepath, password):
         key = PBKDF2(password, self.salt, dkLen=32)
         cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
 
-        with open(hash_filepath, 'rb') as enc_file:
+        with open(hash_filepath, "rb") as enc_file:
             encrypted = enc_file.read()
 
         plaintext = cipher.decrypt(encrypted)
 
-        with open(hash_filepath, 'wb') as file:
+        with open(hash_filepath, "wb") as file:
             file.write(plaintext)
 
     @time_encrypt
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
-
         fpath = FilepathParser(filepath)
         vid_dest = FilepathParser(vid_destination)
         key_dest = FilepathParser(key_destination)
@@ -172,12 +171,17 @@ class Encrypt:
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
-        result = cv2.VideoWriter(vid_dest.get_posix_path(), cv2.VideoWriter_fourcc(*'HFYU'), cap.get(cv2.CAP_PROP_FPS),
-                                 (frame_width, frame_height))
+        result = cv2.VideoWriter(
+            vid_dest.get_posix_path(),
+            cv2.VideoWriter_fourcc(*"HFYU"),
+            cap.get(cv2.CAP_PROP_FPS),
+            (frame_width, frame_height),
+        )
 
+        cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
         # help me fix the output path so every hash file is the same name as output video, and unique
-        hash_file = open(key_dest.get_posix_path(), 'a')
+        hash_file = open(key_dest.get_posix_path(), "a")
 
         count = 1
 
@@ -188,35 +192,48 @@ class Encrypt:
             grabbed, frame = cap.read()
 
             if not grabbed:
-                print('read done')
+                print("read done")
                 break
 
             self.num_rows, self.num_cols, self.num_channels = frame.shape
 
             hashed = self.hashArray(frame)
-            hash_file.write(hashed + '\n')  # write with newline at the end so every writes will start on new line
+            hash_file.write(
+                hashed + "\n"
+            )  # write with newline at the end so every writes will start on new line
             splits = self.splitHash(hashed)
             converted = self.convertToDecimal(splits)
-            transform = self.transformDecimal(converted)  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
+            transform = self.transformDecimal(
+                converted
+            )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
 
             # permutate
-            row_permutated = self.rowShuffle(frame, self.num_rows, transform[1], transform[0])
-            col_permutated = self.colShuffle(row_permutated, self.num_cols, transform[1],
-                                             transform[0])  # final permutation
+            row_permutated = self.rowShuffle(
+                frame, self.num_rows, transform[1], transform[0]
+            )
+            col_permutated = self.colShuffle(
+                row_permutated, self.num_cols, transform[1], transform[0]
+            )  # final permutation
 
             flatten = col_permutated.reshape(-1, self.num_channels)
 
             # create keystream vector
-            kv = self.keystream(self.num_rows * self.num_cols, transform[3], transform[2])
+            kv = self.keystream(
+                self.num_rows * self.num_cols, transform[3], transform[2]
+            )
             kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
             comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
-            uint8_ks = comb_ks.astype(np.uint8)  # change to uint8 datatype for correct cv2 data type
+            uint8_ks = comb_ks.astype(
+                np.uint8
+            )  # change to uint8 datatype for correct cv2 data type
 
             # diffuse the pixels
             diffuse = self.xor(flatten, uint8_ks)
 
             # reshape the array into a required cv2 format
-            diffuse_pixels = diffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
+            diffuse_pixels = diffuse.reshape(
+                self.num_rows, self.num_cols, self.num_channels
+            )
 
             result.write(diffuse_pixels)
 
@@ -224,11 +241,12 @@ class Encrypt:
 
         cap.release()
         hash_file.close()  # finally, close the file
-        self.encryptHashes(key_dest.get_posix_path(), password)  # and encrypt the hash file
+        self.encryptHashes(
+            key_dest.get_posix_path(), password
+        )  # and encrypt the hash file
 
     @time_encrypt
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
-
         fpath = FilepathParser(filepath)
         vid_dest = FilepathParser(vid_destination)
         key = FilepathParser(hash_filepath)
@@ -239,10 +257,14 @@ class Encrypt:
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
-        result = cv2.VideoWriter(vid_dest.get_posix_path(), cv2.VideoWriter_fourcc(*'mp4v'), cap.get(cv2.CAP_PROP_FPS),
-                                 (frame_width, frame_height))
+        result = cv2.VideoWriter(
+            vid_dest.get_posix_path(),
+            cv2.VideoWriter_fourcc(*"mp4v"),
+            cap.get(cv2.CAP_PROP_FPS),
+            (frame_width, frame_height),
+        )
 
-        hash_file = open(key.get_posix_path(), 'r')
+        hash_file = open(key.get_posix_path(), "r")
         lines = hash_file.readlines()
         hash_line = 0  # keep track of our line in the text file
 
@@ -255,7 +277,7 @@ class Encrypt:
             grabbed, frame = cap.read()
 
             if not grabbed:
-                print('read done')
+                print("read done")
                 break
 
             self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -263,26 +285,38 @@ class Encrypt:
             hashed = lines[hash_line].rstrip()
             splits = self.splitHash(hashed)
             converted = self.convertToDecimal(splits)
-            transform = self.transformDecimal(converted)  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
+            transform = self.transformDecimal(
+                converted
+            )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
 
             # flatten array
             flatten = frame.reshape(-1, self.num_channels)
 
             # create keystream vector
-            kv = self.keystream(self.num_rows * self.num_cols, transform[3], transform[2])
+            kv = self.keystream(
+                self.num_rows * self.num_cols, transform[3], transform[2]
+            )
             kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
             comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
-            uint8_ks = comb_ks.astype(np.uint8)     # change to uint8 datatype for correct cv2 data type
+            uint8_ks = comb_ks.astype(
+                np.uint8
+            )  # change to uint8 datatype for correct cv2 data type
 
             # undiffuse the pixels
             undiffuse = self.xor(flatten, uint8_ks)
 
             # rejoin channels into one frame
-            undiffused_frame = undiffuse.reshape(self.num_rows, self.num_cols, self.num_channels)
+            undiffused_frame = undiffuse.reshape(
+                self.num_rows, self.num_cols, self.num_channels
+            )
 
             # generate swap index array for row and column
-            row_swap_indices = self.generateSwapIndex(self.num_rows, transform[1], transform[0])
-            col_swap_indices = self.generateSwapIndex(self.num_cols, transform[1], transform[0])
+            row_swap_indices = self.generateSwapIndex(
+                self.num_rows, transform[1], transform[0]
+            )
+            col_swap_indices = self.generateSwapIndex(
+                self.num_cols, transform[1], transform[0]
+            )
 
             # unshuffle the undiffused frame, then the unshuffled column frame
             col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)

@@ -7,6 +7,7 @@ import logo from '../assets/MedicryptLogo.png';
 import { CSSTransition } from 'react-transition-group';
 import { useState } from 'react';
 
+
 function LandingPage() {
   const navigate = useNavigate();
   const [inProp, setInProp] = useState(true); 
@@ -32,7 +33,7 @@ function LandingPage() {
         <div className="sibling-fade grid grid-cols-3 grid-rows-2 gap-x-3 gap-y-1">
           <Card width="col-span-1 row-span-5" height="h-[350px]">
             <div
-              className="bg-primary h-full flex flex-col justify-between p-4 rounded-[18px] relative transition-all duration-300 hover:bg-[#3a72bb] hover:shadow-lg hover:scale-105"
+              className="bg-primary h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#3a72bb] hover:shadow-lg hover:scale-105"
               onClick={() => handleNavigate('/howtouse')}
             >
               <div className="flex-grow flex items-end">
@@ -44,7 +45,7 @@ function LandingPage() {
 
           <Card width="col-span-1 row-span-2" height="h-[165px]">
             <div
-              className="bg-primary1 h-full flex flex-col justify-between p-4 rounded-[18px] relative transition-all duration-300 hover:bg-[#101e31] hover:shadow-lg hover:scale-105"
+              className="bg-primary1 h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#101e31] hover:shadow-lg hover:scale-105"
               onClick={() => handleNavigate('/encrypt')}
             >
               <div className="flex-grow flex items-end">
@@ -59,7 +60,7 @@ function LandingPage() {
 
           <Card width="col-span-1 row-span-2" height="h-[165px]">
             <div
-              className="bg-black h-full flex flex-col justify-between p-4 rounded-[18px] relative transition-all duration-300 hover:bg-[#0d0d0e] hover:shadow-lg hover:scale-105"
+              className="bg-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#0d0d0e] hover:shadow-lg hover:scale-105"
               onClick={() => handleNavigate('/decrypt')}
             >
               <div className="flex-grow flex items-end">
@@ -74,7 +75,7 @@ function LandingPage() {
 
           <Card width="col-span-2 row-span-3" height="h-[170px]">
             <div
-              className="section-transparent border-2 border-black h-full flex flex-col justify-between p-4 rounded-[18px] relative transition-all duration-300 hover:border-[#000000] hover:bg-gray-100 hover:shadow-lg hover:scale-105"
+              className="section-transparent border-2 border-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:border-[#000000] hover:bg-gray-100 hover:shadow-lg hover:scale-105"
               onClick={() => handleNavigate('/explore')}
             >
               <div className="flex-grow flex items-end">

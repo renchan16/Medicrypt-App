@@ -26,9 +26,9 @@ function Encrypt() {
     console.log(password);
   }
 
-  const handleEncryptClick = () => {
+  const handleEncryptToggle = () => {
     console.log("Encrypt button clicked!");
-};
+  };
 
   return (
     <div className='flex items-center justify-center h-full w-full'>
@@ -51,7 +51,7 @@ function Encrypt() {
             onValueChange={setAlgorithm}
             />
           <FilePathInput 
-            placeholderText="Enter a file path or click the button to select a video" 
+            placeholderText="Enter a file path or click the button to select a video." 
             browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
             browseHandler={window.electron.openFilePath}
             onValueChange={setFilePath}
@@ -59,19 +59,17 @@ function Encrypt() {
           <FilePathInput 
             placeholderText="Enter a file path or click the button to select your hash file location." 
             browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
-            browseHandler={window.electron.openFilePath}
+            browseHandler={window.electron.openFolder}
             onValueChange={setHashPath}
             />
           <PasswordInput 
-            placeholderText="Enter a password for your hash file"
+            placeholderText="Enter a password for your hash file."
             onValueChange={setPassword}
             />
-            <EncryptButton 
-              className="my-1"
-              buttonText="ENCRYPT"
-              onClickFunction={handleEncryptClick}
-              width="180px"
-              height="50px"
+          <EncryptButton 
+            className="my-1"
+            buttonText="ENCRYPT"
+            onClickFunction={handleEncryptToggle}
           />
         </div>
       </div>

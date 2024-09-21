@@ -4,16 +4,19 @@ import Card from '../components/Cards';
 import { useNavigate } from 'react-router-dom';
 import '../pages-css/LandingPage.css';
 import logo from '../assets/MedicryptLogo.png';
+import cardpattern1 from '../assets/cardbg1.png';
+import cardpattern2 from '../assets/cardbg2.png'; // Import the second background image
+import cardpattern3 from '../assets/cardbg3.png'; // Import the third background image
+import cardpattern4 from '../assets/cardbg4.png'; // Import the fourth background image
 import { CSSTransition } from 'react-transition-group';
 import { useState } from 'react';
 
-
 function LandingPage() {
   const navigate = useNavigate();
-  const [inProp, setInProp] = useState(true); 
+  const [inProp, setInProp] = useState(true);
 
   const handleNavigate = (path) => {
-    setInProp(false); 
+    setInProp(false);
     setTimeout(() => navigate(path), 300);
   };
 
@@ -34,6 +37,11 @@ function LandingPage() {
           <Card width="col-span-1 row-span-5" height="h-[350px]">
             <div
               className="bg-primary h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#3a72bb] hover:shadow-lg hover:scale-105"
+              style={{
+                backgroundImage: `url(${cardpattern1})`, // Background image for the first card
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
               onClick={() => handleNavigate('/howtouse')}
             >
               <div className="flex-grow flex items-end">
@@ -43,9 +51,14 @@ function LandingPage() {
             </div>
           </Card>
 
-          <Card width="col-span-1 row-span-2" height="h-[165px]">
+          <Card width="col-span-1 row-span-2" height="h-[190px]">
             <div
               className="bg-primary1 h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#101e31] hover:shadow-lg hover:scale-105"
+              style={{
+                backgroundImage: `url(${cardpattern2})`,  // Apply cardpattern2.png for this card
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
               onClick={() => handleNavigate('/encrypt')}
             >
               <div className="flex-grow flex items-end">
@@ -58,9 +71,15 @@ function LandingPage() {
             </div>
           </Card>
 
-          <Card width="col-span-1 row-span-2" height="h-[165px]">
+          {/* Updated Decrypt Card using cardpattern3.png */}
+          <Card width="col-span-1 row-span-2" height="h-[190px]">
             <div
               className="bg-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#0d0d0e] hover:shadow-lg hover:scale-105"
+              style={{
+                backgroundImage: `url(${cardpattern3})`, // Use cardpattern3.png for this card
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
               onClick={() => handleNavigate('/decrypt')}
             >
               <div className="flex-grow flex items-end">
@@ -73,9 +92,15 @@ function LandingPage() {
             </div>
           </Card>
 
-          <Card width="col-span-2 row-span-3" height="h-[170px]">
+          {/* Updated Explore Features Card using cardpattern4.png */}
+          <Card width="col-span-2 row-span-3" height="h-[130px]">
             <div
               className="section-transparent border-2 border-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:border-[#000000] hover:bg-gray-100 hover:shadow-lg hover:scale-105"
+              style={{
+                backgroundImage: `url(${cardpattern4})`, // Use cardpattern4.png for this card
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
               onClick={() => handleNavigate('/explore')}
             >
               <div className="flex-grow flex items-end">

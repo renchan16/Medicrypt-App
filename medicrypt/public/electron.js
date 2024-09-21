@@ -30,12 +30,24 @@ app.on('window-all-closed', () => {
 });
 
 // Handle file dialog from renderer
-ipcMain.handle('dialog:openFile', async () => {
+ipcMain.handle('dialog:openFilePath', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [
       { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'mov', 'wmv'] },
     ],
+  });
+  if (canceled) {
+    return null;
+  } else {
+    return filePaths[0];  // Return the first selected file path
+  }
+});
+
+// Handle file dialog from renderer
+ipcMain.handle('dialog:openFolder', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openDirectory'],
   });
   if (canceled) {
     return null;

@@ -15,7 +15,7 @@ export default function AlgoSwitch({ className, onAlgorithmChange }) {
     return (
         <div className={`${className}`}>
             <h2 className="text-sm font-semibold text-primary1">Choose an Encryption Algorithm</h2>
-            <label htmlFor="algo" className="mt-1 w-60 h-8 relative bg-primary2 rounded-xl cursor-pointer flex items-center overflow-hidden">
+            <label htmlFor="algo" className="mt-1 w-2/6 h-3/6 relative bg-primary2 rounded-lg cursor-pointer flex items-center overflow-hidden">
                 <input
                     type="checkbox"
                     id="algo"
@@ -23,7 +23,7 @@ export default function AlgoSwitch({ className, onAlgorithmChange }) {
                     checked={selectedAlgo === "3D Cosine"}
                     onChange={handleChange}
                 />
-                <span className={`absolute w-1/2 h-full bg-primary1 rounded-xl  transition-transform duration-300 transform ${selectedAlgo === "3D Cosine" ? "translate-x-full" : ""}`}></span>
+                <span className={`absolute w-1/2 h-full bg-primary1 rounded-lg  transition-transform duration-300 transform ${selectedAlgo === "3D Cosine" ? "translate-x-full" : ""}`}></span>
                 <div className="relative w-full flex justify-between items-center">
                     <p className={`w-1/2 text-center font-bold text-sm transition-colors duration-300 text-white select-none`}>FY-Logistic</p>
                     <p className={`w-1/2 text-center font-bold text-sm transition-colors duration-300 text-white select-none`}>3D Cosine</p>

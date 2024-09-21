@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-  openFile: () => ipcRenderer.invoke('dialog:openFile'),
+  openFilePath: () => ipcRenderer.invoke('dialog:openFilePath'),
+  openFolder: () => ipcRenderer.invoke('dialog:openFolder'),
 });

@@ -60,59 +60,146 @@ class Correlation:
         frame_width = int(self.cap.get(3))
         frame_height = int(self.cap.get(4))
 
-        grabbed, frame = self.cap.read()
+        corr_list = []
 
-        n = sample
+        while True:
+            grabbed, frame = self.cap.read()
 
-        pixel_x = []
-        pixel_y = []
-        corr = []
+            if not grabbed:
+                print("read done")
+                break
 
-        for c in range(3):
+            n = sample
 
-            for i in range(0, frame_width-2):
+            pixel_x = []
+            pixel_y = []
+            corr = []
+            pass
+            for c in range(3):
+
+                for i in range(0, frame_width-2):
+                    if n <= 0:
+                        break
+                    x1 = i
+                    y1 = 0
+                    x2 = i + 1
+                    y2 = 1                
+                    while x1 >= 0 and y2 < frame_height - 1:
+                        if n <= 0:
+                            break
+
+                        pixel_x.append(frame[y1][x1][c].astype(np.float64))
+                        pixel_y.append(frame[y2][x2][c].astype(np.float64))
+
+                        x1 -= 1
+                        x2 -= 1
+                        y1 += 1
+                        y2 += 1
+                        n -= 1
+
                 
-                if n <= 0:
-                    break
-                
-                x1 = i
-                y1 = 0
-                x2 = i + 1
-                y2 = 1                
-                while x1 >= 0 and y2 < frame_height - 1:
+                for j in range (1, frame_height-2):
+                    
+                    if n <= 0:
+                        break
 
-                    pixel_x.append(frame[y1][x1][c].astype(np.float64))
-                    pixel_y.append(frame[y2][x2][c].astype(np.float64))
+                    x1 = frame_width-2
+                    y1 = j
+                    x2 = frame_width-1
+                    y2 = j + 1
 
-                    x1 -= 1
-                    x2 -= 1
-                    y1 += 1
-                    y2 += 1
-                    n -= 1
+                    while y2 < frame_height:
+                        if n <= 0:
+                            break
+                        pixel_x.append(frame[y1][x1][c].astype(np.float64))
+                        pixel_y.append(frame[y2][x2][c].astype(np.float64))
 
+                        x1 -= 1
+                        x2 -= 1
+                        y1 += 1
+                        y2 += 1
+                        n -= 1
+
+                corr.append(self.R(pixel_x, pixel_y))
+            corr_list.append(corr)
+        return corr_list
+    
+    def get_corellation_horizontal(self, sample : int):
+        frame_width = int(self.cap.get(3))
+        frame_height = int(self.cap.get(4))
+
+        corr_list = []        
+
+        while True:
+            grabbed, frame = self.cap.read()
             
-            for j in range (1, frame_height-2):
+
+            if not grabbed:
+                print("read done")
+                break
+
+            corr = []
+            
+            for c in range(3):
                 
-                if n <= 0:
-                    break
+                n = sample
+                pixel_x = []
+                pixel_y = []
 
-                x1 = frame_width-2
-                y1 = j
-                x2 = frame_width-1
-                y2 = j + 1
+                for i in range(frame_width - 2):
+                    if n <= 0:
+                        break
+                    for j in range (frame_height - 1):
+                        if n <= 0:
+                            break
+                        pixel_x.append(frame[j][i][c].astype(np.float64))
+                        pixel_y.append(frame[j][i+1][c].astype(np.float64))
+                        n -= 1
+                
+                corr.append(self.R(pixel_x, pixel_y))
+            
+            corr_list.append(corr)
+        
+        return corr_list
+    
+    def get_corellation_vertical(self, sample : int):
+        frame_width = int(self.cap.get(3))
+        frame_height = int(self.cap.get(4))
 
-                while y2 < frame_height:
-                    pixel_x.append(frame[y1][x1][c].astype(np.float64))
-                    pixel_y.append(frame[y2][x2][c].astype(np.float64))
+        corr_list = []
 
-                    x1 -= 1
-                    x2 -= 1
-                    y1 += 1
-                    y2 += 1
-                    n -= 1
+        while True:
+            grabbed, frame = self.cap.read()
 
-            corr.append(self.R(pixel_x, pixel_y))
+            if not grabbed:
+                print("read done")
+                break
 
-        return corr
+            corr = []
+            
+            for c in range(3):
+                
+                n = sample
+                pixel_x = []
+                pixel_y = []
+
+                for j in range(frame_height - 2):
+                    if n <= 0:
+                        break
+                    for i in range (frame_width - 1):
+                        if n <= 0:
+                            break
+                        pixel_x.append(frame[j][i][c].astype(np.float64))
+                        pixel_y.append(frame[j+1][i][c].astype(np.float64))
+                        n -= 1
+                
+                corr.append(self.R(pixel_x, pixel_y))
+            
+            corr_list.append(corr)
+        
+        return corr_list
+                
+
+
 
 

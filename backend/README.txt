@@ -8,8 +8,8 @@ python medicrypt-cli.py -h
 
 EXAMPLES:
 
-python medicrypt-cli.py encrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -t fisher_yates -k /path/to/key/keyfile.key
-python medicrypt-cli.py decrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -t fisher_yates -k /path/to/key/keyfile.key
+python medicrypt-cli.py encrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -t fisher_yates -k /path/to/key/keyfile.key -p <password>
+python medicrypt-cli.py decrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -t fisher_yates -k /path/to/key/keyfile.key -p <password>
 
 
 NOTE:
@@ -20,17 +20,17 @@ examples:
 
 --------------------------------------------------------------------------------------------------
 
-python medicrypt-cli.py encrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi
+python medicrypt-cli.py encrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi  -p 12345
 
 --------------------------------------------------------------------------------------------------
 
 
-note that there are no key (-k) flag and (-t) encryption type in the syntax. that is because it defaults the keyfile to its own path. however, decryption
+note that there are no key (-k) flag and (-t) encryption type in the syntax. that is because it defaults the keyfile to its own path. however, decryption 
 requires the key flag to determine the encryption key.
 
 --------------------------------------------------------------------------------------------------------------------------
 
-python medicrypt-cli.py decrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -k /path/to/keyfile.key
+python medicrypt-cli.py decrypt  -i ./to_folder/testvid.mp4 -o ./gseed/to_output_folder/output.avi -k /path/to/keyfile.key -p 12345
 
 --------------------------------------------------------------------------------------------------------------------------
 

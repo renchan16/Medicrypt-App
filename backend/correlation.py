@@ -8,7 +8,6 @@ import cv2
 import math
 
 
-
 class Correlation:
     video_path = None
     cap = None

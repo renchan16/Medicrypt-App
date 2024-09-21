@@ -27,7 +27,7 @@ export default function FilePathInput( {className, placeholderText, browseIcon, 
                 className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 placeholder:font-semibold focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
                 onChange={handleInputChange} 
                 />
-            <button className="absolute w-6 h-6 right-4 rounded-lg" onClick={handleBrowsePath}>
+            <button className="absolute w-6 h-6 right-4 rounded-lg text-primary1" onClick={handleBrowsePath}>
                 {browseIcon}
             </button>
         </div>

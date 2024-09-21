@@ -11,6 +11,7 @@ import BackgroundImage from '../assets/background.png';
 import { FaPaperclip } from "react-icons/fa6";
 import { FaFolder } from 'react-icons/fa6';
 
+
 function Encrypt() {
   const navigate = useNavigate();
   const [algorithm, setAlgorithm] = useState("");
@@ -25,6 +26,10 @@ function Encrypt() {
     console.log(password);
   }
 
+  const handleEncryptClick = () => {
+    console.log("Encrypt button clicked!");
+};
+
   return (
     <div className='flex items-center justify-center h-full w-full'>
       <div className="relative h-full w-11/12 p-6">
@@ -35,10 +40,10 @@ function Encrypt() {
           <MdArrowBackIosNew className="mr-2" />
         </button>
 
-        <img src={logo} alt="Medicrypt Logo" className="absolute w-19 h-20 right-2" />
+        <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
 
-        <div className="flex flex-col gap-4 mt-24">
-          <h1 className="flex items-center col-span-3 mb-4 text-3xl font-bold text-primary1 ">Encrypt a Video</h1>
+        <div className="flex flex-col gap-4 mt-20">
+          <h1 className="flex items-center col-span-3 mb-3 text-3xl font-bold text-primary1 ">Encrypt a Video</h1>
           <AlgorithmSelector 
             componentHeader="Choose an Algorithm for Encryption" 
             optionOne="FY-Logistic" 
@@ -61,10 +66,13 @@ function Encrypt() {
             placeholderText="Enter a password for your hash file"
             onValueChange={setPassword}
             />
-          <EncryptButton 
-            buttonText="ENCRYPT"
-            onClickFunction={handleSubmit}
-            />
+            <EncryptButton 
+              className="my-1"
+              buttonText="ENCRYPT"
+              onClickFunction={handleEncryptClick}
+              width="180px"
+              height="50px"
+          />
         </div>
       </div>
     </div>

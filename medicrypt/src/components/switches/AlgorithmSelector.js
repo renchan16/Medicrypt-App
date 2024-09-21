@@ -15,8 +15,8 @@ export default function AlgorithmSelector({ className, componentHeader, optionOn
 
     return (
         <div className={`${className}`}>
-            <h1 className="text-sm text-primary1 font-normal">{componentHeader}</h1>
-            <label className="relative flex items-center w-60 h-8 mt-1 overflow-hidden rounded-lg bg-primary2 cursor-pointer">
+            <h1 className="text-base text-primary1 font-semibold">{componentHeader}</h1>
+            <label className="relative flex items-center w-72 h-8 mt-1 overflow-hidden rounded-lg bg-primary2 cursor-pointer">
                 <input
                     type="checkbox"
                     className="sr-only peer"

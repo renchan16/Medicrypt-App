@@ -45,6 +45,21 @@ ipcMain.handle('dialog:openFilePath', async () => {
 });
 
 // Handle file dialog from renderer
+ipcMain.handle('dialog:openKeyPath', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+      { name: 'Key', extensions: ['key'] },
+    ],
+  });
+  if (canceled) {
+    return null;
+  } else {
+    return filePaths[0];  // Return the first selected file path
+  }
+});
+
+// Handle file dialog from renderer
 ipcMain.handle('dialog:openFolder', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openDirectory'],

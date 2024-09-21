@@ -46,20 +46,23 @@ function Decrypt() {
             optionTwo="ILM-Cosine" 
             onValueChange={setAlgorithm}
             />
-          <FilePathInput 
-            placeholderText="Enter a file path or click the button to select a video." 
+          <FilePathInput
+            componentHeader="Video File*"  
+            placeholderText="C:\Users\YourUsername\Documents\encrypted_video.avi..." 
             browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
             browseHandler={window.electron.openFilePath}
             onValueChange={setFilePath}
             />
-          <FilePathInput 
-            placeholderText="Enter a file path or click the button to select your hash file location." 
+          <FilePathInput
+            componentHeader="Hash File*" 
+            placeholderText="C:\Users\YourUsername\Documents\HashFile\test_key.key..." 
             browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
-            browseHandler={window.electron.openFolder}
+            browseHandler={window.electron.openKeyPath}
             onValueChange={setHashPath}
             />
-          <PasswordInput 
-            placeholderText="Enter a password for your hash file."
+          <PasswordInput
+            componentHeader="Password*" 
+            placeholderText="e.g. f1Sher_Y33tz69"
             onValueChange={setPassword}
             />
           <ProcessButton 

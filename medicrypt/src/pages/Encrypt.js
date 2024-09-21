@@ -47,19 +47,22 @@ function Encrypt() {
             onValueChange={setAlgorithm}
             />
           <FilePathInput 
-            placeholderText="Enter a file path or click the button to select a video." 
+            componentHeader="Video File*"
+            placeholderText="C:\Users\YourUsername\Documents\video.mp4..." 
             browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
             browseHandler={window.electron.openFilePath}
             onValueChange={setFilePath}
             />
-          <FilePathInput 
-            placeholderText="Enter a file path or click the button to select your hash file location." 
+          <FilePathInput
+            componentHeader="Hash File Destination"
+            placeholderText="C:\Users\YourUsername\Documents\HashFile..." 
             browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
             browseHandler={window.electron.openFolder}
             onValueChange={setHashPath}
             />
           <PasswordInput 
-            placeholderText="Enter a password for your hash file."
+            componentHeader="Password*"
+            placeholderText="e.g. ILoveM3d!Crypt143"
             onValueChange={setPassword}
             />
           <ProcessButton 

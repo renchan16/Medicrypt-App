@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function FilePathInput( {className, placeholderText, browseIcon, browseHandler, onValueChange} ){
+export default function FilePathInput( {className, componentHeader, placeholderText, browseIcon, browseHandler, onValueChange} ){
     const [path, setFilePath] = useState("");
 
     // Handle the change in the input field and file path return value upon choosing a file path using the browse function.
@@ -19,17 +19,20 @@ export default function FilePathInput( {className, placeholderText, browseIcon, 
     };
     
     return (
-        <div className={`relative flex items-center ${className}`}>
-            <input 
-                type='text' 
-                value={path} 
-                placeholder={placeholderText} 
-                className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 placeholder:font-semibold focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
-                onChange={handleInputChange} 
-                />
-            <button className="absolute w-6 h-6 right-4 rounded-lg text-primary1" onClick={handleBrowsePath}>
-                {browseIcon}
-            </button>
+        <div className={`${className}`}>
+            <h1 className="mb-1 font-semibold text-base text-primary1">{componentHeader}</h1>
+            <div className="relative flex items-center">
+                <input 
+                    type='text' 
+                    value={path} 
+                    placeholder={placeholderText} 
+                    className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary2 placeholder-opacity-100 focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
+                    onChange={handleInputChange} 
+                    />
+                <button className="absolute w-6 h-6 right-4 rounded-lg text-primary2 hover:text-primary1 transition-colors duration-300" onClick={handleBrowsePath}>
+                    {browseIcon}
+                </button>
+            </div>
         </div>
     );
 }

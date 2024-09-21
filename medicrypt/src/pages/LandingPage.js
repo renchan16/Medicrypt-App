@@ -26,8 +26,8 @@ function LandingPage() {
     >
       <div className="flex flex-col justify-center items-center min-h-screen">
         <div className="flex items-center mb-7">
-          <img src={logo} alt="Medicrypt Logo" className="w-12 h-11 mt-2" />
-          <h1 className="text-5xl font-bold text-transparent bg-clip-text gradient-text">medicrypt.</h1>
+          <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
+          <h1 className="text-6xl font-bold text-transparent bg-clip-text gradient-text">medicrypt.</h1>
         </div>
 
         <div className="sibling-fade grid grid-cols-3 grid-rows-2 gap-x-3 gap-y-1">

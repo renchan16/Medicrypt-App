@@ -3,11 +3,13 @@ import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow ico
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
-import AlgoSwitch from '../components/switches/AlgoSwitch';
+import AlgorithmSelector from '../components/switches/AlgorithmSelector';
 import FilePathInput from '../components/text input/FilePathInput';
 import PasswordInput from '../components/text input/PasswordInput';
 import EncryptButton from '../components/buttons/ProcessButton';
 import BackgroundImage from '../assets/background.png';
+import { FaPaperclip } from "react-icons/fa6";
+import { FaFolder } from 'react-icons/fa6';
 
 function Encrypt() {
   const navigate = useNavigate();
@@ -35,13 +37,34 @@ function Encrypt() {
 
         <img src={logo} alt="Medicrypt Logo" className="absolute w-19 h-20 right-2" />
 
-        <div className="grid grid-cols-3 grid-rows-6 gap-4 auto-rows-auto mt-16">
-          <h1 className="col-span-3 text-3xl font-bold text-primary1 flex items-center">Encrypt a Video</h1>
-          <AlgoSwitch className="col-span-3" onAlgorithmChange={setAlgorithm}/>
-          <FilePathInput className="col-span-3" placeholder="Choose a file" onFilePathChange={setFilePath}/>
-          <PasswordInput className="col-span-3" onPasswordChange={setPassword}/>
-          <FilePathInput className="col-span-3" placeholder="Choose a file" onFilePathChange={setHashPath}/>
-          <EncryptButton onClickFunction={handleSubmit}/>
+        <div className="flex flex-col gap-4 mt-24">
+          <h1 className="flex items-center col-span-3 mb-4 text-3xl font-bold text-primary1 ">Encrypt a Video</h1>
+          <AlgorithmSelector 
+            componentHeader="Choose an Algorithm for Encryption" 
+            optionOne="FY-Logistic" 
+            optionTwo="ILM-Cosine" 
+            onValueChange={setAlgorithm}
+            />
+          <FilePathInput 
+            placeholderText="Enter a file path or click the button to select a video" 
+            browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
+            browseHandler={window.electron.openFilePath}
+            onValueChange={setFilePath}
+            />
+          <FilePathInput 
+            placeholderText="Enter a file path or click the button to select your hash file location." 
+            browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
+            browseHandler={window.electron.openFilePath}
+            onValueChange={setHashPath}
+            />
+          <PasswordInput 
+            placeholderText="Enter a password for your hash file"
+            onValueChange={setPassword}
+            />
+          <EncryptButton 
+            buttonText="ENCRYPT"
+            onClickFunction={handleSubmit}
+            />
         </div>
       </div>
     </div>

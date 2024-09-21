@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 
-export default function PasswordInput( {className, onPasswordChange} ){
+export default function PasswordInput( {className, placeholderText, onValueChange} ){
 
-    const handlePasswordChange = (e) => {
-        onPasswordChange(e.target.value);
+    const handleInputChange = (e) => {
+        onValueChange(e.target.value);
     }
     
     return (
         <div className={`relative flex items-center ${className}`}>
             <input 
                 type='password' 
-                placeholder='Enter a password' 
-                className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
-                onChange={handlePasswordChange}></input>
+                placeholder={placeholderText}
+                className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 placeholder:font-semibold focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
+                onChange={handleInputChange}
+                />
         </div>
     );
 }

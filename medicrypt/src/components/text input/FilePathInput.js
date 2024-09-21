@@ -1,20 +1,21 @@
 import React, { useState } from "react";
-import { FaPaperclip } from "react-icons/fa6";
 
-export default function FilePathInput( {className, placeholder, onFilePathChange} ){
-    const [path, setFilePath] = useState(""); // State to hold the path path
+export default function FilePathInput( {className, placeholderText, browseIcon, browseHandler, onValueChange} ){
+    const [path, setFilePath] = useState("");
 
-    const handleFilePathChange = async () => {
-        const uploadedPath = await window.electron.openFilePath(); // Get the uploaded path
+    // Handle the change in the input field and file path return value upon choosing a file path using the browse function.
+    const handleBrowsePath = async () => {
+        const uploadedPath = await browseHandler();
         if (uploadedPath) {
-            setFilePath(uploadedPath); // Set the path name in the state
-            onFilePathChange(uploadedPath); // Call the onFilePathChange function with the uploaded path
+            setFilePath(uploadedPath);
+            onValueChange(uploadedPath);
         }
     };
 
+    // Handle the change in the input field and file path return value upon typing in the input field.
     const handleInputChange = (e) => {
-        setFilePath(e.target.value);  // Update the state with the typed value
-        onFilePathChange(e.target.value); // Optionally pass the typed value to the parent component
+        setFilePath(e.target.value);
+        onValueChange(e.target.value);
     };
     
     return (
@@ -22,11 +23,12 @@ export default function FilePathInput( {className, placeholder, onFilePathChange
             <input 
                 type='text' 
                 value={path} 
-                placeholder={`${placeholder}`} 
-                className='w-full rounded-xl bg-transparent text-sm  border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
-                onChange={handleInputChange}></input>
-            <button className="absolute w-6 h-6 rounded-lg right-4" onClick={handleFilePathChange}>
-                <FaPaperclip className="w-full h-full transform -rotate-45"/>
+                placeholder={placeholderText} 
+                className='w-full rounded-xl bg-transparent text-sm border-2 border-primary2 placeholder-primary1 placeholder-opacity-100 placeholder:font-semibold focus:border-primary1 focus:placeholder-primary2 focus:outline-none transition-all duration-300' 
+                onChange={handleInputChange} 
+                />
+            <button className="absolute w-6 h-6 right-4 rounded-lg" onClick={handleBrowsePath}>
+                {browseIcon}
             </button>
         </div>
     );

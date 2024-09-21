@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-export default function EncryptButton( {className, onClickFunction} ){
+export default function EncryptButton( {className, buttonText, onClickFunction} ){
     return (
         <div className={`${className}`}>
             <button 
                 className="w-full h-full bg-primary1 rounded-xl font-bold text-white text-lg" 
-                onClick={onClickFunction}>ENCRYPT</button>
+                onClick={onClickFunction}>{buttonText}</button>
         </div>
     );
 }

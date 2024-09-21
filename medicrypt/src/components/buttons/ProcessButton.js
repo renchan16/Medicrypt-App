@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function EncryptButton({ className, buttonText, onClickFunction }) {
+export default function ProcessButton({ className, buttonText, onClickFunction }) {
     return (
         <div className={`${className}`}>
             <button

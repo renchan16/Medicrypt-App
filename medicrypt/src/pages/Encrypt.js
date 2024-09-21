@@ -6,7 +6,7 @@ import logo from '../assets/MedicryptLogo.png';
 import AlgorithmSelector from '../components/switches/AlgorithmSelector';
 import FilePathInput from '../components/text input/FilePathInput';
 import PasswordInput from '../components/text input/PasswordInput';
-import EncryptButton from '../components/buttons/ProcessButton';
+import ProcessButton from '../components/buttons/ProcessButton';
 import BackgroundImage from '../assets/background.png';
 import { FaPaperclip } from "react-icons/fa6";
 import { FaFolder } from 'react-icons/fa6';
@@ -19,17 +19,13 @@ function Encrypt() {
   const [hashpath, setHashPath] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = () => {
+  const processInputData = () => {
     console.log(algorithm);
     console.log(filepath);
     console.log(hashpath);
     console.log(password);
   }
-
-  const handleEncryptToggle = () => {
-    console.log("Encrypt button clicked!");
-  };
-
+  
   return (
     <div className='flex items-center justify-center h-full w-full'>
       <div className="relative h-full w-11/12 p-6">
@@ -66,11 +62,11 @@ function Encrypt() {
             placeholderText="Enter a password for your hash file."
             onValueChange={setPassword}
             />
-          <EncryptButton 
+          <ProcessButton 
             className="my-1"
             buttonText="ENCRYPT"
-            onClickFunction={handleEncryptToggle}
-          />
+            onClickFunction={processInputData}
+            />
         </div>
       </div>
     </div>

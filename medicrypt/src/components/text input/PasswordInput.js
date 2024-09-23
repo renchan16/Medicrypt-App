@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
 
-export default function PasswordInput({ className, componentHeader, placeholderText, onValueChange, onValidityChange }) {
+export default function PasswordInput({ className, componentHeader, placeholderText, processType, onValueChange, onValidityChange }) {
     const [isInputActive, setInputActive] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [value, setValue] = useState("");
@@ -28,6 +28,7 @@ export default function PasswordInput({ className, componentHeader, placeholderT
         setFocus(!isFocused);
     }
 
+    // Handles the onBlur event for the input field.
     const handleBlur = (e) => {
         setInputActive(value !== "");
         setFocus(!isFocused);
@@ -37,18 +38,30 @@ export default function PasswordInput({ className, componentHeader, placeholderT
     const handleInputValidation = (password) => {
         const isValid = ValidatePassword(password)
 
-        // Check both value and validity when isRequired is true
-        if (password === null || password === "") {
-            setPasswordWarning("Password is required");
-            setInputValidity(false);
-        } 
-        else if (isValid) {
-            setPasswordWarning(null);
-            setInputValidity(true);
-        } 
-        else {
-            setPasswordWarning("Invalid Password");
-            setInputValidity(false);
+        // Checks the validity of the password based on process type
+        if(processType === "Encrypt"){
+            if (password === null || password === "") {
+                setPasswordWarning("Password is required");
+                setInputValidity(false);
+            } 
+            else if (isValid) {
+                setPasswordWarning(null);
+                setInputValidity(true);
+            } 
+            else {
+                setPasswordWarning("Invalid Password");
+                setInputValidity(false);
+            }
+        }
+        else if (processType === "Decrypt") {
+            if (password === null || password === "") {
+                setPasswordWarning("Password is required");
+                setInputValidity(false);
+            }  
+            else {
+                setPasswordWarning(null);
+                setInputValidity(true);
+            }
         }
     };
 

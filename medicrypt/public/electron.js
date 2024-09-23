@@ -1,5 +1,6 @@
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -68,5 +69,18 @@ ipcMain.handle('dialog:openFolder', async () => {
     return null;
   } else {
     return filePaths[0];  // Return the first selected file path
+  }
+});
+
+ipcMain.handle('dialog:checkFilePath', (event, filePath) => {
+  try {
+      const normalizedPath = path.normalize(filePath); // Normalize the path
+      if (fs.existsSync(normalizedPath)) {
+          const stat = fs.lstatSync(normalizedPath);
+          return stat.isFile() || stat.isDirectory();
+      }
+      return false;
+  } catch (err) {
+      return false;
   }
 });

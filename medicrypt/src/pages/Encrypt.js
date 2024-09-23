@@ -18,12 +18,24 @@ function Encrypt() {
   const [filepath, setFilePath] = useState("");
   const [hashpath, setHashPath] = useState("");
   const [password, setPassword] = useState("");
+  const [isFilePathValid, setFilePathValidity] = useState(true);
+  const [isHashPathValid, setHashPathValidity] = useState(true);
+  const [isPasswordValid, setPasswordValidity] = useState(true);
 
   const processInputData = () => {
     console.log(algorithm);
-    console.log(filepath);
-    console.log(hashpath);
-    console.log(password);
+
+    if (isFilePathValid){
+      console.log(filepath);
+    }
+    
+    if (isHashPathValid) {
+      console.log(hashpath);
+    }
+    
+    if (isPasswordValid) {
+      console.log(password);
+    }
   }
   
   return (
@@ -47,23 +59,28 @@ function Encrypt() {
             onValueChange={setAlgorithm}
             />
           <FilePathInput 
-            componentHeader="Video File*"
+            componentHeader="Video File"
             placeholderText="C:\Users\YourUsername\Documents\video.mp4..." 
             browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
             browseHandler={window.electron.openFilePath}
             onValueChange={setFilePath}
+            onValidityChange={setFilePathValidity}
+            isRequired={true}
             />
           <FilePathInput
             componentHeader="Hash File Destination"
-            placeholderText="C:\Users\YourUsername\Documents\HashFile..." 
+            placeholderText="C:\Users\YourUsername\Documents\HashFolder..." 
             browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
             browseHandler={window.electron.openFolder}
             onValueChange={setHashPath}
+            onValidityChange={setHashPathValidity}
+            isRequired={false}
             />
           <PasswordInput 
-            componentHeader="Password*"
+            componentHeader="Password"
             placeholderText="e.g. ILoveM3d!Crypt143"
             onValueChange={setPassword}
+            onValidityChange={setPasswordValidity}
             />
           <ProcessButton 
             className="my-1"

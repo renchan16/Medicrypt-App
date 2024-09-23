@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export default function AlgorithmSelector({ className, componentHeader, optionOne, optionTwo, onValueChange }) {
-    const [selectedAlgo, setSelectedAlgo] = useState({optionOne});
+    const [selectedAlgo, setSelectedAlgo] = useState(optionOne);
 
     // Sets the value of the selectedAlgo upon runtime and everytime its value changes.
     useEffect(() => {
@@ -15,7 +15,7 @@ export default function AlgorithmSelector({ className, componentHeader, optionOn
 
     return (
         <div className={`${className}`}>
-            <h1 className="text-base text-primary1 font-semibold">{componentHeader}</h1>
+            <h1 className="text-sm text-primary1 font-semibold">{componentHeader}</h1>
             <label className="relative flex items-center w-72 h-8 mt-1 overflow-hidden rounded-lg bg-primary2 cursor-pointer">
                 <input
                     type="checkbox"

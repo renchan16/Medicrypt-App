@@ -1,4 +1,3 @@
-from turtle import width
 from fisher_yates import Encrypt
 
 import cv2
@@ -11,22 +10,22 @@ class Differential:
     def get_difference(self, pixel_i, pixel_j):
 
         if pixel_i == pixel_j:
-            return 1
-        else:
             return 0
+        else:
+            return 1
 
     def get_npcr(self, frame_1, frame_2, width, height):
 
-        temp2 = 0
-        temp1 = 1 / (width * height)
-
-        npcr_list = [] 
-        for c in range(1):
-            for i in range(width):
-                for j in range(height):
+        npcr_list = []
+        for c in range(3):
+            temp2 = 0
+            temp1 = 1 / (width * height)
+            for i in range(width - 1):
+                for j in range(height - 1):
                     temp2 += self.get_difference(frame_1[j][i][c], frame_2[j][i][c]) * 100
             npcr_list.append(temp1 * temp2)
         return npcr_list
+
 
     def get_uaci(self, frame1, frame2, width, height):
         temp1 = 1 / (width * height)
@@ -34,52 +33,41 @@ class Differential:
 
         uaci_list = []
         for c in range(3):
-            for i in range(width):
-                for j in range(height):
+            for i in range(width - 1):
+                for j in range(height - 1):
                     temp2 += (abs(frame1 - frame2) / 255) * 100
 
             uaci_list.append(temp1 * temp2)
 
         return uaci_list
     
-    def attack_pixel(self, video, destination_path):
+    def attack_pixel(self, frame):
 
-        dest_path = FilepathParser(destination_path)
+        frame_width = len(frame[0])
+        frame_height = len(frame)
+
+        for c in range(3):
+            i, j = frame_width // 3, frame_height // 3
+
+            frame[j][i][c] = frame[j][i][c].astype(float) + 1   
+            
+            encryption_node = Encrypt()
+            e_frame, hash = encryption_node.encryptFrame(frame)
+            return e_frame
+
+    def get_differential(self, video):
         cap = cv2.VideoCapture(video)
 
-        frame_width = int(cap.get(3))
-        frame_height = int(cap.get(4))
+        grabbed1, frame1 = cap.read()
 
-        result = cv2.VideoWriter(
-            dest_path.get_posix_path(),
-            cv2.VideoWriter_fourcc(*"HFYU"),
-            cap.get(cv2.CAP_PROP_FPS),
-            (frame_width, frame_height),
-        )
+        
+        encryption_node = Encrypt()
 
-        while True:
-            grabbed, frame = cap.read()
 
-            if not grabbed:
-                print("write done")
-            
-            for c in range(3):
-                i, j = frame_width // 3, frame_height //3
-                new_pixel = frame[j][i][c]
+        e_frame1, hash1 = encryption_node.encryptFrame(frame1)
+        e_frame2 = self.attack_pixel(frame1)
 
-                # for i in range(frame[j][i][c]):
+        frame_width = len(e_frame1[0])
+        frame_height = len(e_frame1)
 
-                # frame[j][i] = 
-
-    def print_differential(self, e_video1, e_video2):
-        cap1 = cv2.VideoCapture(e_video1)
-        cap2 = cv2.VideoCapture(e_video2)
-
-        frame_width = int(cap1.get(3))
-        frame_height = int(cap2.get(4))
-
-        grabbed1, frame1 = cap1.read()
-        grabbed2, frame2 = cap2.read()
-
-        return self.get_npcr(frame1, frame2, frame_width, frame_height)
-    
+        return self.get_npcr(e_frame1, e_frame2, frame_width, frame_height)

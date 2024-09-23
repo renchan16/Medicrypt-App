@@ -11,7 +11,6 @@ import BackgroundImage from '../assets/background.png';
 import { FaPaperclip } from "react-icons/fa6";
 import { FaFolder } from 'react-icons/fa6';
 
-
 function Decrypt() {
   const navigate = useNavigate();
   const [algorithm, setAlgorithm] = useState("");
@@ -79,6 +78,7 @@ function Decrypt() {
           <PasswordInput 
             componentHeader="Password"
             placeholderText="e.g. ILoveM3d!Crypt143"
+            processType="Decrypt"
             onValueChange={setPassword}
             onValidityChange={setPasswordValidity}
             />

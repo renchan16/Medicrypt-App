@@ -1,9 +1,4 @@
 input[type=text], input[type=password]{
-    padding: 1rem;
+    
     color: '#21316F';
-}
-
-div {
-    margin: 0;
-    padding: 0;
 }

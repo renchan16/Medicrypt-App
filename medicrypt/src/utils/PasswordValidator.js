@@ -1,3 +1,3 @@
 export const ValidatePassword = (password) => {
-    return false;
+    return true;
 }

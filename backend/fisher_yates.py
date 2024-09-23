@@ -252,8 +252,48 @@ class Encrypt:
             key_dest.get_posix_path(), password
         )  # and encrypt the hash file
 
-    def decryptFrame(frame, hash):
-        pass
+    def decryptFrame(self, frame, hash):
+        self.num_rows, self.num_cols, self.num_channels = frame.shape
+        splits = self.splitHash(hash)
+        converted = self.convertToDecimal(splits)
+        transform = self.transformDecimal(
+            converted
+        )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
+
+        # flatten array
+        flatten = frame.reshape(-1, self.num_channels)
+
+        # create keystream vector
+        kv = self.keystream(
+            self.num_rows * self.num_cols, transform[3], transform[2]
+        )
+        kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
+        comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
+        uint8_ks = comb_ks.astype(
+            np.uint8
+        )  # change to uint8 datatype for correct cv2 data type
+
+        # undiffuse the pixels
+        undiffuse = self.xor(flatten, uint8_ks)
+
+        # rejoin channels into one frame
+        undiffused_frame = undiffuse.reshape(
+            self.num_rows, self.num_cols, self.num_channels
+        )
+
+        # generate swap index array for row and column
+        row_swap_indices = self.generateSwapIndex(
+            self.num_rows, transform[1], transform[0]
+        )
+        col_swap_indices = self.generateSwapIndex(
+            self.num_cols, transform[1], transform[0]
+        )
+
+        # unshuffle the undiffused frame, then the unshuffled column frame
+        col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
+        row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
+        
+        return row_unshuffled
 
     @time_encrypt
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
@@ -267,6 +307,7 @@ class Encrypt:
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
+
         result = cv2.VideoWriter(
             vid_dest.get_posix_path(),
             cv2.VideoWriter_fourcc(*"mp4v"),
@@ -290,48 +331,10 @@ class Encrypt:
                 print("read done")
                 break
 
-            self.num_rows, self.num_cols, self.num_channels = frame.shape
-
             hashed = lines[hash_line].rstrip()
-            splits = self.splitHash(hashed)
-            converted = self.convertToDecimal(splits)
-            transform = self.transformDecimal(
-                converted
-            )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
 
-            # flatten array
-            flatten = frame.reshape(-1, self.num_channels)
-
-            # create keystream vector
-            kv = self.keystream(
-                self.num_rows * self.num_cols, transform[3], transform[2]
-            )
-            kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
-            comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
-            uint8_ks = comb_ks.astype(
-                np.uint8
-            )  # change to uint8 datatype for correct cv2 data type
-
-            # undiffuse the pixels
-            undiffuse = self.xor(flatten, uint8_ks)
-
-            # rejoin channels into one frame
-            undiffused_frame = undiffuse.reshape(
-                self.num_rows, self.num_cols, self.num_channels
-            )
-
-            # generate swap index array for row and column
-            row_swap_indices = self.generateSwapIndex(
-                self.num_rows, transform[1], transform[0]
-            )
-            col_swap_indices = self.generateSwapIndex(
-                self.num_cols, transform[1], transform[0]
-            )
-
-            # unshuffle the undiffused frame, then the unshuffled column frame
-            col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
-            row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
-
+            #decrypt
+            row_unshuffled = self.decryptFrame(frame, hashed)
             result.write(row_unshuffled)
 
             count += 1

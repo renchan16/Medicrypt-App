@@ -68,5 +68,8 @@ class Differential:
 
         frame_width = len(e_frame1[0])
         frame_height = len(e_frame1)
-
-        return self.get_uaci(e_frame1, e_frame2, frame_width, frame_height)
+        return {
+            "npcr":  self.get_npcr(frame1, e_frame1, frame_width, frame_height),
+            "uaci":  self.get_uaci(e_frame1, e_frame2, frame_width, frame_height)
+        }
+        

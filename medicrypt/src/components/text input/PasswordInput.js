@@ -41,7 +41,7 @@ export default function PasswordInput({ className, componentHeader, placeholderT
         // Checks the validity of the password based on process type
         if(processType === "Encrypt"){
             if (password === null || password === "") {
-                setPasswordWarning("Password is required");
+                setPasswordWarning("Password is required!");
                 setInputValidity(false);
             } 
             else if (isValid) {
@@ -49,13 +49,13 @@ export default function PasswordInput({ className, componentHeader, placeholderT
                 setInputValidity(true);
             } 
             else {
-                setPasswordWarning("Invalid Password");
+                setPasswordWarning("Invalid Password!");
                 setInputValidity(false);
             }
         }
         else if (processType === "Decrypt") {
             if (password === null || password === "") {
-                setPasswordWarning("Password is required");
+                setPasswordWarning("Password is required!");
                 setInputValidity(false);
             }  
             else {

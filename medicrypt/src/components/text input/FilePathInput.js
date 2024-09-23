@@ -47,7 +47,7 @@ export default function FilePathInput({className, componentHeader, placeholderTe
         if (isRequired) {
             // Check both value and validity when isRequired is true
             if (filePath === null || filePath === "") {
-                setPathWarning("File Path is required");
+                setPathWarning("File Path is required!");
                 setInputValidity(false);
             } 
             else if (isValid) {
@@ -55,7 +55,7 @@ export default function FilePathInput({className, componentHeader, placeholderTe
                 setInputValidity(true);
             } 
             else {
-                setPathWarning("Invalid File Path");
+                setPathWarning("Invalid File Path!");
                 setInputValidity(false);
             }
         }
@@ -69,7 +69,7 @@ export default function FilePathInput({className, componentHeader, placeholderTe
                 setInputValidity(true);
             } 
             else {
-                setPathWarning("Invalid File Path");
+                setPathWarning("Invalid File Path!");
                 setInputValidity(false);
             }
         }

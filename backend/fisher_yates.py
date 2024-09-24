@@ -2,6 +2,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 from math import ceil
 from filepath_parser import FilepathParser
+from pathlib import Path
 import numpy as np
 import hashlib
 import time
@@ -204,16 +205,16 @@ class Encrypt:
 
     @time_encrypt
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key_dest = FilepathParser(key_destination)
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key_dest = Path(key_destination)
 
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
+            vid_dest.absolute(),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_width, frame_height),
@@ -221,7 +222,7 @@ class Encrypt:
 
         cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
-        hash_file = open(key_dest.get_posix_path(), "a")
+        hash_file = open(key_dest.absolute(), "a")
 
         count = 1
 
@@ -230,6 +231,8 @@ class Encrypt:
 
         while True:
             grabbed, frame = cap.read()
+
+            
 
             if not grabbed:
                 print("read done")
@@ -248,7 +251,7 @@ class Encrypt:
         cap.release()
         hash_file.close()  # finally, close the file
         self.encryptHashes(
-            key_dest.get_posix_path(), password
+            key_dest.resolve(), password
         )  # and encrypt the hash file
 
     def decryptFrame(self, frame, hash):
@@ -296,25 +299,25 @@ class Encrypt:
 
     @time_encrypt
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key = FilepathParser(hash_filepath)
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key = Path(hash_filepath)
 
-        self.decryptHashes(key.get_posix_path(), password)
+        self.decryptHashes(key.resolve(), password)
 
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
 
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
+            vid_dest.absolute(),
             cv2.VideoWriter_fourcc(*"mp4v"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_width, frame_height),
         )
 
-        hash_file = open(key.get_posix_path(), "r")
+        hash_file = open(key.resolve(), "r")
         lines = hash_file.readlines()
         hash_line = 0  # keep track of our line in the text file
 
@@ -340,5 +343,5 @@ class Encrypt:
             hash_line += 1
 
         cap.release()
-        self.encryptHashes(key.get_posix_path(), password)
+        self.encryptHashes(key.resolve(), password)
         hash_file.close()  # finally, close the file

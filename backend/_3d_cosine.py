@@ -1,6 +1,6 @@
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
-from filepath_parser import FilepathParser
+from pathlib import Path
 import numpy as np
 import hashlib
 import struct
@@ -346,18 +346,18 @@ class Encrypt_cosine:
         return merged_img
 
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key_dest = FilepathParser(key_destination)
-        key_file = open(key_dest.get_posix_path(), "a")
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key_dest = Path(key_destination)
+        key_file = open(key_dest.absolute(), "a")
 
         # Prepare the video writer
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
+            vid_dest.absolute(),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_height, frame_width),    # we use height, width as the final encryption is rotated 90 degrees
@@ -401,7 +401,7 @@ class Encrypt_cosine:
 
         cap.release()
         key_file.close()
-        self.__encrypKey__(key_dest.get_posix_path(), password)
+        self.__encrypKey__(key_dest.resolve(), password)
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)    # delete the temp_path and its contents
@@ -410,19 +410,19 @@ class Encrypt_cosine:
                             f"it is completely deleted")
 
     def decryptVideo(self, filepath, vid_destination, key_filepath, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key = FilepathParser(key_filepath)
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key = Path(key_filepath)
 
-        self.__decryptKey__(key.get_posix_path(), password)
+        self.__decryptKey__(key.resolve(), password)
 
         # Prepare the video writer
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
+            vid_dest.absolute(),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_width, frame_height),  # we use width, height as the final decryption is rotated back to normal
@@ -436,7 +436,7 @@ class Encrypt_cosine:
         frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.jpg')])
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
-        key_file = open(key.get_posix_path(), "r")
+        key_file = open(key.resolve(), "r")
         lines = key_file.readlines()
 
         # Get the Frame Selection sequence in the last line of the key file
@@ -472,7 +472,7 @@ class Encrypt_cosine:
             result.write(merged_img)
 
         cap.release()
-        self.__encrypKey__(key.get_posix_path(), password)
+        self.__encrypKey__(key.resolve(), password)
         key_file.close()  # finally, close the file
 
 

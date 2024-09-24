@@ -1,6 +1,7 @@
 from filepath_parser import FilepathParser
 from fisher_yates import Encrypt
 from _3d_cosine import Encrypt_cosine
+from pathlib import Path
 
 import sys
 import argparse
@@ -21,8 +22,8 @@ def main():
     args = parser.parse_args()
 
     if args.key == None and args.mode == 'encrypt':
-        fpath = FilepathParser(args.output)
-        args.key = f"{fpath.get_dir_only()}/{fpath.get_filename(exclude_file_extension=True)}.key"
+        fpath = Path(args.output)
+        args.key = f"{fpath.parent}/{fpath.stem}.key"
     elif args.key == None and args.mode == 'decrypt':
         print("You must specify the encrypted hash file first before decrypting")
         return

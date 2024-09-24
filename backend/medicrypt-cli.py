@@ -1,5 +1,6 @@
 from filepath_parser import FilepathParser
 from fisher_yates import Encrypt
+from _3d_cosine import Encrypt_cosine
 
 import sys
 import argparse
@@ -34,8 +35,15 @@ def main():
         elif args.mode == 'decrypt':
             encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
             pass
+        
     elif args.type == "3d-cosine":
-        print("Not yet implemented")
+        encrypt_mod = Encrypt_cosine()
+        if args.mode == 'encrypt':
+            encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password)
+            pass
+        elif args.mode == 'decrypt':
+            encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
+            pass
         return
     
 

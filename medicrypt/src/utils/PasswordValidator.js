@@ -9,6 +9,7 @@ export const ValidatePassword = (password) => {
     const passwordValidity = hasUppercase && hasLowercase && hasDigit && hasSpecialCharacter && !hasSpace && isValidLength;
     let passwordRequirements = "Password must have "; // Start of requirements message
 
+    // Requirements
     const requirements = [];
     if (!isValidLength) {
         requirements.push("at least 8 characters");

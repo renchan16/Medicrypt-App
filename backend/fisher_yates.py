@@ -209,12 +209,12 @@ class Encrypt:
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
 
-        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.absolute(),
+            str(vid_dest.absolute()),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_width, frame_height),

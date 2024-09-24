@@ -373,6 +373,7 @@ class Encrypt_cosine:
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         temp_encryption_path = os.path.join(temp_path, 'encryption_temp')
+        os.makedirs(temp_encryption_path)
         for curr_frame in sorted_frames:
             frame_name = os.path.join(temp_path, curr_frame)
 
@@ -381,7 +382,7 @@ class Encrypt_cosine:
             merged_img, perm_seed, diff_seed = self.encryptFrame(frame)
 
             # Save encrypted image to another temp path
-            no_extension = os.path.splitext(curr_frame[0])
+            no_extension = os.path.splitext(curr_frame)[0]
             cv2.imwrite(f"{temp_encryption_path}/{no_extension}.png", merged_img, [cv2.IMWRITE_PNG_COMPRESSION, 0])
 
             # Save the permutation and diffusion seeds
@@ -404,7 +405,7 @@ class Encrypt_cosine:
         key_file.close()
         self.__encrypKey__(key_dest.get_posix_path(), password)
 
-        if not os.path.isdir(temp_path):
+        if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)    # delete the temp_path and its contents
         else:
             raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"

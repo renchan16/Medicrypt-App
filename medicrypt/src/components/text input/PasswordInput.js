@@ -1,25 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
 
-export default function PasswordInput({ className, componentHeader, placeholderText, processType, onValueChange, onValidityChange }) {
+const PasswordInput = forwardRef(({className, componentHeader, placeholderText, processType, onValueChange, onValidityChange}, ref) => {
     const [isInputActive, setInputActive] = useState(false);
     const [isFocused, setFocus] = useState(false);
-    const [value, setValue] = useState("");
+    const [password, setPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isValidInput, setInputValidity] = useState(false); 
-    const [passwordWarning, setPasswordWarning] = useState("");
+    const [inputWarning, setInputWarning] = useState("");
 
     useEffect(() => {
         // Notify the parent component about the validity whenever it changes
         onValidityChange(isValidInput);
     }, [isValidInput, onValidityChange]);
 
+    useImperativeHandle(ref, () => ({
+        // Function to validate current input using parent.
+        validate() {
+            handleInputValidation(password);
+        }
+    }));
+
     // Handles the input change upon user input.
     const handleInputChange = (e) => {
         const newValue = e.target.value;
-        setValue(newValue);
+        setPassword(newValue);
         onValueChange(newValue);
+        handleInputValidation(newValue);
     };
 
     // Handles the focus for the input field animations.
@@ -30,36 +38,36 @@ export default function PasswordInput({ className, componentHeader, placeholderT
 
     // Handles the onBlur event for the input field.
     const handleBlur = (e) => {
-        setInputActive(value !== "");
+        setInputActive(password !== "");
         setFocus(!isFocused);
         handleInputValidation(e.target.value);
     };
     
     const handleInputValidation = (password) => {
-        const isValid = ValidatePassword(password)
-
+        const validate = ValidatePassword(password);
+        
         // Checks the validity of the password based on process type
         if(processType === "Encrypt"){
             if (password === null || password === "") {
-                setPasswordWarning("Password is required!");
+                setInputWarning("Password is required!");
                 setInputValidity(false);
             } 
-            else if (isValid) {
-                setPasswordWarning(null);
-                setInputValidity(true);
+            else if (validate['passwordValidity']) {
+                setInputWarning(null);
+                setInputValidity(validate['passwordValidity']);
             } 
             else {
-                setPasswordWarning("Invalid Password!");
-                setInputValidity(false);
+                setInputWarning(validate['passwordRequirements']);
+                setInputValidity(validate['passwordValidity']);
             }
         }
         else if (processType === "Decrypt") {
             if (password === null || password === "") {
-                setPasswordWarning("Password is required!");
+                setInputWarning("Password is required!");
                 setInputValidity(false);
             }  
             else {
-                setPasswordWarning(null);
+                setInputWarning(null);
                 setInputValidity(true);
             }
         }
@@ -77,7 +85,7 @@ export default function PasswordInput({ className, componentHeader, placeholderT
                     type={isPasswordVisible ? 'text' : 'password'}
                     id="password-input"
                     placeholder={placeholderText}
-                    value={value}
+                    value={password}
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
@@ -85,7 +93,7 @@ export default function PasswordInput({ className, componentHeader, placeholderT
                 />
                 <label 
                     htmlFor="password-input"
-                    className={`absolute left-3 font-medium transition-all duration-200 ${isInputActive || value ? 'text-xs top-4 leading-tight' : 'text-base top-1/2 -translate-y-1/2'} ${isFocused ? 'text-primary1' : 'text-primary2'}  pointer-events-none`}
+                    className={`absolute left-3 font-medium transition-all duration-200 ${isInputActive || password ? 'text-xs top-4 leading-tight' : 'text-base top-1/2 -translate-y-1/2'} ${isFocused ? 'text-primary1' : 'text-primary2'}  pointer-events-none`}
                 >
                     {componentHeader}
                 </label>
@@ -97,7 +105,9 @@ export default function PasswordInput({ className, componentHeader, placeholderT
                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>
             </div>
-            <p className={"mt-1 font-semibold text-sm text-red-900"}>{passwordWarning}</p>
+            <p className={"mt-1 font-semibold text-sm text-red-900"}>{inputWarning}</p>
         </div>
     );
-}
+});
+
+export default PasswordInput;

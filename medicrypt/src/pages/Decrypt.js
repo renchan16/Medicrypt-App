@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
@@ -13,6 +13,11 @@ import { FaFolder } from 'react-icons/fa6';
 
 function Decrypt() {
   const navigate = useNavigate();
+
+  const fileInputRef = useRef(null);
+  const hashInputRef = useRef(null);
+  const passwordInputRef = useRef(null);
+
   const [algorithm, setAlgorithm] = useState("");
   const [filepath, setFilePath] = useState("");
   const [hashpath, setHashPath] = useState("");
@@ -22,6 +27,10 @@ function Decrypt() {
   const [isPasswordValid, setPasswordValidity] = useState(true);
 
   const processInputData = () => {
+    fileInputRef.current.validate();
+    hashInputRef.current.validate();
+    passwordInputRef.current.validate();
+
     console.log(algorithm);
 
     if (isFilePathValid){
@@ -31,9 +40,9 @@ function Decrypt() {
     if (isHashPathValid) {
       console.log(hashpath);
     }
-      
+    
     if (isPasswordValid) {
-      console.log(isPasswordValid)
+      console.log(password);
     }
   }
   
@@ -57,7 +66,8 @@ function Decrypt() {
             optionTwo="ILM-Cosine" 
             onValueChange={setAlgorithm}
             />
-          <FilePathInput 
+          <FilePathInput
+            ref={fileInputRef}
             componentHeader="Video File"
             placeholderText="C:\Users\YourUsername\Documents\video.mp4..." 
             browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
@@ -67,6 +77,7 @@ function Decrypt() {
             isRequired={true}
             />
           <FilePathInput
+            ref={hashInputRef}
             componentHeader="Hash File"
             placeholderText="C:\Users\YourUsername\Documents\HashFolder..." 
             browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
@@ -75,7 +86,8 @@ function Decrypt() {
             onValidityChange={setHashPathValidity}
             isRequired={true}
             />
-          <PasswordInput 
+          <PasswordInput
+            ref={passwordInputRef} 
             componentHeader="Password"
             placeholderText="e.g. ILoveM3d!Crypt143"
             processType="Decrypt"

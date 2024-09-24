@@ -392,8 +392,6 @@ class Encrypt_cosine:
         # Generate Frame Selection sequence
         FS = self.__frameSeqGen__(len(sorted_frames))
 
-
-
         # Write to video writer with Frame Selection sequence
         for frame_no in FS:
             result.write(cv2.imread(f"{temp_encryption_path}/frame_{frame_no}.png"))
@@ -449,6 +447,7 @@ class Encrypt_cosine:
 
         # Create a temp folder where deshuffled frames are moved then renaming them
         temp_fs_path = os.path.join(temp_path, 'fs_temp')
+        os.makedirs(temp_fs_path)
 
         # rearrange the frames according the Frame Selection sequence
         for inx, curr_frame in enumerate(sorted_frames):
@@ -479,4 +478,11 @@ class Encrypt_cosine:
 
 if __name__ == '__main__':
     e = Encrypt_cosine()
+    src = r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test388.jpg'
+    frame = cv2.imread(src)
+    enc, _, _ = e.encryptFrame(frame)
+
+    cv2.imshow('e', enc)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     # e.encryptVideo(r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test.mp4')

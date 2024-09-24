@@ -221,7 +221,6 @@ class Encrypt:
 
         cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
-        # help me fix the output path so every hash file is the same name as output video, and unique
         hash_file = open(key_dest.get_posix_path(), "a")
 
         count = 1

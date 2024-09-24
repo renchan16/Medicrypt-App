@@ -12,9 +12,9 @@ class Correlation:
     video_path = None
     cap = None
 
-    def __init__(self, filepath: str):
-        self.video_path = FilepathParser(filepath)
-        self.cap = cv2.VideoCapture(self.video_path.get_posix_path(), cv2.CAP_FFMPEG)
+    #def __init__(self, filepath: str):
+    #    self.video_path = FilepathParser(filepath)
+    #    self.cap = cv2.VideoCapture(self.video_path.get_posix_path(), cv2.CAP_FFMPEG)
 
     def E(self, x: list):
         temp = 1 / len(x)
@@ -53,150 +53,145 @@ class Correlation:
         temp1 = self.covariance(x, y)
         temp2 = math.sqrt(self.D(x) * self.D(y))
         return  temp1 / temp2
+    
+
+    def get_corr_diag(self, frame, sample: int):
+        n = sample
+
+        frame_width = len(frame[0])
+        frame_height = len(frame)
+
+        pixel_x = []
+        pixel_y = []
+        corr = []
+
+        for c in range(3):
+
+            for i in range(0, frame_width-2):
+                if n <= 0:
+                    break
+                x1 = i
+                y1 = 0
+                x2 = i + 1
+                y2 = 1                
+                while x1 >= 0 and y2 < frame_height - 1:
+                    if n <= 0:
+                        break
+
+                    pixel_x.append(frame[y1][x1][c].item())
+                    pixel_y.append(frame[y2][x2][c].item())
+
+                    x1 -= 1
+                    x2 -= 1
+                    y1 += 1
+                    y2 += 1
+                    n -= 1
+
+            
+            for j in range (1, frame_height-2):
+                
+                if n <= 0:
+                    break
+
+                x1 = frame_width-2
+                y1 = j
+                x2 = frame_width-1
+                y2 = j + 1
+
+                while y2 < frame_height:
+                    if n <= 0:
+                        break
+                    pixel_x.append(frame[y1][x1][c].item())
+                    pixel_y.append(frame[y2][x2][c].item())
+
+                    x1 -= 1
+                    x2 -= 1
+                    y1 += 1
+                    y2 += 1
+                    n -= 1
+
+            corr.append(self.R(pixel_x, pixel_y))
+        return corr
 
 
-    def get_corellation_diag(self, sample : int):
+
+    def get_corellation_vid(self, sample : int, frame_count):
         frame_width = int(self.cap.get(3))
         frame_height = int(self.cap.get(4))
 
-        corr_list = []
+        cc_d = []
+        cc_h = []
+        cc_v = []
+
+        n = frame_count
 
         while True:
             grabbed, frame = self.cap.read()
 
-            if not grabbed:
+            if not grabbed or frame_count <= 0:
                 print("read done")
                 break
+
+            cc_d.append(self.get_corr_diag(frame, sample))
+            cc_h.append(self.get_corr_horizontal(frame, sample))
+            cc_v.append(self.get_corr_vertical(frame, sample))
+            n -= 1
+        
+        return {"cc_d": cc_d, "cc_v": cc_v, "cc_h": cc_h}
+        
+    
+    def get_corr_horizontal(self, frame, sample : int):
+
+        corr = []
+        frame_width = len(frame[0])
+        frame_height = len(frame)
+
+        for c in range(3):
 
             n = sample
-
             pixel_x = []
             pixel_y = []
-            corr = []
-            pass
-            for c in range(3):
 
-                for i in range(0, frame_width-2):
+            for i in range(frame_width - 2):
+                if n <= 0:
+                    break
+                for j in range (frame_height - 1):
                     if n <= 0:
                         break
-                    x1 = i
-                    y1 = 0
-                    x2 = i + 1
-                    y2 = 1                
-                    while x1 >= 0 and y2 < frame_height - 1:
-                        if n <= 0:
-                            break
+                    pixel_x.append(frame[j][i][c].item())
+                    pixel_y.append(frame[j][i+1][c].item())
+                    n -= 1
+            
+            corr.append(self.R(pixel_x, pixel_y))
 
-                        pixel_x.append(frame[y1][x1][c].astype(np.float64))
-                        pixel_y.append(frame[y2][x2][c].astype(np.float64))
-
-                        x1 -= 1
-                        x2 -= 1
-                        y1 += 1
-                        y2 += 1
-                        n -= 1
-
-                
-                for j in range (1, frame_height-2):
-                    
-                    if n <= 0:
-                        break
-
-                    x1 = frame_width-2
-                    y1 = j
-                    x2 = frame_width-1
-                    y2 = j + 1
-
-                    while y2 < frame_height:
-                        if n <= 0:
-                            break
-                        pixel_x.append(frame[y1][x1][c].astype(np.float64))
-                        pixel_y.append(frame[y2][x2][c].astype(np.float64))
-
-                        x1 -= 1
-                        x2 -= 1
-                        y1 += 1
-                        y2 += 1
-                        n -= 1
-
-                corr.append(self.R(pixel_x, pixel_y))
-            corr_list.append(corr)
-        return corr_list
+        return corr
     
-    def get_corellation_horizontal(self, sample : int):
-        frame_width = int(self.cap.get(3))
-        frame_height = int(self.cap.get(4))
+    def get_corr_vertical(self, frame, sample : int):
 
-        corr_list = []        
+        corr = []
 
-        while True:
-            grabbed, frame = self.cap.read()
+        frame_width = len(frame[0])
+        frame_height = len(frame)
+        
+        for c in range(3):
             
+            n = sample
+            pixel_x = []
+            pixel_y = []
 
-            if not grabbed:
-                print("read done")
-                break
-
-            corr = []
-            
-            for c in range(3):
-                
-                n = sample
-                pixel_x = []
-                pixel_y = []
-
-                for i in range(frame_width - 2):
+            for j in range(frame_height - 2):
+                if n <= 0:
+                    break
+                for i in range (frame_width - 1):
                     if n <= 0:
                         break
-                    for j in range (frame_height - 1):
-                        if n <= 0:
-                            break
-                        pixel_x.append(frame[j][i][c].astype(np.float64))
-                        pixel_y.append(frame[j][i+1][c].astype(np.float64))
-                        n -= 1
-                
-                corr.append(self.R(pixel_x, pixel_y))
+                    pixel_x.append(frame[j][i][c].item())
+                    pixel_y.append(frame[j+1][i][c].item())
+                    n -= 1
             
-            corr_list.append(corr)
-        
-        return corr_list
-    
-    def get_corellation_vertical(self, sample : int):
-        frame_width = int(self.cap.get(3))
-        frame_height = int(self.cap.get(4))
+            corr.append(self.R(pixel_x, pixel_y))
 
-        corr_list = []
-
-        while True:
-            grabbed, frame = self.cap.read()
-
-            if not grabbed:
-                print("read done")
-                break
-
-            corr = []
-            
-            for c in range(3):
-                
-                n = sample
-                pixel_x = []
-                pixel_y = []
-
-                for j in range(frame_height - 2):
-                    if n <= 0:
-                        break
-                    for i in range (frame_width - 1):
-                        if n <= 0:
-                            break
-                        pixel_x.append(frame[j][i][c].astype(np.float64))
-                        pixel_y.append(frame[j+1][i][c].astype(np.float64))
-                        n -= 1
-                
-                corr.append(self.R(pixel_x, pixel_y))
-            
-            corr_list.append(corr)
-        
-        return corr_list
+        return corr
                 
 
 

@@ -1,17 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 
-export default function FilePathInput({className, componentHeader, placeholderText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired}) {
+const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired }, ref) => {
     const [path, setFilePath] = useState("");
     const [isInputActive, setInputActive] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [isValidInput, setInputValidity] = useState(isRequired ? false : true); 
-    const [pathWarning, setPathWarning] = useState("");
+    const [inputWarning, setInputWarning] = useState("");
 
     useEffect(() => {
         // Notify the parent component about the validity whenever it changes
         onValidityChange(isValidInput);
     }, [isValidInput, onValidityChange]);
+
+    useImperativeHandle(ref, () => ({
+        // Function to validate current input using parent.
+        validate() {
+            handleInputValidation(path);
+        }
+    }));
 
     // Handle the change in the input field and file path return value upon choosing a file path using the browse function.
     const handleBrowsePath = async () => {
@@ -34,7 +41,7 @@ export default function FilePathInput({className, componentHeader, placeholderTe
         setFocus(!isFocused);
     }
 
-    const handleBlur = async (e) => {
+    const handleBlur = (e) => {
         setInputActive(path !== "");
         setFocus(!isFocused);
         handleInputValidation(e.target.value);
@@ -42,37 +49,10 @@ export default function FilePathInput({className, componentHeader, placeholderTe
     
     // Handles the checking of input validity.
     const handleInputValidation = async (filePath) => {
-        const isValid = await ValidateFilePath(filePath);
+        const isValid = await ValidateFilePath(filePath, isRequired);
 
-        if (isRequired) {
-            // Check both value and validity when isRequired is true
-            if (filePath === null || filePath === "") {
-                setPathWarning("File Path is required");
-                setInputValidity(false);
-            } 
-            else if (isValid) {
-                setPathWarning(null);
-                setInputValidity(true);
-            } 
-            else {
-                setPathWarning("Invalid File Path");
-                setInputValidity(false);
-            }
-        }
-        else {
-            if (filePath === null || filePath === "") {
-                setPathWarning("");
-                setInputValidity(true);
-            } 
-            else if (isValid) {
-                setPathWarning(null);
-                setInputValidity(true);
-            } 
-            else {
-                setPathWarning("Invalid File Path");
-                setInputValidity(false);
-            }
-        }
+        setInputValidity(isValid['inputValidity']);
+        setInputWarning(isValid['inputWarning']);
     }
 
     return (
@@ -98,7 +78,9 @@ export default function FilePathInput({className, componentHeader, placeholderTe
                     {browseIcon}
                 </button>
             </div>
-            <p className={"mt-1 font-semibold text-sm text-red-900"}>{pathWarning}</p>
+            <p className={"mt-1 font-semibold text-sm text-red-900"}>{inputWarning}</p>
         </div>
     );
-}
+});
+
+export default FilePathInput;

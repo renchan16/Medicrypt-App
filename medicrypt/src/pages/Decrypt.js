@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import axios from 'axios';
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
 import AlgorithmSelector from '../components/switches/AlgorithmSelector';
@@ -26,28 +27,33 @@ function Decrypt() {
   const [isHashPathValid, setHashPathValidity] = useState(true);
   const [isPasswordValid, setPasswordValidity] = useState(true);
 
-  const processInputData = () => {
+  const processInputData = async () => {
     fileInputRef.current.validate();
     hashInputRef.current.validate();
     passwordInputRef.current.validate();
 
-    console.log(algorithm);
-
-    if (isFilePathValid){
-      console.log(filepath);
-    }
-    
-    if (isHashPathValid) {
-      console.log(hashpath);
-    }
-    
-    if (isPasswordValid) {
-      console.log(password);
+    if (isFilePathValid && isHashPathValid && isPasswordValid) {
+      try {
+        const response = await axios.post('http://localhost:8000/decrypt', {
+          algorithm,
+          filepath,
+          hashpath,
+          password
+        });
+        console.log('Decryption response:', response.data);
+        // Handle the response as needed (e.g., show a success message)
+      } catch (error) {
+        console.error('Decryption error:', error);
+        // Handle the error (e.g., show an error message to the user)
+      }
+    } 
+    else {
+      console.log('Please fill in all required fields correctly.');
     }
   }
   
   return (
-    <div className='flex items-center justify-center h-full w-full'>
+    <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6">
         <button
           onClick={() => navigate('/')} 

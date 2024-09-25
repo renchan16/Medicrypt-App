@@ -15,6 +15,7 @@
     "react-router-dom": "^6.26.2",
     "react-scripts": "5.0.1",
     "react-transition-group": "^4.4.5",
+    "wait-on": "^8.0.1",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
@@ -23,7 +24,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
-    "electron:build": "electron-builder"
+    "electron:build": "electron-builder",
+    "dev": "concurrently \"cd .\\ && yarn start\" \"cd ..\\backend && uvicorn api:app --reload\" \"wait-on http://localhost:3000 && cd .\\ && yarn electron\""
   },
   "build": {
     "appId": "com.myapp.electron",

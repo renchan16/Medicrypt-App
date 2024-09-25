@@ -25,7 +25,7 @@
     "eject": "react-scripts eject",
     "electron": "electron .",
     "electron:build": "electron-builder",
-    "dev": "concurrently \"cd ./ && yarn start\" \"cd ../backend && uvicorn api:app --reload\" \"wait-on http://localhost:3000 && cd ./ && yarn electron\""
+    "dev": "concurrently \"cd ./ && cross-env BROWSER=none yarn start\" \"cd ../backend && uvicorn api:app --reload\" \"wait-on http://localhost:3000 && cd ./ && yarn electron\""
   },
   "build": {
     "appId": "com.myapp.electron",
@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
     "electron": "^32.0.2",
     "electron-builder": "^25.0.5",
     "postcss": "^8.4.45",

@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import axios from 'axios';
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
 import AlgorithmSelector from '../components/switches/AlgorithmSelector';
@@ -33,19 +32,12 @@ function Decrypt() {
     passwordInputRef.current.validate();
 
     if (isFilePathValid && isHashPathValid && isPasswordValid) {
-      try {
-        const response = await axios.post('http://localhost:8000/decrypt', {
-          algorithm,
-          filepath,
-          hashpath,
-          password
-        });
-        console.log('Decryption response:', response.data);
-        // Handle the response as needed (e.g., show a success message)
-      } catch (error) {
-        console.error('Decryption error:', error);
-        // Handle the error (e.g., show an error message to the user)
-      }
+      navigate('/decrypt/processing', {
+        state : {
+          processType: 'Decrypt',
+          inputs : {algorithm, filepath, hashpath, password}
+        }
+      });
     } 
     else {
       console.log('Please fill in all required fields correctly.');

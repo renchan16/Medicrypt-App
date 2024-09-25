@@ -222,7 +222,7 @@ class Encrypt:
 
         cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
-        hash_file = open(key_dest.absolute(), "a")
+        hash_file = open(key_dest.absolute(), "w")
 
         count = 1
 

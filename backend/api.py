@@ -20,73 +20,73 @@ class CryptoRequest(BaseModel):
     hashpath: str
     password: str
 
-@app.post("/encrypt")
+class CommandHandler:
+    def __init__(self, algorithm: str, filepath: str, hashpath: str, password: str):
+        self.algorithm = algorithm
+        self.filepath = filepath
+        self.hashpath = hashpath
+        self.password = password
+
+    def _get_algorithm(self):
+        """Internal method to map algorithm name to its corresponding CLI argument."""
+        return "fisher-yates" if self.algorithm == "FY-Logistic" else "3D-cosine"
+
+    def _generate_command(self, process_type: str) -> str:
+        """Generate the appropriate encryption or decryption command."""
+        algorithm = self._get_algorithm()
+        base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
+        key_file = f"{self.hashpath}\\keyfile.key"
+
+        if process_type == "encrypt":
+            output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+            command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
+        else:  # Decrypt
+            output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
+            command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"
+        
+        return command
+
+    def _run_subprocess(self, command: str) -> dict:
+        """Run the subprocess and handle real-time stdout and stderr logging."""
+        try:
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            output_lines = []
+
+            # Stream stdout
+            for stdout_line in iter(process.stdout.readline, ""):
+                print(f"Output: {stdout_line.strip()}")
+                output_lines.append(stdout_line.strip())
+
+            # Stream stderr
+            for stderr_line in iter(process.stderr.readline, ""):
+                print(f"Error: {stderr_line.strip()}")
+                output_lines.append(f"Error: {stderr_line.strip()}")
+
+            process.stdout.close()
+            process.stderr.close()
+            process.wait()
+
+            if process.returncode == 0:
+                return {"message": "Process completed", "status": "success", "output": "\n".join(output_lines)}
+            
+            else:
+                raise Exception("\n".join(output_lines))
+            
+        except Exception as e:
+            print(f"Subprocess error: {str(e)}")
+            raise HTTPException(status_code=500, detail=str(e))
+
+    def process_request(self, process_type: str) -> dict:
+        """Handle the complete request for encryption or decryption."""
+        command = self._generate_command(process_type)
+        return self._run_subprocess(command)
+
+@app.post("/encrypt/processing")
 async def encrypt_video(request: CryptoRequest):
-    try:
-        print("Received encryption request:")
-        print(f"Algorithm: {request.algorithm}")
-        print(f"File Path: {request.filepath}")
-        print(f"Hash Path: {request.hashpath}")
-        print(f"Password: {'*' * len(request.password)}")
+    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
+    return handler.process_request(process_type="encrypt")
 
-        base_filename = os.path.splitext(os.path.basename(request.filepath))[0]
-
-        key_file = os.path.join(request.hashpath, f"{base_filename}.key")
-
-        # Get value and set to algorithm variable the counterpart to the CLI (TO BE CHANGED)
-        if (request.algorithm == "FY-Logistic"):
-            algorithm = "fisher-yates"
-        
-        else:
-            algorithm = "3D-Cosine"
-
-        command = [
-            "python", "medicrypt-cli.py", "encrypt",
-            "-i", request.filepath,
-            "-o", request.filepath.replace(".mp4", "_encrypted.avi"),  # Save output with different name
-            "-t", algorithm,
-            "-k", key_file,
-            "-p", request.password
-        ]
-        
-        # Start the subprocess
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        # Stream and log both stdout and stderr in real-time
-        output_lines = []
-        for stdout_line in iter(process.stdout.readline, ""):
-            print(f"Output: {stdout_line.strip()}")
-            output_lines.append(stdout_line.strip())  # Collect the output
-        for stderr_line in iter(process.stderr.readline, ""):
-            print(f"Error: {stderr_line.strip()}")
-            output_lines.append(f"Error: {stderr_line.strip()}")  # Collect the errors
-
-        process.stdout.close()
-        process.stderr.close()
-
-        # Wait for the process to complete
-        process.wait()
-
-        # Check the result code
-        if process.returncode == 0:
-            return {"message": "Encryption process completed", "status": "success", "output": "\n".join(output_lines)}
-        else:
-            raise Exception("\n".join(output_lines))
-        
-    except Exception as e:
-        print(f"Encryption error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/decrypt")
+@app.post("/decrypt/processing")
 async def decrypt_video(request: CryptoRequest):
-    try:
-        print("Received decryption request:")
-        print(f"Algorithm: {request.algorithm}")
-        print(f"File Path: {request.filepath}")
-        print(f"Hash Path: {request.hashpath}")
-        print(f"Password: {'*' * len(request.password)}")
-
-        return {"message": "Decryption process started", "status": "success"}
-    except Exception as e:
-        print(f"Decryption error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
+    return handler.process_request(process_type="decrypt")

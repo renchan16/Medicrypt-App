@@ -23,8 +23,7 @@ function ProcessingPage() {
 
   // Process video data based on process type
   useEffect(() => {
-    console.log(inputs);
-    const processData = async () => {
+    const processData = async () => {   
       try {
         const response = await axios.post(`http://localhost:8000/${processType.toLowerCase()}/processing`, inputs);
         console.log(`${processType}ion response:`, response.data);

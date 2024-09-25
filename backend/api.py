@@ -43,7 +43,7 @@ class CommandGenerator:
         key_file = os.path.join(self.hashpath, f"{base_filename}.key")
         output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
 
-        command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p 1234"
+        command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
         return command
 
     def generate_decryption_command(self) -> str:
@@ -59,8 +59,6 @@ async def encrypt_video(request: CryptoRequest):
     try:
         commandGenerator = CommandGenerator(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
         command = commandGenerator.generate_encryption_command()
-
-        print(command)
         
         # Start the subprocess
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)

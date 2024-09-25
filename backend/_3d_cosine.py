@@ -1,6 +1,6 @@
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
-from filepath_parser import FilepathParser
+from pathlib import Path
 import numpy as np
 import hashlib
 import struct
@@ -21,7 +21,7 @@ class Encrypt_cosine:
         self.t = 38.23  # theta > 37.9
         self.k = 36.79  # kappa > 35.7
 
-    def __frameGen__(self, filepath, temp_path):
+    def __frameGen__(self, filepath, temp_path, preserveColor=False):
         if not os.path.isdir(temp_path):
             os.makedirs(temp_path)
 
@@ -34,20 +34,36 @@ class Encrypt_cosine:
             # checks whether frames were extracted
             success = 1
 
-            while success:
-                # vidObj object calls read
-                # function extract frames
-                success, image = vidObj.read()
+            if not preserveColor:
+                while success:
+                    # vidObj object calls read
+                    # function extract frames
+                    success, image = vidObj.read()
 
-                if success:
-                    # Saves the frames with frame-count
-                    cv2.imwrite(f"{temp_path}/frame_%d.jpg" % count, image)
+                    if success:
+                        # Saves the frames with frame-count
+                        cv2.imwrite(f"{temp_path}/frame_%d.jpg" % count, image)
 
-                    count += 1
+                        count += 1
 
-                else:
-                    break
+                    else:
+                        break
 
+            else:
+                print("preserve color")
+                while success:
+                    # vidObj object calls read
+                    # function extract frames
+                    success, image = vidObj.read()
+
+                    if success:
+                        # Saves the frames with frame-count
+                        cv2.imwrite(f"{temp_path}/frame_%d.png" % count, image, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+
+                        count += 1
+
+                    else:
+                        break
         else:
             raise Exception(f"Conflicting file directory for path: {temp_path} already exists")
 
@@ -232,7 +248,7 @@ class Encrypt_cosine:
     def __frameSeqGen__(self, num_frames):
         return np.random.permutation(num_frames).tolist()
 
-    def __encrypKey__(self, hash_filepath, password):
+    def __encryptKey__(self, hash_filepath, password):
         key = PBKDF2(password, self.salt, dkLen=32)
         cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
 
@@ -346,18 +362,18 @@ class Encrypt_cosine:
         return merged_img
 
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key_dest = FilepathParser(key_destination)
-        key_file = open(key_dest.get_posix_path(), "a")
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key_dest = Path(key_destination)
+        key_file = open(key_dest.absolute(), "a")
 
         # Prepare the video writer
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
+            str(vid_dest.absolute()),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
             (frame_height, frame_width),    # we use height, width as the final encryption is rotated 90 degrees
@@ -373,6 +389,7 @@ class Encrypt_cosine:
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         temp_encryption_path = os.path.join(temp_path, 'encryption_temp')
+        os.makedirs(temp_encryption_path)
         for curr_frame in sorted_frames:
             frame_name = os.path.join(temp_path, curr_frame)
 
@@ -381,61 +398,63 @@ class Encrypt_cosine:
             merged_img, perm_seed, diff_seed = self.encryptFrame(frame)
 
             # Save encrypted image to another temp path
-            no_extension = os.path.splitext(curr_frame[0])
+            no_extension = os.path.splitext(curr_frame)[0]
             cv2.imwrite(f"{temp_encryption_path}/{no_extension}.png", merged_img, [cv2.IMWRITE_PNG_COMPRESSION, 0])
 
             # Save the permutation and diffusion seeds
             key_file.write(str(perm_seed) + "\n")
             key_file.write(str(diff_seed) + "\n")
 
+            print(f"{curr_frame} done")
+
         # Generate Frame Selection sequence
         FS = self.__frameSeqGen__(len(sorted_frames))
 
         # Write to video writer with Frame Selection sequence
         for frame_no in FS:
-            result.write(f"{temp_encryption_path}/frame_{frame_no}.png")
+            result.write(cv2.imread(f"{temp_encryption_path}/frame_{frame_no}.png"))
 
         # Once Done, write the sequence into the key file
         key_file.write(str(FS))
 
         cap.release()
         key_file.close()
-        self.__encrypKey__(key_dest.get_posix_path(), password)
+        self.__encryptKey__(key_dest.resolve(), password)
 
-        if not os.path.isdir(temp_path):
+        if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)    # delete the temp_path and its contents
         else:
             raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"
                             f"it is completely deleted")
 
     def decryptVideo(self, filepath, vid_destination, key_filepath, password):
-        fpath = FilepathParser(filepath)
-        vid_dest = FilepathParser(vid_destination)
-        key = FilepathParser(key_filepath)
+        fpath = Path(filepath)
+        vid_dest = Path(vid_destination)
+        key = Path(key_filepath)
 
-        self.__decryptKey__(key.get_posix_path(), password)
+        self.__decryptKey__(key.resolve(), password)
 
         # Prepare the video writer
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.get_posix_path(),
-            cv2.VideoWriter_fourcc(*"HFYU"),
+            str(vid_dest.absolute()),
+            cv2.VideoWriter_fourcc(*"mp4v"),
             cap.get(cv2.CAP_PROP_FPS),
-            (frame_width, frame_height),  # we use width, height as the final decryption is rotated back to normal
+            (frame_height, frame_width),  # we use h, w again as the final decryption is rotated back to normal
         )
 
         # Extract frames
         temp_path = os.path.join(os.path.dirname(filepath),
                                  'frameGen_temp')  # make temp folder in the same path as the video
-        self.__frameGen__(filepath, temp_path)
+        self.__frameGen__(filepath, temp_path, True)
 
-        frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.jpg')])
+        frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.png')])
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
-        key_file = open(key.get_posix_path(), "r")
+        key_file = open(key.resolve(), "r")
         lines = key_file.readlines()
 
         # Get the Frame Selection sequence in the last line of the key file
@@ -446,15 +465,16 @@ class Encrypt_cosine:
 
         # Create a temp folder where deshuffled frames are moved then renaming them
         temp_fs_path = os.path.join(temp_path, 'fs_temp')
+        os.makedirs(temp_fs_path)
 
         # rearrange the frames according the Frame Selection sequence
         for inx, curr_frame in enumerate(sorted_frames):
             source = os.path.join(temp_path, curr_frame)
-            dest = os.path.join(temp_fs_path, f"frame_{frame_select_seq[inx]}.jpg")
+            dest = os.path.join(temp_fs_path, f"frame_{frame_select_seq[inx]}.png")
             shutil.move(source, dest)
 
         # sort the arranged frames again in the array to be decrypted
-        new_frame_filenames = sorted([f for f in os.listdir(temp_fs_path) if f.endswith('.jpg')])
+        new_frame_filenames = sorted([f for f in os.listdir(temp_fs_path) if f.endswith('.png')])
         new_sorted_frames = sorted(new_frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         for inx, curr_frame in enumerate(new_sorted_frames):
@@ -462,18 +482,34 @@ class Encrypt_cosine:
 
             frame = cv2.imread(frame_name)
 
-            perm_seed = float(lines[inx].rstrip())
-            diff_seed = float(lines[inx+1].rstrip())
+            start_inx = inx * 2
+            perm_seed = float(lines[start_inx].rstrip())
+            diff_seed = float(lines[start_inx+1].rstrip())
 
             merged_img = self.decryptFrame(frame, perm_seed, diff_seed)
 
             result.write(merged_img)
 
+            print(f"{curr_frame} done")
+
         cap.release()
-        self.__encrypKey__(key.get_posix_path(), password)
+        self.__encryptKey__(key.resolve(), password)
         key_file.close()  # finally, close the file
+
+        if os.path.isdir(temp_path):
+            shutil.rmtree(temp_path)    # delete the temp_path and its contents
+        else:
+            raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"
+                            f"it is completely deleted")
 
 
 if __name__ == '__main__':
     e = Encrypt_cosine()
+    src = r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test388.jpg'
+    frame = cv2.imread(src)
+    enc, _, _ = e.encryptFrame(frame)
+
+    cv2.imshow('e', enc)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     # e.encryptVideo(r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test.mp4')

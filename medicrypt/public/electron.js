@@ -46,7 +46,7 @@ ipcMain.handle('dialog:openFilePath', async () => {
 });
 
 // Handle file dialog from renderer
-ipcMain.handle('dialog:openKeyPath', async () => {
+ipcMain.handle('dialog:openHashKeyPath', async () => {
   const { canceled, filePaths } = await dialog.showOpenDialog({
     properties: ['openFile'],
     filters: [

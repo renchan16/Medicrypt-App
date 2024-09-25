@@ -56,14 +56,14 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     }
 
     return (
-        <div className={`${className}`}>
+        <div className={`${className} snap-center`}>
             <div className="relative flex items-center">
                 <input 
                     type='text' 
                     id="file-path-input"
                     placeholder={placeholderText}
                     value={path} 
-                    className= {`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 border-primary2 focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`} 
+                    className= {`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-base text-black font-normal placeholder:font-normal border-2 border-primary2 focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`} 
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}

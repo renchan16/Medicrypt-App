@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
+from fisher_yates import Encrypt
 
 app = FastAPI()
 
@@ -41,7 +42,7 @@ class CommandGenerator:
         base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
         key_file = os.path.join(self.hashpath, f"{base_filename}.key")
         output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
-        
+
         command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
         return command
 
@@ -60,7 +61,7 @@ async def encrypt_video(request: CryptoRequest):
         command = commandGenerator.generate_encryption_command()
 
         print(command)
-
+        """
         # Start the subprocess
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -82,6 +83,7 @@ async def encrypt_video(request: CryptoRequest):
             return {"message": "Encryption process completed", "status": "success", "output": "\n".join(output_lines)}
         else:
             raise Exception("\n".join(output_lines))
+        """
         
     except Exception as e:
         print(f"Encryption error: {str(e)}")
@@ -93,6 +95,7 @@ async def decrypt_video(request: CryptoRequest):
         commandGenerator = CommandGenerator(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
         command = commandGenerator.generate_decryption_command()
 
+        """
         # Start the subprocess
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -114,7 +117,8 @@ async def decrypt_video(request: CryptoRequest):
             return {"message": "Decryption process completed", "status": "success", "output": "\n".join(output_lines)}
         else:
             raise Exception("\n".join(output_lines))
-        
+        """
+
     except Exception as e:
         print(f"Decryption error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))

@@ -365,7 +365,7 @@ class Encrypt_cosine:
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
-        key_file = open(key_dest.absolute(), "a")
+        key_file = open(key_dest.absolute(), "w")
 
         # Record per frame runtime here
         per_frame_runtime = []

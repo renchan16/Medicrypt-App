@@ -56,7 +56,7 @@ function Decrypt() {
 
         <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
 
-        <div className="flex flex-col gap-4 mt-20">
+        <div className="flex flex-col gap-4 mt-20 h-5/6 overflow-y-auto">
           <h1 className="flex items-center col-span-3 mb-3 text-3xl font-bold text-primary1 ">Decrypt a Video</h1>
           <AlgorithmSelector 
             componentHeader="Choose an Algorithm for Decryption" 

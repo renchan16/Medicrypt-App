@@ -21,7 +21,7 @@ class Encrypt_cosine:
         self.t = 38.23  # theta > 37.9
         self.k = 36.79  # kappa > 35.7
 
-    def __frameGen__(self, filepath, temp_path):
+    def __frameGen__(self, filepath, temp_path, preserveColor=False):
         if not os.path.isdir(temp_path):
             os.makedirs(temp_path)
 
@@ -34,20 +34,36 @@ class Encrypt_cosine:
             # checks whether frames were extracted
             success = 1
 
-            while success:
-                # vidObj object calls read
-                # function extract frames
-                success, image = vidObj.read()
+            if not preserveColor:
+                while success:
+                    # vidObj object calls read
+                    # function extract frames
+                    success, image = vidObj.read()
 
-                if success:
-                    # Saves the frames with frame-count
-                    cv2.imwrite(f"{temp_path}/frame_%d.jpg" % count, image)
+                    if success:
+                        # Saves the frames with frame-count
+                        cv2.imwrite(f"{temp_path}/frame_%d.jpg" % count, image)
 
-                    count += 1
+                        count += 1
 
-                else:
-                    break
+                    else:
+                        break
 
+            else:
+                print("preserve color")
+                while success:
+                    # vidObj object calls read
+                    # function extract frames
+                    success, image = vidObj.read()
+
+                    if success:
+                        # Saves the frames with frame-count
+                        cv2.imwrite(f"{temp_path}/frame_%d.png" % count, image, [cv2.IMWRITE_PNG_COMPRESSION, 0])
+
+                        count += 1
+
+                    else:
+                        break
         else:
             raise Exception(f"Conflicting file directory for path: {temp_path} already exists")
 
@@ -232,7 +248,7 @@ class Encrypt_cosine:
     def __frameSeqGen__(self, num_frames):
         return np.random.permutation(num_frames).tolist()
 
-    def __encrypKey__(self, hash_filepath, password):
+    def __encryptKey__(self, hash_filepath, password):
         key = PBKDF2(password, self.salt, dkLen=32)
         cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
 
@@ -389,6 +405,8 @@ class Encrypt_cosine:
             key_file.write(str(perm_seed) + "\n")
             key_file.write(str(diff_seed) + "\n")
 
+            print(f"{curr_frame} done")
+
         # Generate Frame Selection sequence
         FS = self.__frameSeqGen__(len(sorted_frames))
 
@@ -401,7 +419,7 @@ class Encrypt_cosine:
 
         cap.release()
         key_file.close()
-        self.__encrypKey__(key_dest.resolve(), password)
+        self.__encryptKey__(key_dest.resolve(), password)
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)    # delete the temp_path and its contents
@@ -417,23 +435,23 @@ class Encrypt_cosine:
         self.__decryptKey__(key.resolve(), password)
 
         # Prepare the video writer
-        cap = cv2.VideoCapture(fpath.resolve(), cv2.CAP_FFMPEG)
+        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
         frame_height = int(cap.get(4))
         result = cv2.VideoWriter(
-            vid_dest.absolute(),
-            cv2.VideoWriter_fourcc(*"HFYU"),
+            str(vid_dest.absolute()),
+            cv2.VideoWriter_fourcc(*"mp4v"),
             cap.get(cv2.CAP_PROP_FPS),
-            (frame_width, frame_height),  # we use width, height as the final decryption is rotated back to normal
+            (frame_height, frame_width),  # we use h, w again as the final decryption is rotated back to normal
         )
 
         # Extract frames
         temp_path = os.path.join(os.path.dirname(filepath),
                                  'frameGen_temp')  # make temp folder in the same path as the video
-        self.__frameGen__(filepath, temp_path)
+        self.__frameGen__(filepath, temp_path, True)
 
-        frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.jpg')])
+        frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.png')])
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         key_file = open(key.resolve(), "r")
@@ -452,11 +470,11 @@ class Encrypt_cosine:
         # rearrange the frames according the Frame Selection sequence
         for inx, curr_frame in enumerate(sorted_frames):
             source = os.path.join(temp_path, curr_frame)
-            dest = os.path.join(temp_fs_path, f"frame_{frame_select_seq[inx]}.jpg")
+            dest = os.path.join(temp_fs_path, f"frame_{frame_select_seq[inx]}.png")
             shutil.move(source, dest)
 
         # sort the arranged frames again in the array to be decrypted
-        new_frame_filenames = sorted([f for f in os.listdir(temp_fs_path) if f.endswith('.jpg')])
+        new_frame_filenames = sorted([f for f in os.listdir(temp_fs_path) if f.endswith('.png')])
         new_sorted_frames = sorted(new_frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         for inx, curr_frame in enumerate(new_sorted_frames):
@@ -464,16 +482,25 @@ class Encrypt_cosine:
 
             frame = cv2.imread(frame_name)
 
-            perm_seed = float(lines[inx].rstrip())
-            diff_seed = float(lines[inx+1].rstrip())
+            start_inx = inx * 2
+            perm_seed = float(lines[start_inx].rstrip())
+            diff_seed = float(lines[start_inx+1].rstrip())
 
             merged_img = self.decryptFrame(frame, perm_seed, diff_seed)
 
             result.write(merged_img)
 
+            print(f"{curr_frame} done")
+
         cap.release()
-        self.__encrypKey__(key.resolve(), password)
+        self.__encryptKey__(key.resolve(), password)
         key_file.close()  # finally, close the file
+
+        if os.path.isdir(temp_path):
+            shutil.rmtree(temp_path)    # delete the temp_path and its contents
+        else:
+            raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"
+                            f"it is completely deleted")
 
 
 if __name__ == '__main__':

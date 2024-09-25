@@ -2,8 +2,10 @@ const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+let mainWindow;
+
 function createWindow() {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1024,
     height: 768,
     webPreferences: {
@@ -11,7 +13,7 @@ function createWindow() {
     },
   });
 
-  win.loadURL('http://localhost:3000');
+  mainWindow.loadURL('http://localhost:3000');
 }
 
 app.whenReady().then(() => {
@@ -30,9 +32,16 @@ app.on('window-all-closed', () => {
   }
 });
 
+async function showDialog(dialogFunction, options) {
+  mainWindow.setEnabled(false);
+  const result = await dialogFunction(options);
+  mainWindow.setEnabled(true);
+  return result;
+}
+
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openFilePath', async () => {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
+  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
     properties: ['openFile'],
     filters: [
       { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'mov', 'wmv'] },
@@ -47,7 +56,7 @@ ipcMain.handle('dialog:openFilePath', async () => {
 
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openHashKeyPath', async () => {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
+  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
     properties: ['openFile'],
     filters: [
       { name: 'Key', extensions: ['key'] },
@@ -62,7 +71,7 @@ ipcMain.handle('dialog:openHashKeyPath', async () => {
 
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openFolder', async () => {
-  const { canceled, filePaths } = await dialog.showOpenDialog({
+  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
     properties: ['openDirectory'],
   });
   if (canceled) {

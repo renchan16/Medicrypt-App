@@ -3,7 +3,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import subprocess
-from fisher_yates import Encrypt
 
 app = FastAPI()
 
@@ -44,7 +43,6 @@ class CommandGenerator:
         output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
         
         command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
-        
         return command
 
     def generate_decryption_command(self) -> str:
@@ -63,9 +61,8 @@ async def encrypt_video(request: CryptoRequest):
 
         print(command)
 
-        """
         # Start the subprocess
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, encoding='utf-8')
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         # Stream and log both stdout and stderr in real-time
         output_lines = []
@@ -85,7 +82,6 @@ async def encrypt_video(request: CryptoRequest):
             return {"message": "Encryption process completed", "status": "success", "output": "\n".join(output_lines)}
         else:
             raise Exception("\n".join(output_lines))
-        """
         
     except Exception as e:
         print(f"Encryption error: {str(e)}")
@@ -97,9 +93,8 @@ async def decrypt_video(request: CryptoRequest):
         commandGenerator = CommandGenerator(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
         command = commandGenerator.generate_decryption_command()
 
-        
         # Start the subprocess
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,  encoding='utf-8')
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
         # Stream and log both stdout and stderr in real-time
         output_lines = []

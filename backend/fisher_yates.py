@@ -1,9 +1,12 @@
+import os.path
+
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 from math import ceil
 from filepath_parser import FilepathParser
 from pathlib import Path
 import numpy as np
+import logfilewriter
 import hashlib
 import time
 import cv2
@@ -225,7 +228,7 @@ class Encrypt:
 
         cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
-        hash_file = open(key_dest.absolute(), "a")
+        hash_file = open(key_dest.absolute(), "w")
 
         count = 1
 
@@ -260,7 +263,7 @@ class Encrypt:
             key_dest.resolve(), password
         )  # and encrypt the hash file
 
-        return per_frame_runtime
+        logfilewriter.logwrite(per_frame_runtime, vid_destination)
 
     def decryptFrame(self, frame, hash):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -302,7 +305,7 @@ class Encrypt:
         # unshuffle the undiffused frame, then the unshuffled column frame
         col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
         row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
-        
+
         return row_unshuffled
 
     @time_encrypt
@@ -362,4 +365,4 @@ class Encrypt:
         self.encryptHashes(key.resolve(), password)
         hash_file.close()  # finally, close the file
 
-        return per_frame_runtime
+        logfilewriter.logwrite(per_frame_runtime, vid_destination)

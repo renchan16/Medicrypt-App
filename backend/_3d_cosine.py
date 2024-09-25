@@ -2,6 +2,7 @@ from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Cipher import AES
 from pathlib import Path
 import numpy as np
+import logfilewriter
 import hashlib
 import struct
 import shutil
@@ -365,7 +366,7 @@ class Encrypt_cosine:
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
-        key_file = open(key_dest.absolute(), "a")
+        key_file = open(key_dest.absolute(), "w")
 
         # Record per frame runtime here
         per_frame_runtime = []
@@ -433,7 +434,7 @@ class Encrypt_cosine:
             print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
                   f"it is completely deleted")
 
-        return per_frame_runtime
+        logfilewriter.logwrite(per_frame_runtime, vid_destination)
 
     def decryptVideo(self, filepath, vid_destination, key_filepath, password):
         fpath = Path(filepath)
@@ -516,7 +517,7 @@ class Encrypt_cosine:
             print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
                   f"it is completely deleted")
 
-        return per_frame_runtime
+        logfilewriter.logwrite(per_frame_runtime, vid_destination)
 
 
 if __name__ == '__main__':

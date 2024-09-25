@@ -367,6 +367,9 @@ class Encrypt_cosine:
         key_dest = Path(key_destination)
         key_file = open(key_dest.absolute(), "a")
 
+        # Record per frame runtime here
+        per_frame_runtime = []
+
         # Prepare the video writer
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
@@ -376,7 +379,7 @@ class Encrypt_cosine:
             str(vid_dest.absolute()),
             cv2.VideoWriter_fourcc(*"HFYU"),
             cap.get(cv2.CAP_PROP_FPS),
-            (frame_height, frame_width),    # we use height, width as the final encryption is rotated 90 degrees
+            (frame_height, frame_width),  # we use height, width as the final encryption is rotated 90 degrees
         )
 
         # Extract frames
@@ -391,6 +394,7 @@ class Encrypt_cosine:
         temp_encryption_path = os.path.join(temp_path, 'encryption_temp')
         os.makedirs(temp_encryption_path)
         for curr_frame in sorted_frames:
+            start = time.time()
             frame_name = os.path.join(temp_path, curr_frame)
 
             frame = cv2.imread(frame_name)
@@ -405,7 +409,9 @@ class Encrypt_cosine:
             key_file.write(str(perm_seed) + "\n")
             key_file.write(str(diff_seed) + "\n")
 
-            print(f"{curr_frame} done")
+            stop = time.time()
+            duration = stop - start
+            per_frame_runtime.append(duration)
 
         # Generate Frame Selection sequence
         FS = self.__frameSeqGen__(len(sorted_frames))
@@ -422,15 +428,20 @@ class Encrypt_cosine:
         self.__encryptKey__(key_dest.resolve(), password)
 
         if os.path.isdir(temp_path):
-            shutil.rmtree(temp_path)    # delete the temp_path and its contents
+            shutil.rmtree(temp_path)  # delete the temp_path and its contents
         else:
-            raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"
-                            f"it is completely deleted")
+            print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
+                  f"it is completely deleted")
+
+        return per_frame_runtime
 
     def decryptVideo(self, filepath, vid_destination, key_filepath, password):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key = Path(key_filepath)
+
+        # Record per frame runtime here
+        per_frame_runtime = []
 
         self.__decryptKey__(key.resolve(), password)
 
@@ -478,29 +489,34 @@ class Encrypt_cosine:
         new_sorted_frames = sorted(new_frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
         for inx, curr_frame in enumerate(new_sorted_frames):
+            start = time.time()
             frame_name = os.path.join(temp_fs_path, curr_frame)
 
             frame = cv2.imread(frame_name)
 
             start_inx = inx * 2
             perm_seed = float(lines[start_inx].rstrip())
-            diff_seed = float(lines[start_inx+1].rstrip())
+            diff_seed = float(lines[start_inx + 1].rstrip())
 
             merged_img = self.decryptFrame(frame, perm_seed, diff_seed)
 
             result.write(merged_img)
 
-            print(f"{curr_frame} done")
+            stop = time.time()
+            duration = stop - start
+            per_frame_runtime.append(duration)
 
         cap.release()
         self.__encryptKey__(key.resolve(), password)
         key_file.close()  # finally, close the file
 
         if os.path.isdir(temp_path):
-            shutil.rmtree(temp_path)    # delete the temp_path and its contents
+            shutil.rmtree(temp_path)  # delete the temp_path and its contents
         else:
-            raise Exception(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure"
-                            f"it is completely deleted")
+            print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
+                  f"it is completely deleted")
+
+        return per_frame_runtime
 
 
 if __name__ == '__main__':

@@ -209,6 +209,9 @@ class Encrypt:
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
 
+        # Record per frame runtime here
+        per_frame_runtime = []
+
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
         frame_width = int(cap.get(3))
@@ -230,9 +233,8 @@ class Encrypt:
         print(length)
 
         while True:
+            start = time.time()
             grabbed, frame = cap.read()
-
-            
 
             if not grabbed:
                 print("read done")
@@ -248,11 +250,17 @@ class Encrypt:
 
             count += 1
 
+            stop = time.time()
+            duration = stop - start
+            per_frame_runtime.append(duration)
+
         cap.release()
         hash_file.close()  # finally, close the file
         self.encryptHashes(
             key_dest.resolve(), password
         )  # and encrypt the hash file
+
+        return per_frame_runtime
 
     def decryptFrame(self, frame, hash):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -303,6 +311,9 @@ class Encrypt:
         vid_dest = Path(vid_destination)
         key = Path(hash_filepath)
 
+        # Record per frame runtime here
+        per_frame_runtime = []
+
         self.decryptHashes(key.resolve(), password)
 
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
@@ -327,6 +338,7 @@ class Encrypt:
         print(length)
 
         while True:
+            start = time.time()
             grabbed, frame = cap.read()
 
             if not grabbed:
@@ -342,6 +354,12 @@ class Encrypt:
             count += 1
             hash_line += 1
 
+            stop = time.time()
+            duration = stop - start
+            per_frame_runtime.append(duration)
+
         cap.release()
         self.encryptHashes(key.resolve(), password)
         hash_file.close()  # finally, close the file
+
+        return per_frame_runtime

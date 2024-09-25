@@ -29,17 +29,25 @@ class CommandHandler:
 
     def _get_algorithm(self):
         """Internal method to map algorithm name to its corresponding CLI argument."""
-        return "fisher-yates" if self.algorithm == "FY-Logistic" else "3D-cosine"
+        return "fisher-yates" if self.algorithm == "FY-Logistic" else "3d-cosine"
 
     def _generate_command(self, process_type: str) -> str:
         """Generate the appropriate encryption or decryption command."""
         algorithm = self._get_algorithm()
         base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
-        key_file = f"{self.hashpath}\\keyfile.key"
+        
+        # Handle hashpath only for encryption, and fall back to filepath's directory
+        if self.hashpath and self.hashpath.strip():
+            key_file = f"{self.hashpath}\\{base_filename}.key"
+            
+        else:
+            # Use the directory of the file and append the base filename with .key
+            key_file = f"{os.path.dirname(self.filepath)}\\{base_filename}.key"
 
         if process_type == "encrypt":
             output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
             command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
+        
         else:  # Decrypt
             output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
             command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"

@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
-import axios from 'axios';
 import logo from '../assets/MedicryptLogo.png';
 import AlgorithmSelector from '../components/switches/AlgorithmSelector';
 import FilePathInput from '../components/text input/FilePathInput';
@@ -33,19 +32,12 @@ function Encrypt() {
     passwordInputRef.current.validate();
 
     if (isFilePathValid && isHashPathValid && isPasswordValid) {
-      try {
-        const response = await axios.post('http://localhost:8000/encrypt', {
-          algorithm,
-          filepath,
-          hashpath,
-          password
-        });
-        console.log('Encryption response:', response.data);
-        // Handle the response as needed (e.g., show a success message)
-      } catch (error) {
-        console.error('Encryption error:', error);
-        // Handle the error (e.g., show an error message to the user)
-      }
+      navigate('/encrypt/processing', {
+        state : {
+          processType: 'Encrypt',
+          inputs : {algorithm, filepath, hashpath, password}
+        }
+      });
     } 
     else {
       console.log('Please fill in all required fields correctly.');

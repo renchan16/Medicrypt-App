@@ -33,19 +33,12 @@ function Decrypt() {
     passwordInputRef.current.validate();
 
     if (isFilePathValid && isHashPathValid && isPasswordValid) {
-      try {
-        const response = await axios.post('http://localhost:8000/decrypt', {
-          algorithm,
-          filepath,
-          hashpath,
-          password
-        });
-        console.log('Decryption response:', response.data);
-        // Handle the response as needed (e.g., show a success message)
-      } catch (error) {
-        console.error('Decryption error:', error);
-        // Handle the error (e.g., show an error message to the user)
-      }
+      navigate('/decrypt/processing', {
+        state : {
+          processType: 'Decrypt',
+          inputs : {algorithm, filepath, hashpath, password}
+        }
+      });
     } 
     else {
       console.log('Please fill in all required fields correctly.');

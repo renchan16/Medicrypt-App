@@ -107,7 +107,7 @@ function Encrypt() {
             <div className='space-y-4'>
               <FilePathInput
                 ref={outputPathInputRef}
-                componentHeader="Output File Destination"
+                componentHeader="Encrypted Video File Destination"
                 placeholderText="C:\Users\YourUsername\Documents\EncryptedVideoDest..." 
                 browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                 browseHandler={window.electron.openFolder}
@@ -117,7 +117,7 @@ function Encrypt() {
                 />
               <FilePathInput
                 ref={hashInputRef}
-                componentHeader="Hash File Destination"
+                componentHeader="Hash Key File Destination"
                 placeholderText="C:\Users\YourUsername\Documents\HashFolder..." 
                 browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                 browseHandler={window.electron.openFolder}

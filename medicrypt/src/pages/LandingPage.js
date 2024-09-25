@@ -32,7 +32,7 @@ function LandingPage() {
     >
       <div className="flex items-center mb-7">
         <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
-        <h1 className="text-6xl font-bold text-transparent bg-clip-text gradient-text">medicrypt.</h1>
+        <h1 className="text-7xl font-bold text-transparent bg-clip-text gradient-text leading-tight pb-2">medicrypt.</h1>
       </div>
 
       <motion.div

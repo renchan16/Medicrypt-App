@@ -117,7 +117,7 @@ function Decrypt() {
                 />
               <FilePathInput
                 ref={outputPathInputRef}
-                componentHeader="Output File Destination"
+                componentHeader="Decrypted Video File Destination"
                 placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
                 browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                 browseHandler={window.electron.openFolder}

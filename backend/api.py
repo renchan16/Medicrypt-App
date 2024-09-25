@@ -43,7 +43,7 @@ class CommandGenerator:
         key_file = os.path.join(self.hashpath, f"{base_filename}.key")
         output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
 
-        command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
+        command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p 1234"
         return command
 
     def generate_decryption_command(self) -> str:
@@ -61,7 +61,7 @@ async def encrypt_video(request: CryptoRequest):
         command = commandGenerator.generate_encryption_command()
 
         print(command)
-        """
+        
         # Start the subprocess
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -83,7 +83,6 @@ async def encrypt_video(request: CryptoRequest):
             return {"message": "Encryption process completed", "status": "success", "output": "\n".join(output_lines)}
         else:
             raise Exception("\n".join(output_lines))
-        """
         
     except Exception as e:
         print(f"Encryption error: {str(e)}")
@@ -95,7 +94,6 @@ async def decrypt_video(request: CryptoRequest):
         commandGenerator = CommandGenerator(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
         command = commandGenerator.generate_decryption_command()
 
-        """
         # Start the subprocess
         process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
@@ -117,7 +115,6 @@ async def decrypt_video(request: CryptoRequest):
             return {"message": "Decryption process completed", "status": "success", "output": "\n".join(output_lines)}
         else:
             raise Exception("\n".join(output_lines))
-        """
 
     except Exception as e:
         print(f"Decryption error: {str(e)}")

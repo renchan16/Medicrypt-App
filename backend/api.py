@@ -14,18 +14,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class CryptoRequest(BaseModel):
+class CryptoRequest(BaseModel): 
     algorithm: str
+    password: str
+    outputpath: str
     filepath: str
     hashpath: str
-    password: str
 
 class CommandHandler:
-    def __init__(self, algorithm: str, filepath: str, hashpath: str, password: str):
+    def __init__(self, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
         self.algorithm = algorithm
         self.filepath = filepath
-        self.hashpath = hashpath
         self.password = password
+        self.outputpath = outputpath
+        self.hashpath = hashpath
+        
 
     def _get_algorithm(self):
         """Internal method to map algorithm name to its corresponding CLI argument."""
@@ -45,11 +48,21 @@ class CommandHandler:
             key_file = f"{os.path.dirname(self.filepath)}\\{base_filename}.key"
 
         if process_type == "encrypt":
-            output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+            if self.outputpath and self.outputpath.strip():
+                output_filepath = f"{self.outputpath}\\{base_filename}_encrypted.avi"
+                
+            else:
+                output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+
             command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
         
         else:  # Decrypt
-            output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
+            if self.outputpath and self.outputpath.strip():
+                output_filepath = f"{self.outputpath}\\{base_filename}_decrypted.avi"
+                
+            else:
+                output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
+
             command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"
         
         return command
@@ -91,10 +104,10 @@ class CommandHandler:
 
 @app.post("/encrypt/processing")
 async def encrypt_video(request: CryptoRequest):
-    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
+    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, password=request.password, outputpath=request.outputpath, hashpath=request.hashpath)
     return handler.process_request(process_type="encrypt")
 
 @app.post("/decrypt/processing")
 async def decrypt_video(request: CryptoRequest):
-    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, hashpath=request.hashpath, password=request.password)
+    handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, password=request.password, outputpath=request.outputpath, hashpath=request.hashpath)
     return handler.process_request(process_type="decrypt")

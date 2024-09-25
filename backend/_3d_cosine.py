@@ -434,7 +434,7 @@ class Encrypt_cosine:
             print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
                   f"it is completely deleted")
 
-        logfilewriter.logwrite(per_frame_runtime, vid_destination)
+        return per_frame_runtime
 
     def decryptVideo(self, filepath, vid_destination, key_filepath, password):
         fpath = Path(filepath)
@@ -517,7 +517,7 @@ class Encrypt_cosine:
             print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
                   f"it is completely deleted")
 
-        logfilewriter.logwrite(per_frame_runtime, vid_destination)
+        return per_frame_runtime
 
 
 if __name__ == '__main__':

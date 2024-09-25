@@ -3,6 +3,7 @@ from fisher_yates import Encrypt
 from _3d_cosine import Encrypt_cosine
 from pathlib import Path
 
+import logfilewriter
 import sys
 import argparse
 
@@ -18,6 +19,8 @@ def main():
     parser.add_argument('-o', '--output', required=True, help="specifies the output of the video")
     parser.add_argument('-k', '--key', help="(required for decryption) specifies the key path")
     parser.add_argument('-p', '--password', required=True, help="specifies the password of the key file")
+    parser.add_argument('-v', '--verbose', type=bool, default=False, help="displays the encryption process")
+    parser.add_argument('--store_time', type=str)
 
     args = parser.parse_args()
 
@@ -28,24 +31,31 @@ def main():
         print("You must specify the encrypted hash file first before decrypting")
         return
     
+    video = None
+    
     if args.type == "fisher-yates":
         encrypt_mod = Encrypt()
         if args.mode == 'encrypt':
-            encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password)
+            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password)
             pass
         elif args.mode == 'decrypt':
-            encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
+            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
             pass
         
     elif args.type == "3d-cosine":
         encrypt_mod = Encrypt_cosine()
         if args.mode == 'encrypt':
-            encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password)
+            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password)
             pass
         elif args.mode == 'decrypt':
-            encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
+            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password)
             pass
         return
+    
+    if (args.store_time != None):
+        logfilewriter.logwrite(video, args.store_time)
+    
+
     
 
 if __name__ == "__main__":

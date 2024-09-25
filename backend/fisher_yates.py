@@ -263,7 +263,7 @@ class Encrypt:
             key_dest.resolve(), password
         )  # and encrypt the hash file
 
-        logfilewriter.logwrite(per_frame_runtime, vid_destination)
+        return per_frame_runtime
 
     def decryptFrame(self, frame, hash):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -365,4 +365,4 @@ class Encrypt:
         self.encryptHashes(key.resolve(), password)
         hash_file.close()  # finally, close the file
 
-        logfilewriter.logwrite(per_frame_runtime, vid_destination)
+        return per_frame_runtime

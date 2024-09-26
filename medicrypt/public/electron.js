@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
+let currentDialog = null;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -32,16 +33,23 @@ app.on('window-all-closed', () => {
   }
 });
 
-async function showDialog(dialogFunction, options) {
-  mainWindow.setEnabled(false);
-  const result = await dialogFunction(options);
-  mainWindow.setEnabled(true);
-  return result;
+async function showSingleDialog(dialogOptions) {
+  if (currentDialog) {
+    currentDialog.close();
+  }
+
+  return new Promise((resolve) => {
+    currentDialog = dialog.showOpenDialog(mainWindow, dialogOptions);
+    currentDialog.then((result) => {
+      currentDialog = null;
+      resolve(result);
+    });
+  });
 }
 
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openFilePath', async () => {
-  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
+  const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],
     filters: [
       { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'mov', 'wmv'] },
@@ -56,7 +64,7 @@ ipcMain.handle('dialog:openFilePath', async () => {
 
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openHashKeyPath', async () => {
-  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
+  const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],
     filters: [
       { name: 'Key', extensions: ['key'] },
@@ -71,7 +79,7 @@ ipcMain.handle('dialog:openHashKeyPath', async () => {
 
 // Handle file dialog from renderer
 ipcMain.handle('dialog:openFolder', async () => {
-  const { canceled, filePaths } = await showDialog(dialog.showOpenDialog, {
+  const { canceled, filePaths } = await showSingleDialog({
     properties: ['openDirectory'],
   });
   if (canceled) {
@@ -83,13 +91,13 @@ ipcMain.handle('dialog:openFolder', async () => {
 
 ipcMain.handle('dialog:checkFilePath', (event, filePath) => {
   try {
-      const normalizedPath = path.normalize(filePath); // Normalize the path
-      if (fs.existsSync(normalizedPath)) {
-          const stat = fs.lstatSync(normalizedPath);
-          return stat.isFile() || stat.isDirectory();
-      }
-      return false;
+    const normalizedPath = path.normalize(filePath); // Normalize the path
+    if (fs.existsSync(normalizedPath)) {
+      const stat = fs.lstatSync(normalizedPath);
+      return stat.isFile() || stat.isDirectory();
+    }
+    return false;
   } catch (err) {
-      return false;
+    return false;
   }
 });

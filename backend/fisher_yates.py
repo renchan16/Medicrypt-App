@@ -5,6 +5,7 @@ from Crypto.Cipher import AES
 from math import ceil
 from filepath_parser import FilepathParser
 from pathlib import Path
+import text_file_encryption as tfe
 import numpy as np
 import logfilewriter
 import hashlib
@@ -142,28 +143,10 @@ class Encrypt:
         return np.bitwise_xor(a, b)
 
     def encryptHashes(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as file:
-            plain = file.read()
-
-        ciphertext = cipher.encrypt(plain)
-
-        with open(hash_filepath, "wb") as enc_file:
-            enc_file.write(ciphertext)
+        tfe.encryptFile(hash_filepath, password)
 
     def decryptHashes(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as enc_file:
-            encrypted = enc_file.read()
-
-        plaintext = cipher.decrypt(encrypted)
-
-        with open(hash_filepath, "wb") as file:
-            file.write(plaintext)
+        tfe.decryptFile(hash_filepath, password)
 
     def encryptFrame(self, frame):
         self.num_rows, self.num_cols, self.num_channels = frame.shape

@@ -12,9 +12,6 @@ import os
 
 class Encrypt_cosine:
     def __init__(self):
-        self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
-        self.nonce = b"\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l"
-
         self.n = 2.24  # n = [0, 4)
         self.o = 34.2  # omega > 33.5
         self.t = 38.23  # theta > 37.9

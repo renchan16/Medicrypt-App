@@ -13,9 +13,6 @@ class Encrypt:
         self.num_cols = 0
         self.num_channels = 3
 
-        self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
-        self.nonce = b"\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l"
-
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
 
@@ -177,7 +174,6 @@ class Encrypt:
 
         return diffuse_pixels, hashed
 
-    @time_encrypt
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
@@ -298,7 +294,7 @@ class Encrypt:
 
         return row_unshuffled
 
-    @time_encrypt
+
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)

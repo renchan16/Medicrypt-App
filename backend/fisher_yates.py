@@ -167,7 +167,8 @@ class Encrypt:
 
     def encryptFrame(self, frame):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
-        
+
+        print("Generating Logistic Map Seeds")
         hashed = self.hashArray(frame)
 
         splits = self.splitHash(hashed)
@@ -175,18 +176,22 @@ class Encrypt:
         transform = self.transformDecimal(
             converted
         )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
+        print(f"Generated Logistic Map Seeds: {transform}")
 
-        # permutate
+        # Permutate
+        print("Running Fisher-Yates Permutation")
         row_permutated = self.rowShuffle(
             frame, self.num_rows, transform[1], transform[0]
         )
         col_permutated = self.colShuffle(
             row_permutated, self.num_cols, transform[1], transform[0]
         )  # final permutation
+        print("Permutation Done")
 
         flatten = col_permutated.reshape(-1, self.num_channels)
 
-        # create keystream vector
+        # Create keystream vector
+        print("Creating Keystream Vector")
         kv = self.keystream(
             self.num_rows * self.num_cols, transform[3], transform[2]
         )
@@ -195,9 +200,12 @@ class Encrypt:
         uint8_ks = comb_ks.astype(
             np.uint8
         )  # change to uint8 datatype for correct cv2 data type
+        print("Created Keystream Vector")
 
         # diffuse the pixels
+        print("Splitted Frames and Running Diffusion (XOR)")
         diffuse = self.xor(flatten, uint8_ks)
+        print("Diffusion Done and Channels Merged")
 
         # reshape the array into a required cv2 format
         diffuse_pixels = diffuse.reshape(
@@ -230,10 +238,9 @@ class Encrypt:
         # open the text file that will contain the list of hashes
         hash_file = open(key_dest.absolute(), "w")
 
-        count = 1
+        count = 0
 
         length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        print(length)
 
         while True:
             start = time.time()
@@ -243,13 +250,19 @@ class Encrypt:
                 print("read done")
                 break
 
+            print(f"Encrypting Frame {count}")
             diffuse_pixels, hashed = self.encryptFrame(frame)
+            print(f"Frame {count} is encrypted")
 
+            print("Writing Hash to key text file")
             hash_file.write(
                 hashed + "\n"
             )  # write with newline at the end so every writes will start on new line
+            print("Writing Done")
 
+            print(f"Writing Encrypted Frame {count} to video")
             result.write(diffuse_pixels)
+            print("Writing Done")
 
             count += 1
 
@@ -258,24 +271,31 @@ class Encrypt:
             per_frame_runtime.append(duration)
 
         cap.release()
+        print(f"Video has been encrypted")
+
         hash_file.close()  # finally, close the file
         self.encryptHashes(
             key_dest.resolve(), password
         )  # and encrypt the hash file
+        print(f"Key file has been encrypted")
 
         return per_frame_runtime
 
     def decryptFrame(self, frame, hash):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
+
+        print("Generating Logistic Map Seeds")
         splits = self.splitHash(hash)
         converted = self.convertToDecimal(splits)
         transform = self.transformDecimal(
             converted
         )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
+        print(f"Generated Logistic Map Seeds: {transform}")
 
         # flatten array
         flatten = frame.reshape(-1, self.num_channels)
 
+        print("Generating Keystream Vector")
         # create keystream vector
         kv = self.keystream(
             self.num_rows * self.num_cols, transform[3], transform[2]
@@ -285,26 +305,33 @@ class Encrypt:
         uint8_ks = comb_ks.astype(
             np.uint8
         )  # change to uint8 datatype for correct cv2 data type
+        print("Generated Keystream Vector")
 
         # undiffuse the pixels
+        print("Splitted Frames and Running Reverse Diffusion (XOR)")
         undiffuse = self.xor(flatten, uint8_ks)
 
         # rejoin channels into one frame
         undiffused_frame = undiffuse.reshape(
             self.num_rows, self.num_cols, self.num_channels
         )
+        print("Reverse Diffusion Done and Channels Merged")
 
         # generate swap index array for row and column
+        print("Generate Swap Index Array for Row and Columns")
         row_swap_indices = self.generateSwapIndex(
             self.num_rows, transform[1], transform[0]
         )
         col_swap_indices = self.generateSwapIndex(
             self.num_cols, transform[1], transform[0]
         )
+        print("Swap Index Array Generated")
 
         # unshuffle the undiffused frame, then the unshuffled column frame
+        print("Running Reverse Fisher-Yates Permutation")
         col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
         row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
+        print("Reverse Fisher-Yates Permutation Done")
 
         return row_unshuffled
 
@@ -318,6 +345,7 @@ class Encrypt:
         per_frame_runtime = []
 
         self.decryptHashes(key.resolve(), password)
+        print("Decrypted the Key Hash File")
 
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
 
@@ -335,10 +363,9 @@ class Encrypt:
         lines = hash_file.readlines()
         hash_line = 0  # keep track of our line in the text file
 
-        count = 1
+        count = 0
 
         length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-        print(length)
 
         while True:
             start = time.time()
@@ -348,11 +375,17 @@ class Encrypt:
                 print("read done")
                 break
 
+            print(f"Grabbing the Hash for Frame {count}")
             hashed = lines[hash_line].rstrip()
 
-            #decrypt
+            # Decrypt
+            print(f"Decrypting Frame {count}")
             row_unshuffled = self.decryptFrame(frame, hashed)
+            print(f"Frame {count} is Decrypted")
+
+            print(f"Writing Decrypted Frame {count} to video")
             result.write(row_unshuffled)
+            print(f"Writing Done")
 
             count += 1
             hash_line += 1
@@ -362,6 +395,7 @@ class Encrypt:
             per_frame_runtime.append(duration)
 
         cap.release()
+        print(f"Video has been Decrypted")
         self.encryptHashes(key.resolve(), password)
         hash_file.close()  # finally, close the file
 

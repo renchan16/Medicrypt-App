@@ -12,7 +12,7 @@ PBKDF2_ITERATIONS = 100
 PBKDF2_LAMBDA = lambda x, y: HMAC.new(x, y, SHA256).digest()
 
 
-def encryptString(fpath, password):
+def encryptFile(fpath, password):
     # Generate a 128-bit salt using a CSPRNG.
     salt = get_random_bytes(PBKDF2_SALT_SIZE)
 
@@ -33,7 +33,7 @@ def encryptString(fpath, password):
     return base64.b64encode(ciphertextAndNonceAndSalt)
 
 
-def decryptString(fpath, password):
+def decryptFile(fpath, password):
     with open(fpath, "rb") as enc_file:
         base64CiphertextAndNonceAndSalt = enc_file.read()
 

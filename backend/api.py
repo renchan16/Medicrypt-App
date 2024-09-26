@@ -41,15 +41,15 @@ class CommandHandler:
         
         # Handle hashpath only for encryption, and fall back to filepath's directory
         if self.hashpath and self.hashpath.strip():
-            key_file = f"{self.hashpath}\\{base_filename}.key"
+            key_file = f"{self.hashpath}/{base_filename}.key"
             
         else:
             # Use the directory of the file and append the base filename with .key
-            key_file = f"{os.path.dirname(self.filepath)}\\{base_filename}.key"
+            key_file = f"{os.path.dirname(self.filepath)}/{base_filename}.key"
 
         if process_type == "encrypt":
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}\\{base_filename}_encrypted.avi"
+                output_filepath = f"{self.outputpath}/{base_filename}_encrypted.avi"
                 
             else:
                 output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
@@ -58,7 +58,7 @@ class CommandHandler:
         
         else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}\\{base_filename}_decrypted.avi"
+                output_filepath = f"{self.outputpath}/{base_filename}_decrypted.avi"
                 
             else:
                 output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
@@ -70,7 +70,7 @@ class CommandHandler:
     def _run_subprocess(self, command: str) -> dict:
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             output_lines = []
 
             # Stream stdout

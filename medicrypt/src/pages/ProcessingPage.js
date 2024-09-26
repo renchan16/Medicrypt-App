@@ -4,6 +4,7 @@ import { FiBarChart } from "react-icons/fi";
 import { LuHome } from "react-icons/lu";
 import { FaRegFolder } from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
+import { VscDebugStop } from "react-icons/vsc";
 import { ClimbingBoxLoader } from 'react-spinners';
 import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from '../components/sections/ProcessAlert';
 import NavButton from '../components/buttons/NavButton';
@@ -55,6 +56,18 @@ function ProcessingPage() {
     processData();
   }, [processType, inputs, navigate]);
 
+  const haltProcessing = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/halt_processing');
+      console.log('Halt processing response:', response.data);
+      setIsProcessing(false);
+      setProcessStatus('halted');
+      setProcessDescription('Processing has been halted by user request.');
+    } catch (error) {
+      console.error('Error halting processing:', error);
+    }
+  };
+
   const navigateHome = () => {
     navigate('/');
   };
@@ -72,13 +85,22 @@ function ProcessingPage() {
         <div className={`${isProcessing ? 'block' : 'hidden'} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 flex flex-col items-center justify-center`}>
           <ClimbingBoxLoader className='' color="#1D1B20" loading={true} size={20} />
           <p className='mt-6 text-2xl font-bold text-black'>{processType}ing{dots}</p>
+          <NavButton
+            className="mt-4 w-full h-12"
+            buttonText="Stop Processing"
+            buttonColor="primary1"
+            hoverColor="primary0"
+            buttonTextColor="white"
+            buttonIcon={VscDebugStop}
+            onClickFunction={haltProcessing}
+            />
         </div>
 
         {/* Process Complete Section */}
         <div className={`${isProcessing ? 'hidden' : 'block'} w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
           <h1 className="mb-4 text-4xl text-primary1 font-bold">{processType}ion {processStatus}!</h1>
 
-          <ProcessAlert processStatus={processStatus === "success" ? "Complete" : "Failed"}>
+          <ProcessAlert processStatus={processStatus}>
             <ProcessAlertTitle>{processStatus === "success" ? "Success" : "Error"}</ProcessAlertTitle>
             <ProcessAlertDescription>{processDescription}</ProcessAlertDescription>
           </ProcessAlert>

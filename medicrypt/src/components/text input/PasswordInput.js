@@ -89,7 +89,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-base text-black font-normal placeholder:font-normal border-2 border-primary2 focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`}
+                    className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 border-primary2 focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`}
                 />
                 <label 
                     htmlFor="password-input"

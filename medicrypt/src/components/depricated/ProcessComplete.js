@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from "./ProcessAlert";
+import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from "../sections/ProcessAlert";
 import NavButton from "../buttons/NavButton";
 import { FiBarChart } from "react-icons/fi";
 import { LuHome } from "react-icons/lu";

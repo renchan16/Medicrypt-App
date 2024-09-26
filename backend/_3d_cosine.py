@@ -1,9 +1,6 @@
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Cipher import AES
 from pathlib import Path
 import text_file_encryption as tfe
 import numpy as np
-import logfilewriter
 import hashlib
 import struct
 import shutil

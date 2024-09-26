@@ -1,30 +1,10 @@
-import os.path
-
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Cipher import AES
 from math import ceil
-from filepath_parser import FilepathParser
 from pathlib import Path
 import text_file_encryption as tfe
 import numpy as np
-import logfilewriter
 import hashlib
 import time
 import cv2
-import threading
-
-
-def time_encrypt(func):
-    def wrapper(*args, **kwargs):
-        t1 = time.time()
-        result = func(*args, **kwargs)
-        t2 = time.time() - t1
-        print(f'time: {t2}')
-        # print(f'time: {t2}')
-        # return t2
-        return result
-
-    return wrapper
 
 
 class Encrypt:

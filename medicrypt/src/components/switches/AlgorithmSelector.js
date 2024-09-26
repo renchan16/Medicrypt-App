@@ -23,10 +23,10 @@ export default function AlgorithmSelector({ className, componentHeader, optionOn
                     checked={selectedAlgo === optionTwo}
                     onChange={handleValueChange}
                     />
-                <span className={`absolute w-1/2 h-full rounded-lg bg-primary1 transition-transform duration-300 transform ${selectedAlgo === optionTwo ? "translate-x-full" : ""}`}></span>
+                <span className={`absolute w-1/2 h-full rounded-lg bg-primary1 transition-all duration-300 transform ${selectedAlgo === optionTwo ? "translate-x-full" : ""}`}></span>
                 <div className="relative flex justify-between items-center w-full">
-                    <p className={`w-1/2 text-center font-bold text-sm text-white select-none transition-colors duration-300 `}>{optionOne}</p>
-                    <p className={`w-1/2 text-center font-bold text-sm text-white select-none transition-colors duration-300 `}>{optionTwo}</p>
+                    <p className={`w-1/2 text-center font-bold text-sm text-white select-none transition-colors duration-300`}>{optionOne}</p>
+                    <p className={`w-1/2 text-center font-bold text-sm text-white select-none transition-colors duration-300`}>{optionTwo}</p>
                 </div>
             </label>
         </div>

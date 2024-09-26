@@ -63,6 +63,21 @@ ipcMain.handle('dialog:openFilePath', async () => {
 });
 
 // Handle file dialog from renderer
+ipcMain.handle('dialog:openEncryptedFilePath', async () => {
+  const { canceled, filePaths } = await showSingleDialog({
+    properties: ['openFile'],
+    filters: [
+      { name: 'Videos', extensions: ['avi'] },
+    ],
+  });
+  if (canceled) {
+    return null;
+  } else {
+    return filePaths[0];  // Return the first selected file path
+  }
+});
+
+// Handle file dialog from renderer
 ipcMain.handle('dialog:openHashKeyPath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],

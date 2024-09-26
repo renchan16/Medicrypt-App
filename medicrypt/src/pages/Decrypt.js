@@ -88,7 +88,7 @@ function Decrypt() {
                 componentHeader="Video File"
                 placeholderText="C:\Users\YourUsername\Documents\video.mp4..." 
                 browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
-                browseHandler={window.electron.openFilePath}
+                browseHandler={window.electron.openEncryptedFilePath}
                 onValueChange={setFilePath}
                 onValidityChange={setFilePathValidity}
                 isRequired={true}
@@ -109,7 +109,7 @@ function Decrypt() {
                 ref={hashInputRef}
                 componentHeader="Hash Key File"
                 placeholderText="C:\Users\YourUsername\Documents\HashKey.key..." 
-                browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
+                browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                 browseHandler={window.electron.openHashKeyPath}
                 onValueChange={setHashPath}
                 onValidityChange={setHashPathValidity}

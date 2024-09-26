@@ -28,7 +28,8 @@ class CommandHandler:
         self.password = password
         self.outputpath = outputpath
         self.hashpath = hashpath
-        
+        self.base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
+        self.inputfile_ext = os.path.splitext(os.path.basename(self.filepath))[1]
 
     def _get_algorithm(self):
         """Internal method to map algorithm name to its corresponding CLI argument."""
@@ -37,19 +38,18 @@ class CommandHandler:
     def _generate_command(self, process_type: str) -> str:
         """Generate the appropriate encryption or decryption command."""
         algorithm = self._get_algorithm()
-        base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
         
         # Handle hashpath only for encryption, and fall back to filepath's directory
         if self.hashpath and self.hashpath.strip():
-            key_file = f"{self.hashpath}/{base_filename}.key"
+            key_file = f"{self.hashpath}/{self.base_filename}.key"
             
         else:
             # Use the directory of the file and append the base filename with .key
-            key_file = f"{os.path.dirname(self.filepath)}/{base_filename}.key"
+            key_file = f"{os.path.dirname(self.filepath)}/{self.base_filename}.key"
 
         if process_type == "encrypt":
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}/{base_filename}_encrypted.avi"
+                output_filepath = f"{self.outputpath}/{self.base_filename}_encrypted.avi"
                 
             else:
                 output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
@@ -58,7 +58,7 @@ class CommandHandler:
         
         else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}/{base_filename}_decrypted.avi"
+                output_filepath = f"{self.outputpath}/{self.base_filename}_decrypted.avi"
                 
             else:
                 output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
@@ -71,27 +71,39 @@ class CommandHandler:
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
             process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            output_lines = []
+            stdout_lines = []
+            stderr_lines = []
 
             # Stream stdout
             for stdout_line in iter(process.stdout.readline, ""):
                 print(f"Output: {stdout_line.strip()}")
-                output_lines.append(stdout_line.strip())
+                stdout_lines.append(stdout_line.strip())
 
             # Stream stderr
             for stderr_line in iter(process.stderr.readline, ""):
                 print(f"Error: {stderr_line.strip()}")
-                output_lines.append(f"Error: {stderr_line.strip()}")
+                stderr_lines.append(stderr_line.strip())
 
             process.stdout.close()
             process.stderr.close()
             process.wait()
 
             if process.returncode == 0:
-                return {"message": "Process completed", "status": "success", "output": "\n".join(output_lines)}
-            
+                return {
+                    "message": "Process completed",
+                    "status": "success",
+                    "stdout": "\n".join(stdout_lines),
+                    "stderr": "\n".join(stderr_lines),
+                    "inputfile" :  self.base_filename + self.inputfile_ext
+                }
             else:
-                raise Exception("\n".join(output_lines))
+                return {
+                    "message": "Process encountered an issue",
+                    "status": "failure",
+                    "stdout": "\n".join(stdout_lines),
+                    "stderr": "\n".join(stderr_lines),
+                    "inputfile" :  self.base_filename + self.inputfile_ext
+                }
             
         except Exception as e:
             print(f"Subprocess error: {str(e)}")

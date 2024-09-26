@@ -1,29 +1,10 @@
-import os.path
-
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Cipher import AES
 from math import ceil
-from filepath_parser import FilepathParser
 from pathlib import Path
+import text_file_encryption as tfe
 import numpy as np
-import logfilewriter
 import hashlib
 import time
 import cv2
-import threading
-
-
-def time_encrypt(func):
-    def wrapper(*args, **kwargs):
-        t1 = time.time()
-        result = func(*args, **kwargs)
-        t2 = time.time() - t1
-        print(f'time: {t2}')
-        # print(f'time: {t2}')
-        # return t2
-        return result
-
-    return wrapper
 
 
 class Encrypt:
@@ -31,9 +12,6 @@ class Encrypt:
         self.num_rows = 0
         self.num_cols = 0
         self.num_channels = 3
-
-        self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
-        self.nonce = b"\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l"
 
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
@@ -142,28 +120,10 @@ class Encrypt:
         return np.bitwise_xor(a, b)
 
     def encryptHashes(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as file:
-            plain = file.read()
-
-        ciphertext = cipher.encrypt(plain)
-
-        with open(hash_filepath, "wb") as enc_file:
-            enc_file.write(ciphertext)
+        tfe.encryptFile(hash_filepath, password)
 
     def decryptHashes(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as enc_file:
-            encrypted = enc_file.read()
-
-        plaintext = cipher.decrypt(encrypted)
-
-        with open(hash_filepath, "wb") as file:
-            file.write(plaintext)
+        tfe.decryptFile(hash_filepath, password)
 
     def encryptFrame(self, frame):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -214,7 +174,6 @@ class Encrypt:
 
         return diffuse_pixels, hashed
 
-    @time_encrypt
     def encryptVideo(self, filepath, vid_destination, key_destination, password):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
@@ -335,7 +294,7 @@ class Encrypt:
 
         return row_unshuffled
 
-    @time_encrypt
+
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)

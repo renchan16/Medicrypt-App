@@ -1,8 +1,6 @@
-from Crypto.Protocol.KDF import PBKDF2
-from Crypto.Cipher import AES
 from pathlib import Path
+import text_file_encryption as tfe
 import numpy as np
-import logfilewriter
 import hashlib
 import struct
 import shutil
@@ -14,9 +12,6 @@ import os
 
 class Encrypt_cosine:
     def __init__(self):
-        self.salt = b"\xb8O\xde/\xbc\x9b\\/w\x18%&]&\x0e{\x08\xb9\xfa\xe1T\x8fZ\xc8'\xb25Z\x12\x1b\xb2\x80"
-        self.nonce = b"\xddR\x05#c\xdd\xe3\xcd\x10\x14kWv\x89\xdb[\xf4\x06j \xe8\x97S;\xa6\x14\xdc-\xae\x16@l"
-
         self.n = 2.24  # n = [0, 4)
         self.o = 34.2  # omega > 33.5
         self.t = 38.23  # theta > 37.9
@@ -251,28 +246,10 @@ class Encrypt_cosine:
         return np.random.permutation(num_frames).tolist()
 
     def __encryptKey__(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as file:
-            plain = file.read()
-
-        ciphertext = cipher.encrypt(plain)
-
-        with open(hash_filepath, "wb") as enc_file:
-            enc_file.write(ciphertext)
+        tfe.encryptFile(hash_filepath, password)
 
     def __decryptKey__(self, hash_filepath, password):
-        key = PBKDF2(password, self.salt, dkLen=32)
-        cipher = AES.new(key, AES.MODE_GCM, nonce=self.nonce)
-
-        with open(hash_filepath, "rb") as enc_file:
-            encrypted = enc_file.read()
-
-        plaintext = cipher.decrypt(encrypted)
-
-        with open(hash_filepath, "wb") as file:
-            file.write(plaintext)
+        tfe.decryptFile(hash_filepath, password)
 
     def encryptFrame(self, frame):
         blue, green, red = cv2.split(frame)  # cv2 always read in BGR mode

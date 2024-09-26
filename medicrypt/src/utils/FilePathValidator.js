@@ -1,37 +1,37 @@
-export const ValidateFilePath = async (filePath, isRequired) => {
+export const ValidateFilePath = async (filePath, defaultDisplayText, isRequired) => {
     const isValidPath = await window.electron.checkFilePath(filePath);
     let inputValidity;
-    let inputWarning;
+    let inputMessage;
 
     if (isRequired) {
         // Check both value and validity when isRequired is true
         if (filePath === null || filePath === "") {
             inputValidity = false;
-            inputWarning = "This field is required!"
+            inputMessage = "This field is required!"
         } 
         else if (isValidPath) {
             inputValidity = true;
-            inputWarning = null
+            inputMessage = "Great choice! The file path looks good."
         } 
         else {
             inputValidity = false;
-            inputWarning = "Invalid file path!"
+            inputMessage = "Invalid file path!"
         }
     }
     else {
         if (filePath === null || filePath === "") {
             inputValidity = true;
-            inputWarning = null
+            inputMessage = defaultDisplayText
         } 
         else if (isValidPath) {
             inputValidity = true;
-            inputWarning = null
+            inputMessage = defaultDisplayText
         } 
         else {
             inputValidity = false;
-            inputWarning = "Invalid file path!"
+            inputMessage = "Invalid file path!"
         }
     }
 
-    return { inputValidity, inputWarning };
+    return { inputValidity, inputMessage };
 }

@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
+import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateBefore } from "react-icons/md";
+import { FaUnlock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
@@ -60,6 +63,11 @@ function Decrypt() {
     }
   }
   
+  const showPreviousFields = () => {
+    console.log("TEST")
+    setShowAdditionalFields(false);
+  };
+
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
@@ -72,67 +80,83 @@ function Decrypt() {
 
         <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
 
-        <h1 className="mt-32 mb-3 text-3xl font-bold text-primary1 ">Decrypt a Video</h1>
-        <AlgorithmSelector
-          className='mt-4 mb-4' 
-          componentHeader="Choose an Algorithm for Decryption" 
-          optionOne="FY-Logistic" 
-          optionTwo="ILM-Cosine" 
-          onValueChange={setAlgorithm}
-          />
-        <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
-          <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
-            <div className='space-y-4'>
-              <FilePathInput 
-                ref={fileInputRef}
-                componentHeader="Video File"
-                placeholderText="C:\Users\YourUsername\Documents\video.mp4..." 
-                browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
-                browseHandler={window.electron.openEncryptedFilePath}
-                onValueChange={setFilePath}
-                onValidityChange={setFilePathValidity}
-                isRequired={true}
-                />
-              <PasswordInput
-                ref={passwordInputRef}
-                componentHeader="Hash Key Password"
-                placeholderText="e.g. ILoveM3d!Crypt143"
-                processType="Decrypt"
-                onValueChange={setPassword}
-                onValidityChange={setPasswordValidity}
-                />
+        <div className='relative top-1/2 transform -translate-y-1/2'>
+          <h1 className="mb-3 text-3xl font-bold text-primary1 ">Decrypt a Video</h1>
+          <AlgorithmSelector
+            className='mt-4 mb-4' 
+            componentHeader="Choose an Algorithm for Decryption" 
+            optionOne="FY-Logistic" 
+            optionTwo="ILM-Cosine" 
+            onValueChange={setAlgorithm}
+            />
+          <div className={`flex h-2/6 mb-8 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
+            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
+              <div className='space-y-4'>
+                <FilePathInput 
+                  ref={fileInputRef}
+                  componentHeader="Video File*"
+                  placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
+                  defaultDisplayText="Must be a valid .avi video file path."  
+                  browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
+                  browseHandler={window.electron.openEncryptedFilePath}
+                  onValueChange={setFilePath}
+                  onValidityChange={setFilePathValidity}
+                  isRequired={true}
+                  />
+                <PasswordInput
+                  ref={passwordInputRef}
+                  componentHeader="Hash Key Password*"
+                  defaultDisplayText="Ensure the password matches the one you provided earlier for encryption." 
+                  placeholderText="e.g. ILoveM3d!Crypt143"
+                  processType="Decrypt"
+                  onValueChange={setPassword}
+                  onValidityChange={setPasswordValidity}
+                  />
+              </div>
+            </div>
+            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
+              <div className='space-y-4'>
+                <FilePathInput
+                  ref={hashInputRef}
+                  componentHeader="Hash Key File *"
+                  placeholderText="C:\Users\YourUsername\Documents\HashKey.key..."
+                  defaultDisplayText="Must be a valid .key file path."  
+                  browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
+                  browseHandler={window.electron.openHashKeyPath}
+                  onValueChange={setHashPath}
+                  onValidityChange={setHashPathValidity}
+                  isRequired={true}
+                  />
+                <FilePathInput
+                  ref={outputPathInputRef}
+                  componentHeader="Decrypted Video File Destination"
+                  defaultDisplayText="Must be a valid directory path." 
+                  placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
+                  browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
+                  browseHandler={window.electron.openFolder}
+                  onValueChange={setOutputPath}
+                  onValidityChange={setOutputPathValidity}
+                  isRequired={false}
+                  />
+              </div>
             </div>
           </div>
-          <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
-            <div className='space-y-4'>
-              <FilePathInput
-                ref={hashInputRef}
-                componentHeader="Hash Key File"
-                placeholderText="C:\Users\YourUsername\Documents\HashKey.key..." 
-                browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
-                browseHandler={window.electron.openHashKeyPath}
-                onValueChange={setHashPath}
-                onValidityChange={setHashPathValidity}
-                isRequired={true}
-                />
-              <FilePathInput
-                ref={outputPathInputRef}
-                componentHeader="Decrypted Video File Destination"
-                placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
-                browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
-                browseHandler={window.electron.openFolder}
-                onValueChange={setOutputPath}
-                onValidityChange={setOutputPathValidity}
-                isRequired={false}
-                />
-            </div>
+          <div className='flex justify-between'>
+            <ProcessButton
+              buttonText="BACK"
+              buttonIcon={MdNavigateBefore}
+              iconLocation='left'
+              isEnabled={showAdditionalFields ? true : false}
+              onClickFunction={showPreviousFields}
+              />
+            <ProcessButton 
+              buttonText={`${showAdditionalFields ? "DECRYPT" : "NEXT" }`}
+              buttonIcon={showAdditionalFields ? FaUnlock : MdNavigateNext }
+              iconLocation={showAdditionalFields ? 'left' : 'right' }
+              onClickFunction={processInputData}
+              />
           </div>
         </div>
-        <ProcessButton 
-            className="my-1"
-            buttonText={`${showAdditionalFields ? "DECRYPT" : "NEXT" }`}
-            onClickFunction={processInputData}
-            />
       </div>
     </div>
   );

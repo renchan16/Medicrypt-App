@@ -2,13 +2,14 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
 
-const PasswordInput = forwardRef(({className, componentHeader, placeholderText, processType, onValueChange, onValidityChange}, ref) => {
+const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange}, ref) => {
     const [isInputActive, setInputActive] = useState(false);
+    const [isInitialLoad, setInitialLoad] = useState(true);
     const [isFocused, setFocus] = useState(false);
     const [password, setPassword] = useState("");
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isValidInput, setInputValidity] = useState(false); 
-    const [inputWarning, setInputWarning] = useState("");
+    const [inputWarning, setInputWarning] = useState(defaultDisplayText);
 
     useEffect(() => {
         // Notify the parent component about the validity whenever it changes
@@ -25,6 +26,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
     // Handles the input change upon user input.
     const handleInputChange = (e) => {
         const newValue = e.target.value;
+        setInitialLoad(false);
         setPassword(newValue);
         onValueChange(newValue);
         handleInputValidation(newValue);
@@ -38,6 +40,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
 
     // Handles the onBlur event for the input field.
     const handleBlur = (e) => {
+        setInitialLoad(false);
         setInputActive(password !== "");
         setFocus(!isFocused);
         handleInputValidation(e.target.value);
@@ -53,7 +56,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                 setInputValidity(false);
             } 
             else if (validate['passwordValidity']) {
-                setInputWarning(null);
+                setInputWarning("Great choice! Your password looks good.");
                 setInputValidity(validate['passwordValidity']);
             } 
             else {
@@ -67,7 +70,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                 setInputValidity(false);
             }  
             else {
-                setInputWarning(null);
+                setInputWarning(defaultDisplayText);
                 setInputValidity(true);
             }
         }
@@ -105,7 +108,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>
             </div>
-            <p className={"mt-1 font-semibold text-sm text-red-900"}>{inputWarning}</p>
+            <p className={`mt-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>{inputWarning}</p>
         </div>
     );
 });

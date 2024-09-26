@@ -1,12 +1,13 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 
-const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired }, ref) => {
+const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired }, ref) => {
     const [path, setFilePath] = useState("");
+    const [isInitialLoad, setInitialLoad] = useState(true);
     const [isInputActive, setInputActive] = useState(false);
     const [isFocused, setFocus] = useState(false);
     const [isValidInput, setInputValidity] = useState(isRequired ? false : true); 
-    const [inputWarning, setInputWarning] = useState("");
+    const [inputMessage, setInputMessage] = useState(defaultDisplayText);
 
     useEffect(() => {
         // Notify the parent component about the validity whenever it changes
@@ -24,6 +25,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     const handleBrowsePath = async () => {
         const uploadedPath = await browseHandler();
         if (uploadedPath) {
+            setInitialLoad(false);
             setFilePath(uploadedPath);
             onValueChange(uploadedPath);
             handleInputValidation(uploadedPath);
@@ -32,6 +34,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
 
     // Handle the change in the input field and file path return value upon typing in the input field.
     const handleInputChange = (e) => {
+        setInitialLoad(false);
         setFilePath(e.target.value);
         onValueChange(e.target.value);
     };
@@ -42,6 +45,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     }
 
     const handleBlur = (e) => {
+        setInitialLoad(false);
         setInputActive(path !== "");
         setFocus(!isFocused);
         handleInputValidation(e.target.value);
@@ -49,10 +53,10 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     
     // Handles the checking of input validity.
     const handleInputValidation = async (filePath) => {
-        const isValid = await ValidateFilePath(filePath, isRequired);
+        const isValid = await ValidateFilePath(filePath, defaultDisplayText, isRequired);
 
         setInputValidity(isValid['inputValidity']);
-        setInputWarning(isValid['inputWarning']);
+        setInputMessage(isValid['inputMessage']);
     }
 
     return (
@@ -78,7 +82,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                     {browseIcon}
                 </button>
             </div>
-            <p className={"mt-1 font-semibold text-sm text-red-900"}>{inputWarning}</p>
+            <p className={`mt-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>{inputMessage}</p>
         </div>
     );
 });

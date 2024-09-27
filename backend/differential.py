@@ -22,7 +22,7 @@ class Differential:
             temp1 = 1 / (width * height)
             for i in range(width - 1):
                 for j in range(height - 1):
-                    temp2 += self.get_difference(frame_1[j][i][c], frame_2[j][i][c]) * 100
+                    temp2 += self.get_difference(frame_1[j][i][c].item(), frame_2[j][i][c].item()) * 100
             npcr_list.append(temp1 * temp2)
         return npcr_list
 
@@ -35,7 +35,7 @@ class Differential:
             temp2 = 0
             for i in range(width - 1):
                 for j in range(height - 1):
-                    temp2 += (abs(frame1[j][i][c].astype(np.float128) - frame2[j][i][c].astype(np.float128)) / 255) * 100
+                    temp2 += (abs(frame1[j][i][c].item() - frame2[j][i][c].item()) / 255) * 100
             uaci_list.append(temp1 * temp2)
 
         return uaci_list

@@ -78,8 +78,8 @@ class Correlation:
                     if n <= 0:
                         break
 
-                    pixel_x.append(frame[y1][x1][c].item())
-                    pixel_y.append(frame[y2][x2][c].item())
+                    pixel_x.append(frame[y1][x1][c].item() + 1)
+                    pixel_y.append(frame[y2][x2][c].item() + 1)
 
                     x1 -= 1
                     x2 -= 1
@@ -101,8 +101,8 @@ class Correlation:
                 while y2 < frame_height:
                     if n <= 0:
                         break
-                    pixel_x.append(frame[y1][x1][c].item())
-                    pixel_y.append(frame[y2][x2][c].item())
+                    pixel_x.append(frame[y1][x1][c].item() + 1)
+                    pixel_y.append(frame[y2][x2][c].item() + 1)
 
                     x1 -= 1
                     x2 -= 1
@@ -158,8 +158,8 @@ class Correlation:
                 for j in range (frame_height - 1):
                     if n <= 0:
                         break
-                    pixel_x.append(frame[j][i][c].item())
-                    pixel_y.append(frame[j][i+1][c].item())
+                    pixel_x.append(frame[j][i][c].item() + 1)
+                    pixel_y.append(frame[j][i+1][c].item() + 1)
                     n -= 1
             
             corr.append(self.R(pixel_x, pixel_y))
@@ -185,8 +185,8 @@ class Correlation:
                 for i in range (frame_width - 1):
                     if n <= 0:
                         break
-                    pixel_x.append(frame[j][i][c].item())
-                    pixel_y.append(frame[j+1][i][c].item())
+                    pixel_x.append(frame[j][i][c].item() + 1)
+                    pixel_y.append(frame[j+1][i][c].item() + 1)
                     n -= 1
             
             corr.append(self.R(pixel_x, pixel_y))

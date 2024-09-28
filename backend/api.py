@@ -1,5 +1,6 @@
 import os
 import signal
+import sys
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -43,14 +44,14 @@ class CommandHandler:
         
         # Handle hashpath only for encryption, and fall back to filepath's directory
         if self.hashpath and self.hashpath.strip():
-            key_file = f"{self.hashpath}/{self.base_filename}.key"
+            key_file = os.path.join(self.hashpath, f"{self.base_filename}.key")
         else:
             # Use the directory of the file and append the base filename with .key
-            key_file = f"{os.path.dirname(self.filepath)}/{self.base_filename}.key"
+            key_file = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
 
         if process_type == "encrypt":
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}/{self.base_filename}_encrypted.avi"
+                output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
             else:
                 output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
 
@@ -58,7 +59,7 @@ class CommandHandler:
         
         else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
-                output_filepath = f"{self.outputpath}/{self.base_filename}_decrypted.avi"
+                output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
             else:
                 output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
 
@@ -69,7 +70,12 @@ class CommandHandler:
     def _run_subprocess(self, command: str) -> dict:
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
+            # Use different process creation flags depending on the platform
+            if sys.platform.startswith('win'):
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+            else:
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
+            
             stdout_lines = []
             stderr_lines = []
 
@@ -115,7 +121,11 @@ class CommandHandler:
 
     def halt_process(self):
         if self.process and self.process.poll() is None:
-            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+            # Use different signals to terminate the process depending on the platform
+            if sys.platform.startswith('win'):
+                self.process.send_signal(signal.CTRL_BREAK_EVENT)
+            else:
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
             return {"message": "Process halted successfully"}
         return {"message": "No active process to halt"}
 

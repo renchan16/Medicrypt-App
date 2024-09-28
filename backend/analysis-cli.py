@@ -6,22 +6,77 @@ from other import EncryptionQuality
 import numpy
 import csv
 import cv2
+import sys
+import argparse
+import pathlib
 
 
 def main():
-    filepath = "/home/roel/Documents/code_projects/Medicrypt-App/tests/flamingo.avi"
 
-    fields = ["Frame", "CC_d", "CC_h", "CC_v", 
-                        "CC_d_e", "CC_h_e", "CC_v_e", 
-                        "Entropy(R)", "Entropy(G)", "Entropy(B)", "Entropy(Combined)",
-                        "Entropy_e(R)", "Entropy_e(G)", "Entropy_e(B)", "Entropy(Combined)",
-                        "NPCR", "UACI",
-                        "MSE", "PSNR"]
+    parser = argparse.ArgumentParser(description='For analysis purposes')
+
+    parser.add_argument('-m', "--mode", type=str, choices=['correlational', 'differential', 'entropy', 'psnr', 'all'], required=True)
+    parser.add_argument('-o', "--video", type=str)
+    parser.add_argument('-e', "--encrypted", type=str)
+    parser.add_argument('-d', "--decrypted", type=str)
+    parser.add_argument('-w', "--writepath", type=str)
+    parser.add_argument('-s', "--samples", type=int, default=1000)
+    parser.add_argument('-f', "--frames", type=int, default=50)
+
+    args = parser.parse_args()
+
+    cc_field = ["CC_d", "CC_h", "CC_v"]
+    entropy_field  = ["Entropy(R)", "Entropy(G)", "Entropy(B)", "Entropy(Combined)"]
+    differential_field = ["NPCR", "UACI"]
+    psnr_field = ["MSE", "PSNR"]
+
+    fields = ["frame"]
     
+    if args.mode == 'correlational':
+        fields.append(cc_field)
+    elif args.mode  == 'differential':
+        fields.append(differential_field)
+    elif args.mode == 'entropy':
+        fields.append(entropy_field)
+    elif args.mode == 'psnr':
+        fields.append(psnr_field)
+    elif args.mode == 'all':
+        fields.append(cc_field)
+        fields.append(differential_field)
+        fields.append(entropy_field)
+        fields.append(psnr_field)
 
-    cap = cv2.VideoCapture(filepath, cv2.CAP_FFMPEG)
+    #initializes csv file
 
-    n = 50
+    with open(args.writepath, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fields)
+        writer.writeheader()
+
+        enc = Encrypt()
+        corr = Correlation()
+        diff = Differential()
+        enc_quality = EncryptionQuality()
+
+        cap = cv2.VideoCapture()
+
+
+
+        if args.mode == 'correlational' or args.mode  == 'all':
+            cc_d = corr.get_corr_diag(args.video)
+            cc_h = corr.get_corr_horizontal(args.video)
+            cc_v = corr.get_corr_vertical(args.video)
+            
+            pass
+        elif args.mode  == 'differential'  or args.mode  == 'all':
+
+            pass
+        elif args.mode == 'entropy' or args.mode  == 'all':
+            pass
+        elif args.mode == 'psnr' or args.mode  == 'all':
+            pass
+
+
+
     with open('testcsv.csv', 'w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()

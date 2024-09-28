@@ -1,6 +1,7 @@
 from pathlib import Path
 import text_file_encryption as tfe
 import numpy as np
+import warnings
 import hashlib
 import struct
 import shutil
@@ -46,7 +47,6 @@ class Encrypt_cosine:
                         break
 
             else:
-                print("preserve color")
                 while success:
                     # vidObj object calls read
                     # function extract frames
@@ -251,9 +251,9 @@ class Encrypt_cosine:
     def __decryptKey__(self, hash_filepath, password):
         tfe.decryptFile(hash_filepath, password)
 
-    def encryptFrame(self, frame):
+    def encryptFrame(self, frame, verbose=False):
         blue, green, red = cv2.split(frame)  # cv2 always read in BGR mode
-        print("Splitted Frame into RGB channels")
+        if verbose: print("\tSplitted Frame into RGB channels")
 
         # Permutation
         height, width, channels = frame.shape
@@ -261,9 +261,9 @@ class Encrypt_cosine:
         block_size = min(math.floor(math.sqrt(height)), math.floor(math.sqrt(width)))
         block_matrix = block_size * block_size
 
-        print("Generating ILM-Cosine Sequence")
+        if verbose: print("\tGenerating ILM-Cosine Sequence")
         perm_seed, cos_ilm_sequence = self.__sequenceGen__(360, 4 * block_matrix)
-        print("ILM-Cosine Sequence Generated")
+        if verbose: print("\tILM-Cosine Sequence Generated")
 
         P, Q, R, S = np.split(cos_ilm_sequence, 4)
 
@@ -273,54 +273,54 @@ class Encrypt_cosine:
         In_R = np.argsort(R)
         In_S = np.argsort(S)
 
-        print("Running Permutation(Scrambling) on all color channels")
+        if verbose: print("\tRunning Permutation(Scrambling) on all color channels")
         blue_scrambled = self.__permutate__(block_size, block_matrix, blue, In_P, In_Q, In_R, In_S)
         green_scrambled = self.__permutate__(block_size, block_matrix, green, In_P, In_Q, In_R, In_S)
         red_scrambled = self.__permutate__(block_size, block_matrix, red, In_P, In_Q, In_R, In_S)
-        print("All color channels has been permutated")
+        if verbose: print("\tAll color channels has been permutated")
 
         # Rotate 90
         rot90_blue = np.rot90(blue_scrambled)
         rot90_green = np.rot90(green_scrambled)
         rot90_red = np.rot90(red_scrambled)
-        print("All color channels has been rotated 90 degrees anticlockwise")
+        if verbose: print("\tAll color channels has been rotated 90 degrees anticlockwise")
 
         # Diffusion
         diff_seed, cos_ilm_sequence = self.__sequenceGen__(360, height * width)
         cos_ilm_seq2D = cos_ilm_sequence.reshape(height, width)
 
-        print("Running Diffusion(Random Order Substitution) on all color channels")
+        if verbose: print("\tRunning Diffusion(Random Order Substitution) on all color channels")
         blue_diffuse = self.__diffuse__(cos_ilm_seq2D, rot90_blue)
         green_diffuse = self.__diffuse__(cos_ilm_seq2D, rot90_green)
         red_diffuse = self.__diffuse__(cos_ilm_seq2D, rot90_red)
-        print("All color channels has been diffused")
+        if verbose: print("\tAll color channels has been diffused")
 
         # Merge all channels for final encrypted frame
         merged_img = cv2.merge([blue_diffuse, green_diffuse, red_diffuse])  # merge in BGR mode
-        print("All color channels have been merged")
+        if verbose: print("\tAll color channels have been merged")
 
         return merged_img, perm_seed, diff_seed
 
-    def decryptFrame(self, frame, perm_seed, diff_seed):
+    def decryptFrame(self, frame, perm_seed, diff_seed, verbose=False):
         height, width, channels = frame.shape
         blue, green, red = cv2.split(frame)
-        print("Splitted Frame into RGB channels")
+        if verbose: print("Splitted Frame into RGB channels")
 
         # Anti-Diffusion
-        print("Running Anti-Substitution(Random Order Substitution) on all color channels")
+        if verbose: print("Running Anti-Substitution(Random Order Substitution) on all color channels")
         cos_ilm_sequence = self.__ILMGen__(height * width, diff_seed)
         cos_ilm_seq2D = cos_ilm_sequence.reshape(width, height)
 
         blue_antidiffused = self.__diffuse__(cos_ilm_seq2D, blue, mode='antidiffuse')
         green_antidiffused = self.__diffuse__(cos_ilm_seq2D, green, mode='antidiffuse')
         red_antidiffused = self.__diffuse__(cos_ilm_seq2D, red, mode='antidiffuse')
-        print("All color channels has been anti-substituted")
+        if verbose: print("All color channels has been anti-substituted")
 
         # Rotate 270
         rot270_blue = np.rot90(blue_antidiffused, 3)
         rot270_green = np.rot90(green_antidiffused, 3)
         rot270_red = np.rot90(red_antidiffused, 3)
-        print("All color channels has been rotated 270 degrees anticlockwise")
+        if verbose: print("All color channels has been rotated 270 degrees anticlockwise")
 
         new_height, new_width = rot270_blue.shape  # since frames are same sizes, sample a channel for new rotated h,w
 
@@ -328,9 +328,9 @@ class Encrypt_cosine:
         block_size = min(math.floor(math.sqrt(new_height)), math.floor(math.sqrt(new_width)))
         block_matrix = block_size * block_size
 
-        print("Generating ILM-Cosine Sequence")
+        if verbose: print("Generating ILM-Cosine Sequence")
         cos_ilm_sequence = self.__ILMGen__(4 * block_matrix, perm_seed)
-        print("ILM-Cosine Sequence Generated")
+        if verbose: print("ILM-Cosine Sequence Generated")
 
         P, Q, R, S = np.split(cos_ilm_sequence, 4)
 
@@ -340,7 +340,7 @@ class Encrypt_cosine:
         In_R = np.argsort(R)
         In_S = np.argsort(S)
 
-        print("Running De-Permutation on all color channels")
+        if verbose: print("Running De-Permutation on all color channels")
         blue_scrambled = self.__permutate__(block_size, block_matrix, rot270_blue,
                                             In_P, In_Q, In_R, In_S,
                                             mode='antipermute')
@@ -350,15 +350,15 @@ class Encrypt_cosine:
         red_scrambled = self.__permutate__(block_size, block_matrix, rot270_red,
                                            In_P, In_Q, In_R, In_S,
                                            mode='antipermute')
-        print("All color channels has been de-permutated")
+        if verbose: print("All color channels has been de-permutated")
 
         # Merge all channels for final decrypted frame
         merged_img = cv2.merge([blue_scrambled, green_scrambled, red_scrambled])  # merge in BGR mode
-        print("All color channels have been merged")
+        if verbose: print("All color channels have been merged")
 
         return merged_img
 
-    def encryptVideo(self, filepath, vid_destination, key_destination, password):
+    def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
@@ -382,9 +382,9 @@ class Encrypt_cosine:
         # Extract frames
         temp_path = os.path.join(os.path.dirname(filepath),
                                  'frameGen_temp')  # make temp folder in the same path as the video
-        print(f"Extracting and Dumping Frames to {temp_path} as .jpg")
+        if verbose: print(f"Extracting and Dumping Frames to {temp_path} as .jpg")
         self.__frameGen__(filepath, temp_path)
-        print(f"All frames has been Extracted")
+        if verbose: print(f"All frames has been Extracted")
 
         # Get a sorted list of all the frame filenames in the folder
         frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.jpg')])
@@ -392,21 +392,21 @@ class Encrypt_cosine:
 
         temp_encryption_path = os.path.join(temp_path, 'encryption_temp')
         os.makedirs(temp_encryption_path)
-        for curr_frame in sorted_frames:
+        for count, curr_frame in enumerate(sorted_frames):
             start = time.time()
             frame_name = os.path.join(temp_path, curr_frame)
 
             frame = cv2.imread(frame_name)
 
-            print(f"Encrypting {curr_frame}")
-            merged_img, perm_seed, diff_seed = self.encryptFrame(frame)
-            print(f"{curr_frame} has been Encrypted")
+            if verbose: print(f"[Frame {count}] Encrypting {curr_frame}")
+            merged_img, perm_seed, diff_seed = self.encryptFrame(frame, verbose)
+            if verbose: print(f"[Frame {count}] Frame Encrypted")
 
             # Save encrypted image to another temp path
-            print(f"Saving Encrypted Frame to {temp_encryption_path}")
+            if verbose: print(f"[Frame {count}] Saving Encrypted Frame to {temp_encryption_path}")
             no_extension = os.path.splitext(curr_frame)[0]
             cv2.imwrite(f"{temp_encryption_path}/{no_extension}.png", merged_img, [cv2.IMWRITE_PNG_COMPRESSION, 0])
-            print(f"Encrypted Frame has been saved")
+            if verbose: print(f"[Frame {count}] Encrypted Frame has been saved")
 
             # Save the permutation and diffusion seeds
             key_file.write(str(perm_seed) + "\n")
@@ -418,10 +418,10 @@ class Encrypt_cosine:
 
         # Generate Frame Selection sequence
         FS = self.__frameSeqGen__(len(sorted_frames))
-        print("Frame Sequence has been generated")
+        if verbose: print("Frame Sequence has been generated")
 
         # Write to video writer with Frame Selection sequence
-        print("Writing encrypted frames to Video according to Frame Sequence")
+        if verbose: print("Writing encrypted frames to Video according to Frame Sequence")
         for frame_no in FS:
             result.write(cv2.imread(f"{temp_encryption_path}/frame_{frame_no}.png"))
 
@@ -429,19 +429,20 @@ class Encrypt_cosine:
         key_file.write(str(FS))
 
         cap.release()
-        print("Video Writing Done and Video has been encrypted")
+        if verbose: print("Video Writing Done and Video has been encrypted")
         key_file.close()
         self.__encryptKey__(key_dest.resolve(), password)
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)  # delete the temp_path and its contents
         else:
-            print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
-                  f"it is completely deleted")
+            text_warn = f"{temp_path} could not be found: Path could be either moved or deleted, please make sure it " \
+                        f"is completely gone from your files"
+            warnings.warn(text_warn, Warning)
 
         return per_frame_runtime
 
-    def decryptVideo(self, filepath, vid_destination, key_filepath, password):
+    def decryptVideo(self, filepath, vid_destination, key_filepath, password, verbose=False):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key = Path(key_filepath)
@@ -466,9 +467,9 @@ class Encrypt_cosine:
         # Extract frames
         temp_path = os.path.join(os.path.dirname(filepath),
                                  'frameGen_temp')  # make temp folder in the same path as the video
-        print(f"Extracting and Dumping Frames to {temp_path} as .png")
+        if verbose: print(f"Extracting and Dumping Frames to {temp_path} as .png")
         self.__frameGen__(filepath, temp_path, True)
-        print(f"All frames has been Extracted")
+        if verbose: print(f"All frames has been Extracted")
 
         frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.png')])
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
@@ -487,12 +488,12 @@ class Encrypt_cosine:
         os.makedirs(temp_fs_path)
 
         # rearrange the frames according the Frame Selection sequence
-        print(f"Rearranging and Renaming the frames to {temp_fs_path}")
+        if verbose: print(f"Rearranging and Renaming the frames to {temp_fs_path}")
         for inx, curr_frame in enumerate(sorted_frames):
             source = os.path.join(temp_path, curr_frame)
             dest = os.path.join(temp_fs_path, f"frame_{frame_select_seq[inx]}.png")
             shutil.move(source, dest)
-        print(f"All frames has been rearranged and renamed")
+        if verbose: print(f"All frames has been rearranged and renamed")
 
         # sort the arranged frames again in the array to be decrypted
         new_frame_filenames = sorted([f for f in os.listdir(temp_fs_path) if f.endswith('.png')])
@@ -508,28 +509,29 @@ class Encrypt_cosine:
             perm_seed = float(lines[start_inx].rstrip())
             diff_seed = float(lines[start_inx + 1].rstrip())
 
-            print(f"Decrypting {curr_frame}")
+            if verbose: print(f"[Frame {inx}]: Decrypting {curr_frame}")
             merged_img = self.decryptFrame(frame, perm_seed, diff_seed)
-            print(f"{curr_frame} has been Decrypting")
+            if verbose: print(f"[Frame {inx}]: Frame Decrypted")
 
-            print("Writing Decrypted frame to video")
+            if verbose: print(f"[Frame {inx}]: Writing Decrypted frame to video")
             result.write(merged_img)
-            print("Writing Done")
+            if verbose: print(f"[Frame {inx}]: Writing Done")
 
             stop = time.time()
             duration = stop - start
             per_frame_runtime.append(duration)
 
         cap.release()
-        print("Video has been decrypted")
+        if verbose: print("Video has been decrypted")
         self.__encryptKey__(key.resolve(), password)
         key_file.close()  # finally, close the file
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)  # delete the temp_path and its contents
         else:
-            print(f"{temp_path} could not be found: Path could be either moved or deleted, please make sure "
-                  f"it is completely deleted")
+            text_warn = f"{temp_path} could not be found: Path could be either moved or deleted, please make sure it " \
+                        f"is completely gone from your files"
+            warnings.warn(text_warn, Warning)
 
         return per_frame_runtime
 

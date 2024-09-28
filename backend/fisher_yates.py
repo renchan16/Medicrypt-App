@@ -139,7 +139,7 @@ class Encrypt:
         if verbose: print(f"\tGenerated Logistic Map Seeds: {transform}")
 
         # Permutate
-        if verbose: print("Running Fisher-Yates Permutation")
+        if verbose: print("\tRunning Fisher-Yates Permutation")
         row_permutated = self.rowShuffle(
             frame, self.num_rows, transform[1], transform[0]
         )

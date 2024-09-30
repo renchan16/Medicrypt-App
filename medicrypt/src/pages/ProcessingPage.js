@@ -16,12 +16,14 @@ import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
 function ProcessingPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { processType, inputs } = location.state || {};
+  
   const [inputFile, setInputFile] = useState("");
   const [isProcessing, setIsProcessing] = useState(true);
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
-  const { processType, inputs } = location.state || {};
-  const [dots, setDots] = useState(''); // State for trailing dots in "Loading..."
+  const [outputLocation, setOutputLocation] = useState("");
+  const [dots, setDots] = useState(''); 
 
   // Simulate loading text ellipsis effect
   useEffect(() => {
@@ -46,6 +48,7 @@ function ProcessingPage() {
           setProcessDescription(ProcessErrorMessage(response.data['stdout']));
         } else {
           setInputFile(response.data['inputfile']);
+          setOutputLocation(response.data['outputloc']);
           setProcessDescription(`The ${response.data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
         }
       } catch (error) {
@@ -127,7 +130,7 @@ function ProcessingPage() {
                 buttonText={"View File"}
                 buttonTextColor={"black"}
                 buttonIcon={FaRegFolder}
-                onClickFunction={navigateHome}
+                filePath={outputLocation}
               />
             </div>
 

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, ipcMain } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -47,7 +47,7 @@ async function showSingleDialog(dialogOptions) {
   });
 }
 
-// Handle file dialog from renderer
+// Handle open File Explorer for Video Files
 ipcMain.handle('dialog:openFilePath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],
@@ -62,7 +62,7 @@ ipcMain.handle('dialog:openFilePath', async () => {
   }
 });
 
-// Handle file dialog from renderer
+// Handle file File Explorer for Encrypted Video Files
 ipcMain.handle('dialog:openEncryptedFilePath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],
@@ -77,7 +77,7 @@ ipcMain.handle('dialog:openEncryptedFilePath', async () => {
   }
 });
 
-// Handle file dialog from renderer
+// Handle file File Explorer for Key Files
 ipcMain.handle('dialog:openHashKeyPath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
     properties: ['openFile'],
@@ -92,7 +92,7 @@ ipcMain.handle('dialog:openHashKeyPath', async () => {
   }
 });
 
-// Handle file dialog from renderer
+// Handle file File Explorer for Destination Location
 ipcMain.handle('dialog:openFolder', async () => {
   const { canceled, filePaths } = await showSingleDialog({
     properties: ['openDirectory'],
@@ -104,6 +104,7 @@ ipcMain.handle('dialog:openFolder', async () => {
   }
 });
 
+// Handle file path checking
 ipcMain.handle('dialog:checkFilePath', (event, filePath) => {
   try {
     const normalizedPath = path.normalize(filePath); // Normalize the path
@@ -113,6 +114,25 @@ ipcMain.handle('dialog:checkFilePath', (event, filePath) => {
     }
     return false;
   } catch (err) {
+    return false;
+  }
+});
+
+// Handle directory location opening
+ipcMain.handle('dialog:openFileLocation', (event, filePath) => {
+  try {
+    const normalizedPath = path.normalize(filePath);
+    if (fs.existsSync(normalizedPath)) {
+      const stat = fs.lstatSync(normalizedPath);
+      if (stat.isFile()) {
+        const dirPath = path.dirname(normalizedPath);
+        shell.openPath(dirPath);
+        return true;
+      }
+    }
+    return false;
+  } catch (err) {
+    console.error('Error opening file location:', err);
     return false;
   }
 });

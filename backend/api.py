@@ -25,13 +25,19 @@ class CryptoRequest(BaseModel):
 
 class CommandHandler:
     def __init__(self, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
+        # User Inputs
         self.algorithm = algorithm
         self.filepath = filepath
         self.password = password
         self.outputpath = outputpath
         self.hashpath = hashpath
+        
+        # Necessary variables for output
         self.base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
         self.inputfile_ext = os.path.splitext(os.path.basename(self.filepath))[1]
+        self.output_filepath = None
+        
+        # Subprocess
         self.process = None
 
     def _get_algorithm(self):
@@ -51,19 +57,19 @@ class CommandHandler:
 
         if process_type == "encrypt":
             if self.outputpath and self.outputpath.strip():
-                output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
+                self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
             else:
-                output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+                self.output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
 
-            command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
+            command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
         
         else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
-                output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
+                self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
             else:
-                output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
+                self.output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
 
-            command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"
+            command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"
         
         return command
 
@@ -99,7 +105,8 @@ class CommandHandler:
                     "status": "success",
                     "stdout": "\n".join(stdout_lines),
                     "stderr": "\n".join(stderr_lines),
-                    "inputfile": self.base_filename + self.inputfile_ext
+                    "inputfile": self.base_filename + self.inputfile_ext,
+                    "outputloc" : self.output_filepath
                 }
             else:
                 return {

@@ -5,5 +5,6 @@ contextBridge.exposeInMainWorld('electron', {
   openEncryptedFilePath: () => ipcRenderer.invoke('dialog:openEncryptedFilePath'),
   openHashKeyPath: () => ipcRenderer.invoke('dialog:openHashKeyPath'),
   openFolder: () => ipcRenderer.invoke('dialog:openFolder'),
-  checkFilePath: (filePath) => ipcRenderer.invoke('dialog:checkFilePath', filePath)
+  checkFilePath: (filePath) => ipcRenderer.invoke('dialog:checkFilePath', filePath),
+  openFileLocation: (filePath) => ipcRenderer.invoke('dialog:openFileLocation', filePath)
 });

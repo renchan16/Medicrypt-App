@@ -2,5 +2,8 @@
   "dependencies": {
     "framer-motion": "^11.6.0",
     "react-spinners": "^0.14.1"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
   }
 }

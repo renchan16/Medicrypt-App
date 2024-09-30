@@ -1,14 +1,18 @@
 from dataclasses import field
+from difflib import diff_bytes
+from _3d_cosine import Encrypt_cosine
 from correlation import Correlation
 from differential import Differential
 from fisher_yates import Encrypt
 from other import EncryptionQuality
-import numpy
+import numpy as np
 import csv
 import cv2
 import sys
 import argparse
 import pathlib
+import math
+import text_file_encryption as tfe
 
 
 def main():
@@ -16,10 +20,13 @@ def main():
     parser = argparse.ArgumentParser(description='For analysis purposes')
 
     parser.add_argument('-m', "--mode", type=str, choices=['correlational', 'differential', 'entropy', 'psnr', 'all'], required=True)
+    parser.add_argument('-t', "--type", type=str, choices=['fisher-yates', '3d-cosine'], default='fisher-yates')
     parser.add_argument('-o', "--video", type=str)
     parser.add_argument('-e', "--encrypted", type=str)
     parser.add_argument('-d', "--decrypted", type=str)
     parser.add_argument('-w', "--writepath", type=str)
+    parser.add_argument('-k', "--key", type=str)
+    parser.add_argument('-p', '--password', type=str)
     parser.add_argument('-s', "--samples", type=int, default=1000)
     parser.add_argument('-f', "--frames", type=int, default=50)
 
@@ -30,7 +37,7 @@ def main():
     differential_field = ["NPCR", "UACI"]
     psnr_field = ["MSE", "PSNR"]
 
-    fields = ["frame"]
+    fields = ["Frame"]
     
     if args.mode == 'correlational':
         fields.append(cc_field)
@@ -39,7 +46,7 @@ def main():
     elif args.mode == 'entropy':
         fields.append(entropy_field)
     elif args.mode == 'psnr':
-        fields.append(psnr_field)
+        fields += psnr_field
     elif args.mode == 'all':
         fields.append(cc_field)
         fields.append(differential_field)
@@ -49,82 +56,101 @@ def main():
     #initializes csv file
 
     with open(args.writepath, 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fields)
-        writer.writeheader()
 
-        enc = Encrypt()
-        corr = Correlation()
-        diff = Differential()
-        enc_quality = EncryptionQuality()
+        tfe.decryptFile(args.key, args.password)
 
-        cap = cv2.VideoCapture()
+        with open(args.key, 'r',  newline='') as keyfile:
+            try:
+                lines = keyfile.readlines()
+                writer = csv.DictWriter(csvfile, fieldnames=fields)
+                writer.writeheader()
 
+                #modules initialization
+                fish_enc = Encrypt()
+                cos_enc = Encrypt_cosine()
+                corr = Correlation()
+                diff = Differential()
+                enc_quality = EncryptionQuality()
 
+                requires_encrypted_list = ['differential', 'all']
 
-        if args.mode == 'correlational' or args.mode  == 'all':
-            cc_d = corr.get_corr_diag(args.video)
-            cc_h = corr.get_corr_horizontal(args.video)
-            cc_v = corr.get_corr_vertical(args.video)
-            
-            pass
-        elif args.mode  == 'differential'  or args.mode  == 'all':
+                #variable initialization
+                cap = None
+                cap_encrypted = None
+                cap_decrypted = None
 
-            pass
-        elif args.mode == 'entropy' or args.mode  == 'all':
-            pass
-        elif args.mode == 'psnr' or args.mode  == 'all':
-            pass
+                ret, frame = None, None
+                ret_e, frame_e = None, None
+                ret_d, frame_d = None, None
 
+                #Video Capture initialization
+                cap = cv2.VideoCapture(args.video, cv2.CAP_FFMPEG)
 
+                if args.encrypted != None:
+                    cap_encrypted = cv2.VideoCapture(args.encrypted, cv2.CAP_FFMPEG)
+                
+                if (args.mode == 'psnr' or args.mode == 'all') and args.decrypted != None:
+                    cap_decrypted = cv2.VideoCapture(args.decrypted, cv2.CAP_FFMPEG)
+                
 
-    with open('testcsv.csv', 'w', newline='') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fields)
-        writer.writeheader()
+                for i in range(args.frames):
+                    
+                    row_field = {"Frame": i}
+                    print(i)
+                    ret, frame = cap.read()
+                    
 
-        for i in range(n):
-            ret, frame = cap.read()
+                    if not ret:
+                        print("frame end")
+                        break
 
-            if not ret:
-                print("read done")
-                break
+                    if args.encrypted != None:
+                        ret_e, frame_e = cap_encrypted.read()
+                        
+                    if (args.mode == 'psnr' or args.mode == 'all'):
+                        if args.decrypted != None:
+                            ret_d, frame_d = cap_decrypted.read()
+                        else:
+                            if args.type == 'fisher-yates':
+                                frame_d = fish_enc.decryptFrame(frame_e, lines[i].rstrip())
+                            elif args.type == '3d-cosine':
+                                start_inx = i * 2
+                                perm_seed = float(lines[start_inx].rstrip())
+                                diff_seed = float(lines[start_inx + 1].rstrip())
+                                frame_d = cos_enc.decryptFrame(frame_e, perm_seed, diff_seed)
+                                print(frame_d.dtype)
+                                cv2.imshow('frame_e', frame_e)
+                                cv2.imshow('test', frame_d)
 
-            enc = Encrypt()
-            corr = Correlation()
-            diff = Differential()
-            enc_quality = EncryptionQuality()
-            
-            encrypted_frame, hash = enc.encryptFrame(frame.copy())
-            attacked_frame = diff.attack_pixel(frame.copy())
-            decrypted_frame = enc.decryptFrame(encrypted_frame, hash)
+                    if args.mode == 'correlational' or args.mode  == 'all':
+                        cc_d = np.array(corr.get_corr_diag(frame))
+                        cc_h = np.array(corr.get_corr_horizontal(frame))
+                        cc_v = np.array(corr.get_corr_vertical(frame))
 
-            frame_width_o = len(frame[0])
-            frame_length_o = len(frame)
-            frame_width_e = len(encrypted_frame[0])
-            frame_length_e = len(encrypted_frame)
+                        row_field["CC_d"] = np.mean(np.atanh(cc_d))
+                        row_field["CC_h"] = np.mean(np.atanh(cc_h))
+                        row_field["CC_v"] = np.mean(np.atanh(cc_v))
+                            
+                    elif args.mode  == 'differential'  or args.mode  == 'all':
 
-            corr_o = [corr.get_corr_diag(frame, 1000), corr.get_corr_horizontal(frame, 1000), corr.get_corr_vertical(frame, 100)]
-            corr_e = [corr.get_corr_diag(encrypted_frame, 1000), corr.get_corr_horizontal(encrypted_frame, 1000), corr.get_corr_vertical(encrypted_frame, 100)]
+                        attacked_frame = diff.attack_pixel(frame)
+                        
+                        npcr = np.mean(diff.get_npcr(frame_e, attacked_frame))
+                        uaci = np.mean(diff.get_uaci(frame_e, attacked_frame))
 
-            npcr_e = diff.get_npcr(encrypted_frame, attacked_frame, frame_width_e, frame_length_e)
-            uaci_e = diff.get_uaci(encrypted_frame, attacked_frame, frame_width_e, frame_length_e)
+                        row_field['NPCR'] = npcr
+                        row_field['UACI'] = uaci
+                        
+                    elif args.mode == 'entropy' or args.mode  == 'all':
+                        pass
+                    elif args.mode == 'psnr' or args.mode  == 'all': 
+                        row_field['PSNR'] = enc_quality.get_psnr(frame, frame_d)
 
-            B_o, G_o, R_o = cv2.split(frame.copy())
-            B_e, G_e, R_e = cv2.split(encrypted_frame)
-
-            entropy_o = [enc_quality.get_entropy(R_o).item(), enc_quality.get_entropy(G_o).item(), enc_quality.get_entropy(B_o).item(), enc_quality.get_entropy(frame).item()]
-            entropy_e = [enc_quality.get_entropy(R_e).item(), enc_quality.get_entropy(G_e).item(), enc_quality.get_entropy(B_e).item(), enc_quality.get_entropy(encrypted_frame).item()]
-
-            mse_o = enc_quality.get_mse(frame, decrypted_frame)
-            psnr_o = enc_quality.get_psnr(frame, decrypted_frame)
-
-            writer.writerow({'Frame': i, "CC_d": corr_o[0][0], "CC_h": corr_o[1][0], "CC_v": corr_o[2][0], 
-                                        "CC_d_e": corr_e[0][0], "CC_h_e": corr_e[1][0], "CC_v_e": corr_e[2][0], 
-                                        "Entropy(R)": entropy_o[0], "Entropy(G)": entropy_o[1], "Entropy(B)" : entropy_o[2], "Entropy(Combined)": entropy_o[3],
-                                        "Entropy_e(R)" : entropy_e[0], "Entropy_e(G)" : entropy_e[1], "Entropy_e(B)" : entropy_e[2], "Entropy(Combined)" : entropy_e[3],
-                                        "NPCR": npcr_e[0],"UACI" : uaci_e[0],
-                                        "MSE": mse_o, "PSNR": psnr_o})
-            
-
+                    writer.writerow(row_field)
+            except Exception as e:
+                tfe.encryptFile(args.key, args.password)
+                raise e
+            tfe.encryptFile(args.key, args.password)
 
 if __name__ == "__main__":
     main()

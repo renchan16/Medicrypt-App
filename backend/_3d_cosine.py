@@ -417,7 +417,8 @@ class Encrypt_cosine:
             per_frame_runtime.append(duration)
 
         # Generate Frame Selection sequence
-        FS = self.__frameSeqGen__(len(sorted_frames))
+        all_encrypted_frames = [f for f in os.listdir(temp_encryption_path) if f.endswith('.png')]
+        FS = self.__frameSeqGen__(len(all_encrypted_frames))
         if verbose: print("Frame Sequence has been generated")
 
         # Write to video writer with Frame Selection sequence

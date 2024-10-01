@@ -45,7 +45,7 @@ function ProcessingPage() {
         setProcessStatus(response.data['status']);
 
         if (response.data['status'] === "failure") {
-          setProcessDescription(ProcessErrorMessage(response.data['stdout']));
+          setProcessDescription(ProcessErrorMessage(response));
         } else {
           setInputFile(response.data['inputfile']);
           setOutputLocation(response.data['outputloc']);
@@ -63,9 +63,6 @@ function ProcessingPage() {
     try {
       const response = await axios.post('http://localhost:8000/halt_processing');
       console.log('Halt processing response:', response.data);
-      setIsProcessing(false);
-      setProcessStatus('halted');
-      setProcessDescription('Processing has been halted by user request.');
     } catch (error) {
       console.error('Error halting processing:', error);
     }
@@ -101,7 +98,7 @@ function ProcessingPage() {
 
         {/* Process Complete Section */}
         <div className={`${isProcessing ? 'hidden' : 'block'} w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
-          <h1 className="mb-4 text-4xl text-primary1 font-bold">{processType}ion {processStatus}!</h1>
+          <h1 className="mb-4 text-4xl text-primary1 font-bold">{processType}ion {processStatus === "success" ? "Complete" : "Failed"}!</h1>
 
           <ProcessAlert processStatus={processStatus}>
             <ProcessAlertTitle>{processStatus === "success" ? "Success" : "Error"}</ProcessAlertTitle>

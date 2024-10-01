@@ -96,7 +96,7 @@ function Decrypt() {
                   ref={fileInputRef}
                   componentHeader="Video File*"
                   placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
-                  defaultDisplayText="Must be a valid .avi video file path."  
+                  defaultDisplayText="Enter a valid .avi video file path."  
                   browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                   browseHandler={window.electron.openEncryptedFilePath}
                   onValueChange={setFilePath}
@@ -120,7 +120,7 @@ function Decrypt() {
                   ref={hashInputRef}
                   componentHeader="Hash Key File *"
                   placeholderText="C:\Users\YourUsername\Documents\HashKey.key..."
-                  defaultDisplayText="Must be a valid .key file path."  
+                  defaultDisplayText="Enter a valid .key file path."  
                   browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                   browseHandler={window.electron.openHashKeyPath}
                   onValueChange={setHashPath}
@@ -130,7 +130,7 @@ function Decrypt() {
                 <FilePathInput
                   ref={outputPathInputRef}
                   componentHeader="Decrypted Video File Destination"
-                  defaultDisplayText="Must be a valid directory path." 
+                  defaultDisplayText="Enter a valid directory path." 
                   placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
                   browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                   browseHandler={window.electron.openFolder}

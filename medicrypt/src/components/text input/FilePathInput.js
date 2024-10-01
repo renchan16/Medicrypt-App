@@ -1,5 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { ValidateFilePath } from "../../utils/FilePathValidator";
+import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
 const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired }, ref) => {
     const [path, setFilePath] = useState("");
@@ -83,7 +84,14 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                     {browseIcon}
                 </button>
             </div>
-            <p className={`mt-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>{inputMessage}</p>
+            <p className={`mt-1 flex items-center gap-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>
+                {isValidInput || isInitialLoad ? (
+                    <CiCircleInfo size={16} />
+                ) : (
+                    <CiCircleAlert size={16} />
+                )}
+                <span>{inputMessage}</span>
+            </p>
         </div>
     );
 });

@@ -95,7 +95,7 @@ function Encrypt() {
                   ref={fileInputRef}
                   componentHeader="Video File*"
                   placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
-                  defaultDisplayText="Must be a valid video file path." 
+                  defaultDisplayText="Enter a valid video file path." 
                   browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                   browseHandler={window.electron.openFilePath}
                   onValueChange={setFilePath}
@@ -106,7 +106,7 @@ function Encrypt() {
                   ref={passwordInputRef}
                   componentHeader="Hash Key Password*"
                   placeholderText="e.g. ILoveM3d!Crypt143"
-                  defaultDisplayText="Must have atleast 8 characters, an Uppercase Letter, a Lowercase Letter, a Digit, and a Special Character." 
+                  defaultDisplayText="Enter a password with atleast 8 characters, an Uppercase Letter, a Lowercase Letter, a Digit, and a Special Character." 
                   processType="Encrypt"
                   onValueChange={setPassword}
                   onValidityChange={setPasswordValidity}
@@ -119,7 +119,7 @@ function Encrypt() {
                   ref={outputPathInputRef}
                   componentHeader="Encrypted Video File Destination"
                   placeholderText="C:\Users\YourUsername\Documents\EncryptedVideoDest..." 
-                  defaultDisplayText="Must be a valid directory path." 
+                  defaultDisplayText="Enter a valid directory path." 
                   browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                   browseHandler={window.electron.openFolder}
                   onValueChange={setOutputPath}
@@ -130,7 +130,7 @@ function Encrypt() {
                   ref={hashInputRef}
                   componentHeader="Hash Key File Destination"
                   placeholderText="C:\Users\YourUsername\Documents\HashFolder..." 
-                  defaultDisplayText="Must be a valid directory path." 
+                  defaultDisplayText="Enter a valid directory path." 
                   browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                   browseHandler={window.electron.openFolder}
                   onValueChange={setHashPath}

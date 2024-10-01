@@ -1,6 +1,7 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
+import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
 const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange}, ref) => {
     const [isInputActive, setInputActive] = useState(false);
@@ -109,7 +110,14 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>
             </div>
-            <p className={`mt-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>{inputWarning}</p>
+            <p className={`mt-1 flex items-center gap-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>
+                {isValidInput || isInitialLoad ? (
+                    <CiCircleInfo size={16} />
+                ) : (
+                    <CiCircleAlert size={16} />
+                )}
+                <span>{inputWarning}</span>
+            </p>
         </div>
     );
 });

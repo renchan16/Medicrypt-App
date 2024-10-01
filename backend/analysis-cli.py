@@ -163,13 +163,28 @@ def main():
                 if args.encrypted != None:
                     B_e, G_e, R_e = cv2.split(frame_e.copy())
                     row_field['Entropy(B)_e'],  row_field['Entropy(G)_e'], row_field['Entropy(R)_e'], row_field["Entropy(Combined)_e"] = enc_quality.get_entropy(B_e), enc_quality.get_entropy(G_e), enc_quality.get_entropy(R_e), enc_quality.get_entropy(frame_e)
-                pass
+
+                    mean_field['Entropy(B)_e'] += [enc_quality.get_entropy(B_e)]
+                    mean_field['Entropy(G)_e'] += [enc_quality.get_entropy(G_e)]
+                    mean_field['Entropy(R)_e'] += [enc_quality.get_entropy(R_e)]
+                    mean_field['Entropy(Combined)_e'] += [enc_quality.get_entropy(frame_e)]
+
             if args.mode == 'psnr' or args.mode  == 'all':
                 row_field['MSE'] = enc_quality.get_mse(frame, frame_d)
                 row_field['PSNR'] = enc_quality.get_psnr(frame, frame_d)
-            writer.writerow(row_field)
-            csvfile.flush()
+
+                mean_field['MSE'] += [enc_quality.get_mse(frame, frame_d)]
+                mean_field['PSNR'] +=[enc_quality.get_psnr(frame, frame_d)]
             
+            writer.writerow(row_field)
+
+        for i in fields:
+            if i not in cc_field or i not in cc_field_e:
+                mean_field[i] = np.mean(np.array(mean_field[i]))
+
+            mean_field[i] = np.tanh(np.mean(np.array(mean_field[i])))
+
+        writer.writerow(mean_field)
 
 if __name__ == "__main__":
     main()

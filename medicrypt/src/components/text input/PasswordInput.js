@@ -47,6 +47,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
         handleInputValidation(e.target.value);
     };
     
+    // Handle validation of password inputs
     const handleInputValidation = (password) => {
         const validate = ValidatePassword(password);
         

@@ -40,11 +40,13 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
         onValueChange(e.target.value);
     };
 
+    // Handle the focus animation
     const handleFocus = () => {
         setInputActive(true);
         setFocus(!isFocused);
     }
 
+    // Handle the blur of the input
     const handleBlur = (e) => {
         setInitialLoad(false);
         setInputActive(path !== "");

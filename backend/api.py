@@ -1,9 +1,8 @@
 import os
 import signal
 import sys
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 import subprocess
 
 app = FastAPI()
@@ -15,13 +14,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-class CryptoRequest(BaseModel): 
-    algorithm: str
-    password: str
-    outputpath: str
-    filepath: str
-    hashpath: str
 
 class CommandHandler:
     def __init__(self, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
@@ -61,7 +53,7 @@ class CommandHandler:
             else:
                 self.output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
 
-            command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {key_file} -p {self.password}"
+            command = f"python medicrypt-cli.py encrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {key_file} -p {self.password} --verbose"
         
         else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
@@ -69,7 +61,7 @@ class CommandHandler:
             else:
                 self.output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
 
-            command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password}"
+            command = f"python medicrypt-cli.py decrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password} --verbose"
         
         return command
 
@@ -140,15 +132,35 @@ class CommandHandler:
 current_handler = None
 
 @app.post("/encrypt/processing")
-async def encrypt_video(request: CryptoRequest):
+async def encrypt_video(request: Request):
     global current_handler
-    current_handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, password=request.password, outputpath=request.outputpath, hashpath=request.hashpath)
+    body = await request.json()
+    
+    # Extract values from the body (manually handle any validation needed here)
+    algorithm = body.get("algorithm")
+    filepath = body.get("filepath")
+    password = body.get("password")
+    outputpath = body.get("outputpath")
+    hashpath = body.get("hashpath")
+    
+    # Initialize and process the encryption
+    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
     return current_handler.process_request(process_type="encrypt")
 
 @app.post("/decrypt/processing")
-async def decrypt_video(request: CryptoRequest):
+async def decrypt_video(request: Request):
     global current_handler
-    current_handler = CommandHandler(algorithm=request.algorithm, filepath=request.filepath, password=request.password, outputpath=request.outputpath, hashpath=request.hashpath)
+    body = await request.json()
+
+    # Extract values from the body (manually handle any validation needed here)
+    algorithm = body.get("algorithm")
+    filepath = body.get("filepath")
+    password = body.get("password")
+    outputpath = body.get("outputpath")
+    hashpath = body.get("hashpath")
+    
+    # Initialize and process the decryption
+    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
     return current_handler.process_request(process_type="decrypt")
 
 @app.post("/halt_processing")

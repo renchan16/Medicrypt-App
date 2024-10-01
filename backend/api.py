@@ -68,11 +68,7 @@ class CommandHandler:
     def _run_subprocess(self, command: str) -> dict:
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            # Use different process creation flags depending on the platform
-            if sys.platform.startswith('win'):
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
-            else:
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
+            self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
             
             stdout_lines = []
             stderr_lines = []

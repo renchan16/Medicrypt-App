@@ -54,7 +54,8 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     // Handles the checking of input validity.
     const handleInputValidation = async (filePath) => {
         const isValid = await ValidateFilePath(filePath, defaultDisplayText, isRequired);
-
+        
+        setInitialLoad(false);
         setInputValidity(isValid['inputValidity']);
         setInputMessage(isValid['inputMessage']);
     }

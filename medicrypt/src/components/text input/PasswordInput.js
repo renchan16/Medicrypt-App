@@ -49,6 +49,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
     const handleInputValidation = (password) => {
         const validate = ValidatePassword(password);
         
+        setInitialLoad(false);
         // Checks the validity of the password based on process type
         if(processType === "Encrypt"){
             if (password === null || password === "") {

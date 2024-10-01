@@ -51,7 +51,8 @@ function ProcessingPage() {
           setOutputLocation(response.data['outputloc']);
           setProcessDescription(`The ${response.data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
         }
-      } catch (error) {
+      } 
+      catch (error) {
         console.error(`${processType}ion error:`, error);
       }
     };
@@ -63,7 +64,9 @@ function ProcessingPage() {
     try {
       const response = await axios.post('http://localhost:8000/halt_processing');
       console.log('Halt processing response:', response.data);
-    } catch (error) {
+      setProcessDescription(ProcessErrorMessage(response));
+    } 
+    catch (error) {
       console.error('Error halting processing:', error);
     }
   };

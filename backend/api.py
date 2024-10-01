@@ -4,7 +4,7 @@ import io
 import asyncio
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fisher_yates import Encrypt as Encrypt_FY
+from fisher_yates import Encrypt as Encrypt_FYLog
 from _3d_cosine import Encrypt_cosine as Encrypt_3DCos
 from contextlib import redirect_stdout
 
@@ -57,7 +57,7 @@ class CommandHandler:
         
         # Initialize the appropriate encryption class
         if self.algorithm == "FY-Logistic":
-            self.encryption_instance = Encrypt_FY()
+            self.encryption_instance = Encrypt_FYLog()
         else:
             self.encryption_instance = Encrypt_3DCos()
 

@@ -4,6 +4,8 @@ import sys
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 import subprocess
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
 app = FastAPI()
 
@@ -14,6 +16,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Initialize ThreadPoolExecutor
+executor = ThreadPoolExecutor(max_workers=3)
 
 class CommandHandler:
     def __init__(self, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
@@ -68,11 +73,15 @@ class CommandHandler:
     def _run_subprocess(self, command: str) -> dict:
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
-            
+            # Use different process creation flags depending on the platform
+            if sys.platform.startswith('win'):
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+            else:
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid)
+
             stdout_lines = []
             stderr_lines = []
-
+    
             # Stream stdout
             for stdout_line in iter(self.process.stdout.readline, ""):
                 print(f"Output: {stdout_line.strip()}")
@@ -94,7 +103,7 @@ class CommandHandler:
                     "stdout": "\n".join(stdout_lines),
                     "stderr": "\n".join(stderr_lines),
                     "inputfile": self.base_filename + self.inputfile_ext,
-                    "outputloc" : self.output_filepath
+                    "outputloc": self.output_filepath
                 }
             else:
                 return {
@@ -117,7 +126,10 @@ class CommandHandler:
     def halt_process(self):
         if self.process and self.process.poll() is None:
             # Use different signals to terminate the process depending on the platform
-            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+            if sys.platform.startswith('win'):
+                self.process.send_signal(signal.CTRL_BREAK_EVENT)
+            else:
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
             return {"message": "Process halted successfully"}
         return {"message": "No active process to halt"}
 
@@ -136,9 +148,13 @@ async def encrypt_video(request: Request):
     outputpath = body.get("outputpath")
     hashpath = body.get("hashpath")
     
-    # Initialize and process the encryption
+    # Initialize the CommandHandler
     current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
-    return current_handler.process_request(process_type="encrypt")
+    
+    # Use the executor to run the process in a separate thread
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(executor, current_handler.process_request, "encrypt")
+    return result
 
 @app.post("/decrypt/processing")
 async def decrypt_video(request: Request):
@@ -152,9 +168,13 @@ async def decrypt_video(request: Request):
     outputpath = body.get("outputpath")
     hashpath = body.get("hashpath")
     
-    # Initialize and process the decryption
+    # Initialize the CommandHandler
     current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
-    return current_handler.process_request(process_type="decrypt")
+    
+    # Use the executor to run the process in a separate thread
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(executor, current_handler.process_request, "decrypt")
+    return result
 
 @app.post("/halt_processing")
 async def halt_processing():

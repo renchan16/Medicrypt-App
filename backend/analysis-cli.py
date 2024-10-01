@@ -179,10 +179,15 @@ def main():
             writer.writerow(row_field)
 
         for i in fields:
-            if i not in cc_field or i not in cc_field_e:
-                mean_field[i] = np.mean(np.array(mean_field[i]))
+            print(i)
+            if i == "Frame":
+                continue
+            if (i not in cc_field) and (i not in cc_field_e):
+                print("not cc")
+                mean_field[i] = np.mean(mean_field[i])
+                continue
 
-            mean_field[i] = np.tanh(np.mean(np.array(mean_field[i])))
+            mean_field[i] = np.tanh(np.mean(mean_field[i]))
 
         writer.writerow(mean_field)
 

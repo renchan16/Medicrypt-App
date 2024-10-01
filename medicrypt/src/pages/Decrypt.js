@@ -86,7 +86,7 @@ function Decrypt() {
             className='mt-4 mb-4' 
             componentHeader="Choose an Algorithm for Decryption" 
             optionOne="FY-Logistic" 
-            optionTwo="ILM-Cosine" 
+            optionTwo="3D-Cosine" 
             onValueChange={setAlgorithm}
             />
           <div className={`flex h-2/6 mb-8 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>

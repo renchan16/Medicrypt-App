@@ -121,10 +121,7 @@ class CommandHandler:
     def halt_process(self):
         if self.process and self.process.poll() is None:
             # Use different signals to terminate the process depending on the platform
-            if sys.platform.startswith('win'):
-                self.process.send_signal(signal.CTRL_BREAK_EVENT)
-            else:
-                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
             return {"message": "Process halted successfully"}
         return {"message": "No active process to halt"}
 

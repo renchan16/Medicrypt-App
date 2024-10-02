@@ -111,7 +111,7 @@ function ProcessingPage() {
         {/* Processing Loader */}
         <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
           {/* Centered Processing Content */}
-          <h1 className='mt-6 text-3xl font-bold text-black'>{processType}ing{dots}</h1>
+          <h1 className='mt-6 text-4xl font-bold text-black'>{processType}ing{dots}</h1>
           <div className="w-full h-60 flex flex-col items-center justify-center">
             <ClimbingBoxLoader color="#1D1B20" loading={true} size={20} />
             <p className="text-black mt-4">{currentProcess}</p>

@@ -45,7 +45,7 @@ class CommandHandler:
         """Internal method to map algorithm name to its corresponding CLI argument."""
         return "fisher-yates" if self.algorithm == "FY-Logistic" else "3d-cosine"
 
-    def _generate_command(self, process_type: str) -> str:
+    def _generate_command(self, process_type: str):
         """Generate the appropriate encryption or decryption command."""
         algorithm = self._get_algorithm()
         
@@ -64,8 +64,10 @@ class CommandHandler:
             key_file = os.path.join(self.hashpath, f"{self.base_filename}.key")
 
         else:
-            # Use the directory of the file and append the base filename with .key
             key_file = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
+
+        # Ensure the key file path is unique
+        key_file = get_unique_filepath(key_file)
 
         if process_type == "encrypt":
             # Determine output path for encrypted file

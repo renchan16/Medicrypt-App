@@ -49,26 +49,47 @@ class CommandHandler:
         """Generate the appropriate encryption or decryption command."""
         algorithm = self._get_algorithm()
         
+        # Helper function to check if the file exists and append a number if necessary
+        def get_unique_filepath(filepath):
+            base, ext = os.path.splitext(filepath)
+            counter = 1
+            new_filepath = filepath
+            while os.path.exists(new_filepath):
+                new_filepath = f"{base}({counter}){ext}"
+                counter += 1
+            return new_filepath
+
         # Handle hashpath only for encryption, and fall back to filepath's directory
         if self.hashpath and self.hashpath.strip():
             key_file = os.path.join(self.hashpath, f"{self.base_filename}.key")
+
         else:
             # Use the directory of the file and append the base filename with .key
             key_file = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
 
         if process_type == "encrypt":
+            # Determine output path for encrypted file
             if self.outputpath and self.outputpath.strip():
                 self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
+
             else:
                 self.output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+
+            # Ensure the output filepath is unique
+            self.output_filepath = get_unique_filepath(self.output_filepath)
 
             command = f"python -u medicrypt-cli.py encrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {key_file} -p {self.password} --verbose"
         
         else:  # Decrypt
+            # Determine output path for decrypted file
             if self.outputpath and self.outputpath.strip():
                 self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
+                
             else:
                 self.output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
+
+            # Ensure the output filepath is unique
+            self.output_filepath = get_unique_filepath(self.output_filepath)
 
             command = f"python -u medicrypt-cli.py decrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password} --verbose"
         

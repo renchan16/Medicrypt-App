@@ -21,7 +21,9 @@ function EvaluateEncrypt() {
         
         <div className='relative top-1/2 transform -translate-y-1/2'>
           <h1 className="mb-3 text-4xl font-bold text-primary1 ">Evaluate Encryption</h1>
-          
+          <div className='space-y-4'>
+            
+          </div>
         </div>
       </div>
     </div>

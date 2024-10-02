@@ -99,6 +99,10 @@ function ProcessingPage() {
     navigate(`/${processType.toLowerCase()}`);
   };
 
+  const navigateEvaluatePage = () => {
+    navigate(`/${processType.toLowerCase()}/evaluate`)
+  }
+
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6">
@@ -147,7 +151,7 @@ function ProcessingPage() {
                 hoverColor={"primary0"}
                 buttonTextColor={"white"}
                 buttonIcon={FiBarChart}
-                onClickFunction={navigateHome}
+                onClickFunction={navigateEvaluatePage}
               />
               <NavButton
                 className={`w-full h-12`}

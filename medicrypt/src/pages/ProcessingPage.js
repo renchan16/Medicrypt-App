@@ -4,7 +4,6 @@ import { FiBarChart } from "react-icons/fi";
 import { LuHome } from "react-icons/lu";
 import { FaRegFolder } from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
-import { VscDebugStop } from "react-icons/vsc";
 import { ClimbingBoxLoader } from 'react-spinners';
 import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from '../components/sections/ProcessAlert';
 import NavButton from '../components/buttons/NavButton';
@@ -20,6 +19,7 @@ function ProcessingPage() {
   
   const [inputFile, setInputFile] = useState("");
   const [isProcessing, setIsProcessing] = useState(true);
+  const [currentProcess, setCurrentProcess] = useState(false);
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
   const [outputLocation, setOutputLocation] = useState("");
@@ -38,23 +38,41 @@ function ProcessingPage() {
   useEffect(() => {
     const processData = async () => {
       try {
-        const response = await axios.post(`http://localhost:8000/${processType.toLowerCase()}/processing`, inputs);
+        const response = await axios.post(`http://localhost:8000/init_handler`, inputs);
         console.log(`${processType}ion response:`, response.data);
-
-        setIsProcessing(false);
-        setProcessStatus(response.data['status']);
-
-        if (response.data['status'] === "failure") {
-          setProcessDescription(ProcessErrorMessage(response));
-        } else {
-          setInputFile(response.data['inputfile']);
-          setOutputLocation(response.data['outputloc']);
-          setProcessDescription(`The ${response.data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
-        }
       } 
       catch (error) {
         console.error(`${processType}ion error:`, error);
       }
+
+      const eventSource = new EventSource(`http://localhost:8000/${processType.toLowerCase()}/processing`);
+
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Event data:', data);
+
+        setCurrentProcess(data['stdout']); 
+
+        if (data['status'].trim() === "success" || data['status'].trim() === "failure"){
+          setIsProcessing(false);
+          setProcessStatus(data['status']);
+          if (data['status'] === "failure") {
+            setProcessDescription(ProcessErrorMessage(data));
+          } 
+          else {
+            setInputFile(data['inputfile']);
+            setOutputLocation(data['outputloc']);
+            setProcessDescription(`The ${data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
+          }
+          eventSource.close();
+        }
+      };
+
+      eventSource.onerror = () => {
+        console.error('EventSource error');
+        eventSource.close(); // Close the connection on error
+        setIsProcessing(false);
+      };
     };
 
     processData();
@@ -63,8 +81,10 @@ function ProcessingPage() {
   const haltProcessing = async () => {
     try {
       const response = await axios.post('http://localhost:8000/halt_processing');
-      console.log('Halt processing response:', response.data);
-      setProcessDescription(ProcessErrorMessage(response));
+      console.log(`${processType}ion response:`, response.data);
+      setProcessStatus(response.data['status']);
+      setProcessDescription(ProcessErrorMessage(response.data))
+      setIsProcessing(false);
     } 
     catch (error) {
       console.error('Error halting processing:', error);
@@ -85,18 +105,23 @@ function ProcessingPage() {
         <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
         
         {/* Processing Loader */}
-        <div className={`${isProcessing ? 'block' : 'hidden'} absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 flex flex-col items-center justify-center`}>
-          <ClimbingBoxLoader className='' color="#1D1B20" loading={true} size={20} />
-          <p className='mt-6 text-2xl font-bold text-black'>{processType}ing{dots}</p>
+        <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
+          {/* Centered Processing Content */}
+          <h1 className='mt-6 text-3xl font-bold text-black'>{processType}ing{dots}</h1>
+          <div className="w-full h-60 flex flex-col items-center justify-center">
+            <ClimbingBoxLoader color="#1D1B20" loading={true} size={20} />
+            <p className="text-black mt-4">{currentProcess}</p>
+          </div>
+
+          {/* Stop Processing Button */}
           <NavButton
-            className="mt-4 w-full h-12"
+            className="w-60 h-12 rounded-lg"
             buttonText="Stop Processing"
             buttonColor="primary1"
             hoverColor="primary0"
             buttonTextColor="white"
-            buttonIcon={VscDebugStop}
             onClickFunction={haltProcessing}
-            />
+          />
         </div>
 
         {/* Process Complete Section */}

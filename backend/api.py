@@ -3,9 +3,11 @@ import signal
 import sys
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
 import asyncio
+import json
 
 app = FastAPI()
 
@@ -36,6 +38,9 @@ class CommandHandler:
         
         # Subprocess
         self.process = None
+
+        # Flags
+        self.is_halted = False
 
     def _get_algorithm(self):
         """Internal method to map algorithm name to its corresponding CLI argument."""
@@ -70,7 +75,7 @@ class CommandHandler:
         
         return command
 
-    def _run_subprocess(self, command: str) -> dict:
+    def _run_subprocess(self, command: str):
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
             # Use different process creation flags depending on the platform
@@ -84,44 +89,44 @@ class CommandHandler:
     
             # Stream stdout
             for stdout_line in iter(self.process.stdout.readline, ""):
-                print(f"Output: {stdout_line.strip()}")
+                yield f"data: {json.dumps({'stdout': stdout_line.strip(), 'status': 'processing'})}\n\n"
                 stdout_lines.append(stdout_line.strip())
 
             # Stream stderr
             for stderr_line in iter(self.process.stderr.readline, ""):
-                print(f"Error: {stderr_line.strip()}")
+                yield f"data: {json.dumps({'stderr': stderr_line.strip(), 'status': 'processing'})}\n\n"
                 stderr_lines.append(stderr_line.strip())
 
             self.process.stdout.close()
             self.process.stderr.close()
             self.process.wait()
 
+            stdout_str = "\n".join(stdout_lines)
+            stderr_str = "\n".join(stderr_lines)
+            inputfile = self.base_filename + self.inputfile_ext
+            outputloc = self.output_filepath
+
             if self.process.returncode == 0:
-                return {
-                    "message": "Process completed",
-                    "status": "success",
-                    "stdout": "\n".join(stdout_lines),
-                    "stderr": "\n".join(stderr_lines),
-                    "inputfile": self.base_filename + self.inputfile_ext,
-                    "outputloc": self.output_filepath
-                }
+                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'inputfile': inputfile, 'outputloc': outputloc})}\n\n"
+                
             else:
-                return {
-                    "message": "Process encountered an issue",
-                    "status": "failure",
-                    "stdout": "\n".join(stdout_lines),
-                    "stderr": "\n".join(stderr_lines),
-                    "inputfile": self.base_filename + self.inputfile_ext
-                }
+                if self.is_halted:
+                    yield f"data: {json.dumps({'message': 'Process halted by user request.', 'status': 'failure', 'stdout': 'HALTED', 'stderr': stderr_str})}\n\n"
+
+                else:
+                    yield f"data: {json.dumps({'message': 'Process encountered an issue', 'status': 'failure', 'stdout': stdout_str, 'stderr': stderr_str})}\n\n"
             
         except Exception as e:
             print(f"Subprocess error: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
 
-    def process_request(self, process_type: str) -> dict:
+    def process_request(self, process_type: str):
         """Handle the complete request for encryption or decryption."""
         command = self._generate_command(process_type)
-        return self._run_subprocess(command)
+        subprocess = self._run_subprocess(command)
+
+        for out in subprocess:
+            yield out
 
     def halt_process(self):
         if self.process and self.process.poll() is None:
@@ -130,51 +135,57 @@ class CommandHandler:
                 self.process.send_signal(signal.CTRL_BREAK_EVENT)
             else:
                 os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
-            return {"message": "Process halted successfully"}
+                
+            self.is_halted = True
+            return { "message": "Process halted successfully" }
         return {"message": "No active process to halt"}
+
+    def test_func():
+        yield "data: TEST\n\n"
 
 # Global variable to store the current CommandHandler instance
 current_handler = None
 
-@app.post("/encrypt/processing")
+@app.post("/init_handler")
+async def init_handler(request: Request):
+    global current_handler
+    body = await request.json()
+
+    # Extract values from the body
+    algorithm = body.get("algorithm")
+    filepath = body.get("filepath")
+    password = body.get("password")
+    outputpath = body.get("outputpath")
+    hashpath = body.get("hashpath")
+    
+    # Initialize the CommandHandler
+    current_handler = CommandHandler(
+        algorithm=algorithm,
+        filepath=filepath,
+        password=password,
+        outputpath=outputpath,
+        hashpath=hashpath
+    )
+    
+    return {"message": "Handler initialized successfully"}
+
+@app.get("/encrypt/processing")
 async def encrypt_video(request: Request):
     global current_handler
-    body = await request.json()
-    
-    # Extract values from the body (manually handle any validation needed here)
-    algorithm = body.get("algorithm")
-    filepath = body.get("filepath")
-    password = body.get("password")
-    outputpath = body.get("outputpath")
-    hashpath = body.get("hashpath")
-    
-    # Initialize the CommandHandler
-    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
-    
-    # Use the executor to run the process in a separate thread
-    loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(executor, current_handler.process_request, "encrypt")
-    return result
+    if not current_handler:
+        raise HTTPException(status_code=400, detail="Handler not initialized.")
 
-@app.post("/decrypt/processing")
+    # Use the executor to run the process in a separate thread
+    return StreamingResponse(current_handler.process_request("encrypt"), media_type="text/event-stream")
+
+@app.get("/decrypt/processing")
 async def decrypt_video(request: Request):
     global current_handler
-    body = await request.json()
-
-    # Extract values from the body (manually handle any validation needed here)
-    algorithm = body.get("algorithm")
-    filepath = body.get("filepath")
-    password = body.get("password")
-    outputpath = body.get("outputpath")
-    hashpath = body.get("hashpath")
-    
-    # Initialize the CommandHandler
-    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
+    if not current_handler:
+        raise HTTPException(status_code=400, detail="Handler not initialized.")
     
     # Use the executor to run the process in a separate thread
-    loop = asyncio.get_event_loop()
-    result = await loop.run_in_executor(executor, current_handler.process_request, "decrypt")
-    return result
+    return StreamingResponse(current_handler.process_request("decrypt"), media_type="text/event-stream")
 
 @app.post("/halt_processing")
 async def halt_processing():

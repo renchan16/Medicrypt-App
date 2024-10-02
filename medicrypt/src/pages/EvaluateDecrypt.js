@@ -32,7 +32,7 @@ function EvaluateDecrypt() {
         <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
         
         <div className='relative top-1/2 transform -translate-y-1/2'>
-          <h1 className="mb-3 text-4xl font-bold text-primary1 ">Evaluate Decryption</h1>
+          <h1 className="mb-4 text-4xl font-bold text-primary1 ">Evaluate Decryption</h1>
           <p className='mb-4 text-sm italic text-primary1 text-justify'>This page serves as a tool to help identify the performance metrics of the decryption process including the PSNR and Decryption Time.</p>
           <div className='space-y-4'>
             <FilePathInput 
@@ -58,8 +58,9 @@ function EvaluateDecrypt() {
               isRequired={true}
               />
             <ProcessButton
-              className={`right-0`}
+              className={`relative right-0`}
               buttonText="EVALUATE"
+              buttonSize='w-full h-14'
               isEnabled={true}
               />
           </div>

@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 import subprocess
 from concurrent.futures import ThreadPoolExecutor
-import asyncio
 import json
 
 app = FastAPI()

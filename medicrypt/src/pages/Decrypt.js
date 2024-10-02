@@ -81,7 +81,7 @@ function Decrypt() {
         <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
 
         <div className='relative top-1/2 transform -translate-y-1/2'>
-          <h1 className="mb-3 text-3xl font-bold text-primary1 ">Decrypt a Video</h1>
+          <h1 className="mb-3 text-4xl font-bold text-primary1 ">Decrypt a Video</h1>
           <AlgorithmSelector
             className='mt-4 mb-4' 
             componentHeader="Choose an Algorithm for Decryption" 

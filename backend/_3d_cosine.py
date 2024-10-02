@@ -17,7 +17,6 @@ class Encrypt_cosine:
         self.o = 34.2  # omega > 33.5
         self.t = 38.23  # theta > 37.9
         self.k = 36.79  # kappa > 35.7
-        self.cancelled = False
 
     def __frameGen__(self, filepath, temp_path, preserveColor=False):
         if not os.path.isdir(temp_path):
@@ -396,9 +395,6 @@ class Encrypt_cosine:
         for count, curr_frame in enumerate(sorted_frames):
             start = time.time()
 
-            if self.cancelled:
-                break
-
             frame_name = os.path.join(temp_path, curr_frame)
 
             frame = cv2.imread(frame_name)
@@ -508,9 +504,6 @@ class Encrypt_cosine:
         for inx, curr_frame in enumerate(new_sorted_frames):
             start = time.time()
 
-            if self.cancelled:
-                break
-
             frame_name = os.path.join(temp_fs_path, curr_frame)
 
             frame = cv2.imread(frame_name)
@@ -544,10 +537,6 @@ class Encrypt_cosine:
             warnings.warn(text_warn, Warning)
 
         return per_frame_runtime
-
-    def cancel(self):
-        """Method to set the cancellation flag."""
-        self.cancelled = True
 
 if __name__ == '__main__':
     e = Encrypt_cosine()

@@ -12,7 +12,6 @@ class Encrypt:
         self.num_rows = 0
         self.num_cols = 0
         self.num_channels = 3
-        self.cancelled = False
 
     def hashArray(self, array):
         hash = hashlib.sha512(array.tobytes()).hexdigest()
@@ -261,9 +260,6 @@ class Encrypt:
             if not grabbed:
                 break
 
-            if self.cancelled:
-                break
-
             if verbose: print(f"[Frame {count}] Encrypting Frame")
             diffuse_pixels, hashed = self.encryptFrame(frame, verbose)
             if verbose: print(f"[Frame {count}]  Frame Encrypted")
@@ -331,9 +327,6 @@ class Encrypt:
             if not grabbed:
                 break
 
-            if self.cancelled:
-                break
-
             if verbose: print(f"[Frame {count}] Grabbing the Hash for Frame {count}")
             hashed = lines[hash_line].rstrip()
 
@@ -359,7 +352,3 @@ class Encrypt:
         hash_file.close()  # finally, close the file
 
         return per_frame_runtime
-
-    def cancel(self):
-        """Method to set the cancellation flag."""
-        self.cancelled = True

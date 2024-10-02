@@ -1,12 +1,11 @@
 import os
+import signal
 import sys
-import io
-import asyncio
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fisher_yates import Encrypt as Encrypt_FYLog
-from _3d_cosine import Encrypt_cosine as Encrypt_3DCos
-from contextlib import redirect_stdout
+import subprocess
+from concurrent.futures import ThreadPoolExecutor
+import asyncio
 
 app = FastAPI()
 
@@ -18,31 +17,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class CaptureOutput:
-    def __init__(self):
-        self._output = io.StringIO()
-
-    def __enter__(self):
-        self._original_stdout = sys.stdout  # Save original stdout
-        sys.stdout = self._output  # Redirect stdout to the StringIO object
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        sys.stdout = self._original_stdout  # Restore original stdout
-
-    def get_output(self):
-        # Get the captured output
-        output = self._output.getvalue()
-        
-        # Check if there is only one line in the output
-        if output.count('\n') <= 1: 
-            return output.replace("\n", "")  
-        return output  
+# Initialize ThreadPoolExecutor
+executor = ThreadPoolExecutor(max_workers=3)
 
 class CommandHandler:
-    def __init__(self, process_type: str, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
+    def __init__(self, algorithm: str, filepath: str, password: str, outputpath: str, hashpath: str):
         # User Inputs
-        self.process_type = process_type
         self.algorithm = algorithm
         self.filepath = filepath
         self.password = password
@@ -52,129 +32,106 @@ class CommandHandler:
         # Necessary variables for output
         self.base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
         self.inputfile_ext = os.path.splitext(os.path.basename(self.filepath))[1]
-        self.output_filepath = self._generate_output_path()
-        self.key_file = self._generate_key_file()
+        self.output_filepath = None
         
-        # Initialize the appropriate encryption class
-        if self.algorithm == "FY-Logistic":
-            self.encryption_instance = Encrypt_FYLog()
+        # Subprocess
+        self.process = None
+
+    def _get_algorithm(self):
+        """Internal method to map algorithm name to its corresponding CLI argument."""
+        return "fisher-yates" if self.algorithm == "FY-Logistic" else "3d-cosine"
+
+    def _generate_command(self, process_type: str) -> str:
+        """Generate the appropriate encryption or decryption command."""
+        algorithm = self._get_algorithm()
+        
+        # Handle hashpath only for encryption, and fall back to filepath's directory
+        if self.hashpath and self.hashpath.strip():
+            key_file = os.path.join(self.hashpath, f"{self.base_filename}.key")
         else:
-            self.encryption_instance = Encrypt_3DCos()
+            # Use the directory of the file and append the base filename with .key
+            key_file = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
 
-        # Async task for process management
-        self.process_task = None
-
-        self.stdout = None
-
-    def _generate_output_path(self):
-        """Generate output path based on process type."""
-        if self.process_type == "encrypt":
+        if process_type == "encrypt":
             if self.outputpath and self.outputpath.strip():
-                path = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
+                self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
             else:
-                path = self.filepath.replace(".mp4", "_encrypted.avi")
-        else:
+                self.output_filepath = self.filepath.replace(".mp4", "_encrypted.avi")
+
+            command = f"python -u medicrypt-cli.py encrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {key_file} -p {self.password} --verbose"
+        
+        else:  # Decrypt
             if self.outputpath and self.outputpath.strip():
-                path = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
+                self.output_filepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
             else:
-                path = self.filepath.replace(".avi", "_decrypted.avi")
-        
-        return path
-    
-    def _generate_key_file(self):
-        """Generate the key file path for encryption or decryption."""
-        if self.process_type == "encrypt":
-            if self.hashpath and self.hashpath.strip():
-                path = os.path.join(self.hashpath, f"{self.base_filename}.key")
-            else:
-                path = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
-        else:
-            if self.hashpath and self.hashpath.strip():
-                path = self.hashpath
-            else:
-                raise HTTPException(status_code=400, detail="Key file path is required for decryption")
-        
-        return path
+                self.output_filepath = self.filepath.replace(".avi", "_decrypted.avi")
 
-    async def _run_process(self):
-        """Run the encryption or decryption process asynchronously."""
-        output_capturer = CaptureOutput()  # Create an output capturer
-        with output_capturer:  # Use the context manager to capture stdout
-            try:
-                if self.process_type == "encrypt":
-                    await asyncio.to_thread(
-                        self.encryption_instance.encryptVideo,
-                        self.filepath,
-                        self.output_filepath,
-                        self.key_file,
-                        self.password,
-                        True  
-                    )
-                else:  # Decrypt
-                    await asyncio.to_thread(
-                        self.encryption_instance.decryptVideo,
-                        self.filepath,
-                        self.output_filepath,
-                        self.key_file,
-                        self.password,
-                        True  
-                    )
-            except Exception as e:
-                # If an error occurs, capture the output and re-raise the exception
-                captured_output = output_capturer.get_output()
-                raise HTTPException(status_code=500, detail=str(e), headers={"Output": captured_output})
+            command = f"python -u medicrypt-cli.py decrypt -i {self.filepath} -o {self.output_filepath} -t {algorithm} -k {self.hashpath} -p {self.password} --verbose"
+        
+        return command
 
-        captured_output = output_capturer.get_output() 
-        return captured_output
-    
-    async def process_request(self):
-        """Handle the encryption or decryption process asynchronously."""
+    def _run_subprocess(self, command: str) -> dict:
+        """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            self.process_task = asyncio.create_task(self._run_process())
-            self.stdout = await self.process_task  # Wait for the process to complete
+            # Use different process creation flags depending on the platform
+            if sys.platform.startswith('win'):
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+            else:
+                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, preexec_fn=os.setsid)
 
-            return {
-                "message": "Process completed",
-                "status": "success",
-                "inputfile": self.base_filename + self.inputfile_ext,
-                "outputloc": self.output_filepath,
-                "stdout": self.stdout  # Include captured output in the response
-            }
-            
-        except asyncio.CancelledError:
-            return {
-                "message": "Process was cancelled",
-                "status": "failure",
-            }
-            
-        except HTTPException as e:
-            # Return the captured output even if there's an exception
-            return {
-                "message": "Process failed",
-                "status": "failure",
-                "detail": str(e.detail),
-                "stdout": e.headers.get("Output", "")  # Include captured output in the response
-            }
+            stdout_lines = []
+            stderr_lines = []
+    
+            # Stream stdout
+            for stdout_line in iter(self.process.stdout.readline, ""):
+                print(f"Output: {stdout_line.strip()}")
+                stdout_lines.append(stdout_line.strip())
 
+            # Stream stderr
+            for stderr_line in iter(self.process.stderr.readline, ""):
+                print(f"Error: {stderr_line.strip()}")
+                stderr_lines.append(stderr_line.strip())
+
+            self.process.stdout.close()
+            self.process.stderr.close()
+            self.process.wait()
+
+            if self.process.returncode == 0:
+                return {
+                    "message": "Process completed",
+                    "status": "success",
+                    "stdout": "\n".join(stdout_lines),
+                    "stderr": "\n".join(stderr_lines),
+                    "inputfile": self.base_filename + self.inputfile_ext,
+                    "outputloc": self.output_filepath
+                }
+            else:
+                return {
+                    "message": "Process encountered an issue",
+                    "status": "failure",
+                    "stdout": "\n".join(stdout_lines),
+                    "stderr": "\n".join(stderr_lines),
+                    "inputfile": self.base_filename + self.inputfile_ext
+                }
+            
         except Exception as e:
-            print(self.stdout)
+            print(f"Subprocess error: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
 
-    async def halt_process(self):
-        """Implement halting logic for asynchronous process."""
-        if self.process_task and not self.process_task.done():
-            self.process_task.cancel()  # Cancel the async task
-            self.encryption_instance.cancel()
-            try:
-                await self.process_task  # Wait for cancellation
-            except asyncio.CancelledError:
-                return {
-                    "message": "Process was halted",
-                    "status": "failure",
-                    "stdout": "HALTED"
-                }
-        
-        return {"message": "No process to halt"}
+    def process_request(self, process_type: str) -> dict:
+        """Handle the complete request for encryption or decryption."""
+        command = self._generate_command(process_type)
+        return self._run_subprocess(command)
+
+    def halt_process(self):
+        if self.process and self.process.poll() is None:
+            # Use different signals to terminate the process depending on the platform
+            if sys.platform.startswith('win'):
+                self.process.send_signal(signal.CTRL_BREAK_EVENT)
+            else:
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+            return {"message": "Process halted successfully"}
+        return {"message": "No active process to halt"}
 
 # Global variable to store the current CommandHandler instance
 current_handler = None
@@ -184,7 +141,7 @@ async def encrypt_video(request: Request):
     global current_handler
     body = await request.json()
     
-    # Extract values from the body
+    # Extract values from the body (manually handle any validation needed here)
     algorithm = body.get("algorithm")
     filepath = body.get("filepath")
     password = body.get("password")
@@ -192,17 +149,19 @@ async def encrypt_video(request: Request):
     hashpath = body.get("hashpath")
     
     # Initialize the CommandHandler
-    current_handler = CommandHandler(process_type="encrypt", algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
+    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
     
-    # Run the process asynchronously
-    return await current_handler.process_request()
+    # Use the executor to run the process in a separate thread
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(executor, current_handler.process_request, "encrypt")
+    return result
 
 @app.post("/decrypt/processing")
 async def decrypt_video(request: Request):
     global current_handler
     body = await request.json()
 
-    # Extract values from the body
+    # Extract values from the body (manually handle any validation needed here)
     algorithm = body.get("algorithm")
     filepath = body.get("filepath")
     password = body.get("password")
@@ -210,15 +169,16 @@ async def decrypt_video(request: Request):
     hashpath = body.get("hashpath")
     
     # Initialize the CommandHandler
-    current_handler = CommandHandler(process_type="decrypt", algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
+    current_handler = CommandHandler(algorithm=algorithm, filepath=filepath, password=password, outputpath=outputpath, hashpath=hashpath)
     
-    # Run the process asynchronously
-    return await current_handler.process_request()
+    # Use the executor to run the process in a separate thread
+    loop = asyncio.get_event_loop()
+    result = await loop.run_in_executor(executor, current_handler.process_request, "decrypt")
+    return result
 
 @app.post("/halt_processing")
 async def halt_processing():
     global current_handler
     if current_handler:
-        print(current_handler.process_type)
-        return await current_handler.halt_process()
+        return current_handler.halt_process()
     return {"message": "No active process to halt"}

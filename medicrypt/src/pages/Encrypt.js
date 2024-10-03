@@ -142,13 +142,15 @@ function Encrypt() {
           </div>
           <div className='flex justify-between'>
             <ProcessButton
+              className={`w-56 h-14`}
               buttonText="BACK"
               buttonIcon={MdNavigateBefore}
               iconLocation='left'
               isEnabled={showAdditionalFields ? true : false}
               onClickFunction={showPreviousFields}
               />
-            <ProcessButton 
+            <ProcessButton
+              className={`w-56 h-14`} 
               buttonText={`${showAdditionalFields ? "ENCRYPT" : "NEXT" }`}
               buttonIcon={showAdditionalFields ? FaUnlock : MdNavigateNext }
               iconLocation={showAdditionalFields ? 'left' : 'right' }

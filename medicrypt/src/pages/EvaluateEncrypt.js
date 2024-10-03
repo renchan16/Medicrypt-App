@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
 import FilePathInput from '../components/text input/FilePathInput';
@@ -9,11 +9,29 @@ import { FaFolder } from 'react-icons/fa6';
 
 function EvaluateEncrypt() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { data } = location.state || {};
   
+  let encryptedFileLocation= data['outputLocation']
+  let timeFileLocation = data['timeFileLocation']
+
   const [outputpath, setOutputPath] = useState("");
   const [isOutputPathValid, setOutputPathValidity] = useState(true);
-  
+
   const csvLocationRef = useRef(null);
+  
+  const processInputData = () => {
+    csvLocationRef.current.validate();
+    
+    if (isOutputPathValid) {
+      navigate('/encrypt/evaluating', {
+        state : {
+          processType: 'Encrypt',
+          inputs : { encryptedFileLocation, timeFileLocation, outputpath }
+        }
+      });
+    }
+  }
 
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
@@ -43,10 +61,10 @@ function EvaluateEncrypt() {
               isRequired={true}
               />
             <ProcessButton
-              className={`relative right-0`}
+              className={`relative right-0 w-full h-14`}
               buttonText="EVALUATE"
-              buttonSize='w-full h-14'
               isEnabled={true}
+              onClickFunction={processInputData}
               />
           </div>
         </div>

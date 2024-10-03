@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
 import logo from '../assets/MedicryptLogo.png';
 import FilePathInput from '../components/text input/FilePathInput';
@@ -10,6 +10,10 @@ import { FaFolder } from 'react-icons/fa6';
 
 function EvaluateDecrypt() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { data } = location.state || {};
+
+  let timeFileLocation = data['timeFileLocation']
 
   const fileInputRef = useRef(null);
   const csvLocationRef = useRef(null);
@@ -19,6 +23,20 @@ function EvaluateDecrypt() {
   const [outputpath, setOutputPath] = useState("");
   const [isOutputPathValid, setOutputPathValidity] = useState(true);
   
+  const processInputData = () => {
+    csvLocationRef.current.validate();
+    fileInputRef.current.validate();
+    
+    if (isFilePathValid && isOutputPathValid) {
+      navigate('/encrypt/evaluating', {
+        state : {
+          processType: 'Decrypt',
+          inputs : { timeFileLocation, filepath, outputpath }
+        }
+      });
+    }
+  }
+
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
@@ -58,10 +76,11 @@ function EvaluateDecrypt() {
               isRequired={true}
               />
             <ProcessButton
-              className={`relative right-0`}
+              className={`relative right-0 w-full h-14`}
               buttonText="EVALUATE"
               buttonSize='w-full h-14'
               isEnabled={true}
+              onClickFunction={processInputData}
               />
           </div>
         </div>

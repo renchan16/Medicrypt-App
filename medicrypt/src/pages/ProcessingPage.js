@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FiBarChart } from "react-icons/fi";
-import { LuHome } from "react-icons/lu";
-import { FaRegFolder } from "react-icons/fa";
-import { TbReload } from "react-icons/tb";
 import { ClimbingBoxLoader } from 'react-spinners';
-import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from '../components/sections/ProcessAlert';
+import ProcessComplete from '../components/sections/ProcessComplete';
 import NavButton from '../components/buttons/NavButton';
 import '../pages-css/General.css';
 import axios from 'axios';
@@ -23,6 +19,7 @@ function ProcessingPage() {
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
   const [outputLocation, setOutputLocation] = useState("");
+  const [timeFileLocation, setTimeFileLocation] = useState("");
   const [dots, setDots] = useState(''); 
 
   // Simulate loading text ellipsis effect
@@ -38,7 +35,7 @@ function ProcessingPage() {
   useEffect(() => {
     const processData = async () => {
       try {
-        const response = await axios.post(`http://localhost:8000/init_handler`, inputs);
+        const response = await axios.post(`http://localhost:8000/init_encryption_handler`, inputs);
         console.log(`${processType}ion response:`, response.data);
       } 
       catch (error) {
@@ -62,6 +59,7 @@ function ProcessingPage() {
           else {
             setInputFile(data['inputfile']);
             setOutputLocation(data['outputloc']);
+            setTimeFileLocation(data['timefileloc']);
             setProcessDescription(`The ${data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
           }
           eventSource.close();
@@ -100,7 +98,16 @@ function ProcessingPage() {
   };
 
   const navigateEvaluatePage = () => {
-    navigate(`/${processType.toLowerCase()}/evaluate`)
+    if (processType === "Encrypt"){
+      navigate(`/${processType.toLowerCase()}/evaluate`, {
+        state: { data: { outputLocation, timeFileLocation } }
+      });
+    }
+    else {
+      navigate(`/${processType.toLowerCase()}/evaluate`, {
+        state: { data: { timeFileLocation } }
+      });
+    }
   }
 
   return (
@@ -128,65 +135,18 @@ function ProcessingPage() {
           />
         </div>
 
-        {/* Process Complete Section */}
-        <div className={`${isProcessing ? 'hidden' : 'block'} w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
-          <h1 className="mb-4 text-4xl text-primary1 font-bold">{processType}ion {processStatus === "success" ? "Complete" : "Failed"}!</h1>
-
-          <ProcessAlert processStatus={processStatus}>
-            <ProcessAlertTitle>{processStatus === "success" ? "Success" : "Error"}</ProcessAlertTitle>
-            <ProcessAlertDescription>{processDescription}</ProcessAlertDescription>
-          </ProcessAlert>
-
-          <p className="text-sm text-gray-600">
-            File processed: <span className="font-medium">{inputFile !== "" ? inputFile : "None"}</span>
-          </p>
-
-          <div className="flex flex-col gap-4">
-            {/* Success Actions */}
-            <div className={`${processStatus === "success" ? 'block' : 'hidden'} flex flex-shrink-0 gap-4`}>
-              <NavButton
-                className={`w-full h-12`}
-                buttonText={`Evaluate ${processType}ion`}
-                buttonColor={"primary1"}
-                hoverColor={"primary0"}
-                buttonTextColor={"white"}
-                buttonIcon={FiBarChart}
-                onClickFunction={navigateEvaluatePage}
-              />
-              <NavButton
-                className={`w-full h-12`}
-                buttonColor={"primary2"}
-                buttonText={"View File"}
-                buttonTextColor={"black"}
-                buttonIcon={FaRegFolder}
-                filePath={outputLocation}
-              />
-            </div>
-
-            {/* Error Action (Try Again) */}
-            <div className={`${processStatus === "success" ? 'hidden' : 'block'} flex flex-shrink-0 gap-4`}>
-              <NavButton
-                className={`w-full h-12`}
-                buttonText={`Try Again`}
-                buttonColor={"primary1"}
-                hoverColor={"primary0"}
-                buttonTextColor={"white"}
-                buttonIcon={TbReload}
-                onClickFunction={navigateProcessPage}
-              />
-            </div>
-
-            {/* Return Home */}
-            <NavButton
-              className={`w-full h-12`}
-              buttonText={"Return Home"}
-              buttonColor={"primary2"}
-              buttonTextColor={"black"}
-              buttonIcon={LuHome}
-              onClickFunction={navigateHome}
-            />
-          </div>
-        </div>
+        {!isProcessing && (
+          <ProcessComplete
+            processType={processType}
+            processStatus={processStatus}
+            processDescription={processDescription}
+            inputFile={inputFile}
+            outputLocation={outputLocation}
+            navigateNextPage={navigateEvaluatePage}
+            navigatePrevPage={navigateProcessPage}
+            navigateHome={navigateHome}
+          />
+        )}
       </div>
     </div>
   );

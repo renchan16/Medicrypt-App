@@ -13,25 +13,29 @@ function EvaluateDecrypt() {
   const location = useLocation();
   const { data } = location.state || {};
 
-  let timeFileLocation = data['timeFileLocation']
+  let algorithm= data['algorithm'];
+  let processedfilepath= data['outputfilepath'];
+  let timefilepath = data['timefilepath'];
 
-  const fileInputRef = useRef(null);
+  const origFileInputRef = useRef(null);
   const csvLocationRef = useRef(null);
 
-  const [filepath, setFilePath] = useState("");
-  const [isFilePathValid, setFilePathValidity] = useState(false);
+  const [origfilepath, setOrigFilePath] = useState("");
+  const [isOrigFilePathValid, setOrigFilePathValidity] = useState(false);
   const [outputpath, setOutputPath] = useState("");
   const [isOutputPathValid, setOutputPathValidity] = useState(true);
   
   const processInputData = () => {
     csvLocationRef.current.validate();
-    fileInputRef.current.validate();
-    
-    if (isFilePathValid && isOutputPathValid) {
+    origFileInputRef.current.validate();
+
+    console.log(data);
+
+    if (isOrigFilePathValid && isOutputPathValid) {
       navigate('/encrypt/evaluating', {
         state : {
           processType: 'Decrypt',
-          inputs : { timeFileLocation, filepath, outputpath }
+          inputs : { algorithm, origfilepath, processedfilepath, timefilepath, outputpath }
         }
       });
     }
@@ -54,14 +58,14 @@ function EvaluateDecrypt() {
           <p className='mb-4 text-sm italic text-primary1 text-justify'>This page serves as a tool to help identify the performance metrics of the decryption process including the PSNR and Decryption Time.</p>
           <div className='space-y-4'>
             <FilePathInput 
-              ref={fileInputRef}
+              ref={origFileInputRef}
               componentHeader="Original Video File*"
               placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
               defaultDisplayText="Enter a valid video file path." 
               browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
               browseHandler={window.electron.openFilePath}
-              onValueChange={setFilePath}
-              onValidityChange={setFilePathValidity}
+              onValueChange={setOrigFilePath}
+              onValidityChange={setOrigFilePathValidity}
               isRequired={true}
               />
             <FilePathInput

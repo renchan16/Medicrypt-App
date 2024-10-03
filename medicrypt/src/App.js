@@ -9,6 +9,7 @@ import HowToUse from './pages/HowToUse';
 import ProcessingPage from './pages/ProcessingPage';
 import EvaluateEncrypt from './pages/EvaluateEncrypt';
 import EvaluateDecrypt from './pages/EvaluateDecrypt';
+import EvaluatingPage from './pages/EvaluatingPage';
 import backgroundImage from './assets/background.png'; 
 import { ClimbingBoxLoader } from 'react-spinners'; // Import the loader
 
@@ -67,6 +68,8 @@ function App() {
             <Route path="/decrypt/processing" element={<ProcessingPage />} />
             <Route path="/encrypt/evaluate" element={<EvaluateEncrypt />} />
             <Route path="/decrypt/evaluate" element={<EvaluateDecrypt />} />
+            <Route path="/encrypt/evaluating" element={<EvaluatingPage />} />
+            <Route path="/decrypt/evaluating" element={<EvaluatingPage />} />
           </Routes>
         )}
       </div>

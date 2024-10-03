@@ -51,6 +51,14 @@ def main():
     parser.add_argument('-f', "--frames",
                         help="specifies the number of frames. Default is 50",
                         type=int, default=50)
+    parser.add_argument("--etime",
+                        help="specifies the encrypt time file to be stored on the csv file",
+                        type=str)
+    parser.add_argument("--dtime",
+                        help="specifies the decrypt time file to be stored on the csv file",
+                        type=str)
+    parser.add_argument("-v", "--verbose", action="store_true",
+                        help="Enables verbose during analysis")
 
     args = parser.parse_args()
 
@@ -62,6 +70,11 @@ def main():
     psnr_field = ["MSE", "PSNR"]
 
     fields = ["Frame"]
+
+    if args.etime != None:
+        fields.append("ETime")
+    if args.dtime != None:
+        fields.append("DTime")
     
     if args.mode == 'correlational':
         fields += cc_field
@@ -86,9 +99,9 @@ def main():
 
     #initializes csv file
 
-    with open(args.writepath, 'w', newline='') as csvfile:
+    print(f"[Analyzing {args.video}]")
 
-        print(fields)
+    with open(args.writepath, 'w', newline='') as csvfile:
 
         writer = csv.DictWriter(csvfile, fieldnames=fields)
         writer.writeheader()
@@ -118,12 +131,14 @@ def main():
         for i in fields:
             if i == "Frame":
                 continue
+            if i == "ETime" or i == "DTime":
+                mean_field[i] = 0.0
+                continue
             mean_field[i] = []
         
         for i in range(args.frames):
             
             row_field = {"Frame": i}
-            print(i)
             ret, frame = cap.read()
             
             if not ret:
@@ -138,6 +153,7 @@ def main():
             
 
             if args.mode == 'correlational' or args.mode  == 'all':
+                if args.verbose : print(f"[Frame {i}] Analyzing Correlation")
                 cc_d = np.array(corr.get_corr_diag(frame, args.samples))
                 cc_h = np.array(corr.get_corr_horizontal(frame, args.samples))
                 cc_v = np.array(corr.get_corr_vertical(frame, args.samples))
@@ -162,6 +178,7 @@ def main():
                     mean_field["CC_v_e"] += [np.mean(np.atanh(cc_v_e))]
                     
             if args.mode  == 'differential'  or args.mode  == 'all':
+                if args.verbose : print(f"[Frame {i}] Differential Analysis")
                 attacked_frame = diff.attack_pixel(frame, args.type)
                 frame_width_e = len(frame_e[0])
                 frame_height_e = len(frame_e)
@@ -173,6 +190,7 @@ def main():
                 mean_field['NPCR'] += [npcr]
                 mean_field['UACI'] += [uaci]
             if args.mode == 'entropy' or args.mode  == 'all':
+                if args.verbose : print(f"[Frame {i}] Analyzing Entropy")
                 B_o, G_o, R_o = cv2.split(frame.copy())
                 row_field['Entropy(B)'],  row_field['Entropy(G)'], row_field['Entropy(R)'], row_field['Entropy(Combined)'] = enc_quality.get_entropy(B_o), enc_quality.get_entropy(G_o), enc_quality.get_entropy(R_o), enc_quality.get_entropy(frame)
 
@@ -191,20 +209,31 @@ def main():
                     mean_field['Entropy(Combined)_e'] += [enc_quality.get_entropy(frame_e)]
 
             if args.mode == 'psnr' or args.mode  == 'all':
+                if args.verbose : print(f"[Frame {i}] Analyzing PSNR")
                 row_field['MSE'] = enc_quality.get_mse(frame, frame_d)
                 row_field['PSNR'] = enc_quality.get_psnr(frame, frame_d)
 
                 mean_field['MSE'] += [enc_quality.get_mse(frame, frame_d)]
                 mean_field['PSNR'] +=[enc_quality.get_psnr(frame, frame_d)]
+
+            if args.etime != None:
+                with open(args.etime, 'r') as t:
+                    lines = t.readlines()
+                    row_field['ETime'] = float(lines[i])
+                    mean_field['ETime'] += float(lines[i])
+            
+            if args.dtime != None:
+                with open(args.dtime, 'r') as t:
+                    lines = t.readlines()
+                    row_field['DTime'] = float(lines[i])
+                    mean_field['DTime'] += float(lines[i])
             
             writer.writerow(row_field)
 
         for i in fields:
-            print(i)
             if i == "Frame":
                 continue
             if (i not in cc_field) and (i not in cc_field_e):
-                print("not cc")
                 mean_field[i] = np.mean(mean_field[i])
                 continue
 

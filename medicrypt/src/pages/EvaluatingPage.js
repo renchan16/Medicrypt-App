@@ -11,9 +11,13 @@ import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
 function EvaluatingPage() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [inputFile, setInputFile] = useState("");
     const { processType, inputs } = location.state || {};
     const [isProcessing, setIsProcessing] = useState(true);
     const [currentProcess, setCurrentProcess] = useState(false);
+    const [processStatus, setProcessStatus] = useState("");
+    const [processDescription, setProcessDescription] = useState("");
+    const [outputfilepath, setOutputFilePath] = useState("");
     const [dots, setDots] = useState(''); 
     
     // Simulate loading text ellipsis effect
@@ -47,6 +51,15 @@ function EvaluatingPage() {
 
         if (data['status'].trim() === "success" || data['status'].trim() === "failure"){
           setIsProcessing(false);
+          setProcessStatus(data['status']);
+          if (data['status'] === "failure") {
+            setProcessDescription(ProcessErrorMessage(data));
+          } 
+          else {
+            setInputFile(data['inputfile']);
+            setOutputFilePath(data['outputfilepath']);
+            setProcessDescription(`The ${processType}ion for the ${data['inputfile']} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
+          }
           eventSource.close();
         }
       };
@@ -61,10 +74,43 @@ function EvaluatingPage() {
     processData();
   }, [processType, inputs, navigate]);
 
-  const TestFunc = () => {
-    setIsProcessing(false);
+  const haltProcessing = async () => {
+    try {
+      const response = await axios.post('http://localhost:8000/halt_processing');
+      console.log(`${processType}ion response:`, response.data);
+      setProcessStatus(response.data['status']);
+      setProcessDescription(ProcessErrorMessage(response.data))
+      setIsProcessing(false);
+    } 
+    catch (error) {
+      console.error('Error halting processing:', error);
+    }
+  };
+
+  const navigateHome = () => {
     navigate('/');
-  }
+  };
+
+  const navigateEvaluatePage = () => {
+    if (processType === "Encrypt") {
+      let algorithm= inputs['algorithm'];
+      let inputfilepath = inputs['origfilepath']
+      let outputfilepath = inputs['processedfilepath']
+      let timefilepath = inputs['timefilepath']
+
+      navigate(`/${processType.toLowerCase()}/evaluate`, {
+        state: { data: {algorithm, inputfilepath, outputfilepath, timefilepath} }
+      });
+    }
+    else {
+      let algorithm= inputs['algorithm'];
+      let outputfilepath = inputs['processedfilepath']
+      let timefilepath = inputs['timefilepath']
+      navigate(`/${processType.toLowerCase()}/evaluate`, {
+        state: { data: { algorithm, outputfilepath, timefilepath } }
+      });
+    }
+  };
 
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
@@ -74,7 +120,7 @@ function EvaluatingPage() {
           {/* Processing Loader */}
           <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
           {/* Centered Processing Content */}
-          <h1 className='mt-6 text-4xl font-bold text-black'>{processType}ing{dots}</h1>
+          <h1 className='mt-6 text-4xl font-bold text-black'>Analyzing {processType}ion{dots}</h1>
           <div className="w-full h-60 flex flex-col items-center justify-center">
               <ClimbingBoxLoader color="#1D1B20" loading={true} size={20} />
               <p className="text-black mt-4">{currentProcess}</p>
@@ -87,9 +133,24 @@ function EvaluatingPage() {
               buttonColor="primary1"
               hoverColor="primary0"
               buttonTextColor="white"
-              onClickFunction={TestFunc}
+              onClickFunction={haltProcessing}
           />
           </div>
+          
+          {!isProcessing && (
+          <ProcessComplete
+            processType={"Evaluat"}
+            processStatus={processStatus}
+            processDescription={processDescription}
+            inputFile={inputFile}
+            outputLocation={outputfilepath}
+            nextPageButtonText="View Analytics Summary"
+            viewFileButtonText="View CSV File"
+            navigateNextPage={navigateHome}
+            navigatePrevPage={navigateEvaluatePage}
+            navigateHome={navigateHome}
+          />
+        )}
       </div>
     </div>
   );

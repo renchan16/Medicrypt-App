@@ -6,7 +6,7 @@ import { TbReload } from "react-icons/tb";
 import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from './ProcessAlert';
 import NavButton from '../buttons/NavButton';
 
-const ProcessComplete = ({ processType, processStatus, processDescription, inputFile, outputLocation, navigateNextPage, navigatePrevPage, navigateHome
+const ProcessComplete = ({ processType, processStatus, processDescription, inputFile, outputLocation, nextPageButtonText, viewFileButtonText, navigateNextPage, navigatePrevPage, navigateHome
 }) => {
   return (
     <div className="w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -28,7 +28,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
         <div className={`${processStatus === "success" ? 'block' : 'hidden'} flex flex-shrink-0 gap-4`}>
           <NavButton
             className="w-full h-12"
-            buttonText={`Evaluate ${processType}ion`}
+            buttonText={nextPageButtonText}
             buttonColor="primary1"
             hoverColor="primary0"
             buttonTextColor="white"
@@ -38,7 +38,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
           <NavButton
             className="w-full h-12"
             buttonColor="primary2"
-            buttonText="View File"
+            buttonText={viewFileButtonText}
             buttonTextColor="black"
             buttonIcon={FaRegFolder}
             filePath={outputLocation}

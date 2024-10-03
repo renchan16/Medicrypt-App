@@ -32,7 +32,7 @@ def main():
                         type=str,  required=True)
     parser.add_argument('-e', "--encrypted",
                         help="specifies the path of the encrypted video",
-                        type=str, required=True)
+                        type=str)
     parser.add_argument('-d', "--decrypted",
                         help="specifies the path of the decrypted video",
                         type=str)
@@ -165,25 +165,25 @@ def main():
                 cc_d = np.array(corr.get_corr_diag(frame, args.samples))
                 cc_h = np.array(corr.get_corr_horizontal(frame, args.samples))
                 cc_v = np.array(corr.get_corr_vertical(frame, args.samples))
-                row_field["CC_d"] = np.tanh(np.mean(np.atanh(cc_d)))
-                row_field["CC_h"] = np.tanh(np.mean(np.atanh(cc_h)))
-                row_field["CC_v"] = np.tanh(np.mean(np.atanh(cc_v)))
+                row_field["CC_d"] = np.tanh(np.mean(np.arctanh(cc_d)))
+                row_field["CC_h"] = np.tanh(np.mean(np.arctanh(cc_h)))
+                row_field["CC_v"] = np.tanh(np.mean(np.arctanh(cc_v)))
 
-                mean_field["CC_d"] += [np.mean(np.atanh(cc_d))]
-                mean_field["CC_h"] += [np.mean(np.atanh(cc_h))]
-                mean_field["CC_v"] += [np.mean(np.atanh(cc_v))]
+                mean_field["CC_d"] += [np.mean(np.arctanh(cc_d))]
+                mean_field["CC_h"] += [np.mean(np.arctanh(cc_h))]
+                mean_field["CC_v"] += [np.mean(np.arctanh(cc_v))]
                 
 
                 if  args.encrypted != None:
                     cc_d_e = np.array(corr.get_corr_diag(frame_e, args.samples))
                     cc_h_e = np.array(corr.get_corr_horizontal(frame_e, args.samples))
                     cc_v_e = np.array(corr.get_corr_vertical(frame_e, args.samples))
-                    row_field["CC_d_e"] = np.tanh(np.mean(np.atanh(cc_d_e)))
-                    row_field["CC_h_e"] = np.tanh(np.mean(np.atanh(cc_h_e)))
-                    row_field["CC_v_e"] = np.tanh(np.mean(np.atanh(cc_v_e)))
-                    mean_field["CC_d_e"] += [np.mean(np.atanh(cc_d_e))]
-                    mean_field["CC_h_e"] += [np.mean(np.atanh(cc_h_e))]
-                    mean_field["CC_v_e"] += [np.mean(np.atanh(cc_v_e))]
+                    row_field["CC_d_e"] = np.tanh(np.mean(np.arctanh(cc_d_e)))
+                    row_field["CC_h_e"] = np.tanh(np.mean(np.arctanh(cc_h_e)))
+                    row_field["CC_v_e"] = np.tanh(np.mean(np.arctanh(cc_v_e)))
+                    mean_field["CC_d_e"] += [np.mean(np.arctanh(cc_d_e))]
+                    mean_field["CC_h_e"] += [np.mean(np.arctanh(cc_h_e))]
+                    mean_field["CC_v_e"] += [np.mean(np.arctanh(cc_v_e))]
                     
             if args.mode  == 'differential'  or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Differential Analysis")

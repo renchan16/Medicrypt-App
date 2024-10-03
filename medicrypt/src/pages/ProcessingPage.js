@@ -146,6 +146,8 @@ function ProcessingPage() {
             processDescription={processDescription}
             inputFile={inputFile}
             outputLocation={outputfilepath}
+            nextPageButtonText={`Evaluate ${processType}ion`}
+            viewFileButtonText="View File"
             navigateNextPage={navigateEvaluatePage}
             navigatePrevPage={navigateProcessPage}
             navigateHome={navigateHome}

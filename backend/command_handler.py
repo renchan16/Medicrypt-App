@@ -177,6 +177,7 @@ class AnalysisCommandHandler:
 
         # Necessary variables for output
         self.base_processedfilename = os.path.splitext(os.path.basename(self.processedfilepath))[0]
+        self.inputfile_ext = os.path.splitext(os.path.basename(self.processedfilepath))[1].lower()
         self.outputfilepath = None
 
         # Subprocess
@@ -241,17 +242,18 @@ class AnalysisCommandHandler:
             stdout_str = "\n".join(stdout_lines)
             stderr_str = "\n".join(stderr_lines)
             algorithm = self.algorithm
+            inputfile = self.base_processedfilename + self.inputfile_ext
             outputfilepath = self.outputfilepath
 
             if self.process.returncode == 0:
-                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'algorithm': algorithm, 'outputfilepath': outputfilepath})}\n\n"
+                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'algorithm': algorithm, 'inputfile': inputfile, 'outputfilepath': outputfilepath})}\n\n"
                 
             else:
                 if self.is_halted:
                     yield f"data: {json.dumps({'message': 'Process halted by user request.', 'status': 'failure', 'stdout': 'HALTED', 'stderr': stderr_str})}\n\n"
 
                 else:
-                    yield f"data: {json.dumps({'message': 'Process encountered an issue', 'status': 'failure', 'stdout': stdout_str, 'stderr': stderr_str})}\n\n"
+                    yield f"data: {json.dumps({'message': 'Process encountered an issue', 'status': 'failure', 'stdout': stdout_str, 'stderr': stderr_str, 'command': command})}\n\n"
             
         except Exception as e:
             print(f"Subprocess error: {str(e)}")

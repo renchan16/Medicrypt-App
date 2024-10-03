@@ -279,3 +279,4 @@ class AnalysisCommandHandler:
             self.is_halted = True
             return { "message": "Process halted successfully" }
         return {"message": "No active process to halt"}
+    

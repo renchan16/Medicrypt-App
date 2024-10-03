@@ -20,7 +20,7 @@ def main():
     parser.add_argument('-k', '--key', help="(required for decryption) specifies the key path")
     parser.add_argument('-p', '--password', required=True, help="specifies the password of the key file")
     parser.add_argument('-v', '--verbose', action='store_true', help="displays the encryption process")
-    parser.add_argument('--store_time', type=str)
+    parser.add_argument('--storetime', type=str)
 
     args = parser.parse_args()
 
@@ -52,8 +52,8 @@ def main():
             pass
         return
     
-    if (args.store_time != None):
-        logfilewriter.logwrite(video, args.store_time)
+    if (args.storetime != None):
+        logfilewriter.logwrite(video, args.storetime)
     
 
     

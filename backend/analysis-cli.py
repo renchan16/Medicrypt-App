@@ -20,16 +20,37 @@ def main():
 
     parser = argparse.ArgumentParser(description='For analysis purposes')
 
-    parser.add_argument('-m', "--mode", type=str, choices=['correlational', 'differential', 'entropy', 'psnr', 'all'], required=True)
-    parser.add_argument('-t', "--type", type=str, choices=['fisher-yates', '3d-cosine'], default='fisher-yates')
-    parser.add_argument('-o', "--video", type=str)
-    parser.add_argument('-e', "--encrypted", type=str)
-    parser.add_argument('-d', "--decrypted", type=str)
-    parser.add_argument('-w', "--writepath", type=str)
-    parser.add_argument('-k', "--key", type=str)
-    parser.add_argument('-p', '--password', type=str)
-    parser.add_argument('-s', "--samples", type=int, default=1000)
-    parser.add_argument('-f', "--frames", type=int, default=50)
+    parser.add_argument('-m', "--mode", type=str, 
+                        choices=['correlational', 'differential', 'entropy', 'psnr', 'all'],
+                        help="specifies the mode of analysis.  Default is 'all'.",
+                        default='all')
+    parser.add_argument('-t', "--type", type=str, choices=['fisher-yates', '3d-cosine'],
+                        help="specifies the encryption type used by the datasets in the analysis", 
+                        default='fisher-yates')
+    parser.add_argument('-o', "--video",
+                        help="specifies the path of the original video",
+                        type=str,  required=True)
+    parser.add_argument('-e', "--encrypted",
+                        help="specifies the path of the encrypted video",
+                        type=str, required=True)
+    parser.add_argument('-d', "--decrypted",
+                        help="specifies the path of the decrypted video",
+                        type=str)
+    parser.add_argument('-w', "--writepath",
+                        help="specifies the write path of the csv_file (specify the filename at the end of the path)",
+                        type=str, required=True)
+    parser.add_argument('-k', "--key", 
+                        help="specifies the path of keyfile (may not be required anymore)",
+                        type=str)
+    parser.add_argument('-p', '--password', 
+                        help="password of the keyfile (may not be required anymore)",
+                        type=str)
+    parser.add_argument('-s', "--samples",
+                        help="specifies the number of pixel samples for correlational analysis. Default is 1000",
+                        type=int, default=1000)
+    parser.add_argument('-f', "--frames",
+                        help="specifies the number of frames. Default is 50",
+                        type=int, default=50)
 
     args = parser.parse_args()
 

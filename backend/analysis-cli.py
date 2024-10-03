@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser(description='For analysis purposes')
 
     parser.add_argument('-m', "--mode", type=str, 
-                        choices=['correlational', 'differential', 'entropy', 'psnr', 'all'],
+                        choices=['encryption', 'correlational', 'differential', 'entropy', 'psnr', 'all'],
                         help="specifies the mode of analysis.  Default is 'all'.",
                         default='all')
     parser.add_argument('-t', "--type", type=str, choices=['fisher-yates', '3d-cosine'],
@@ -88,6 +88,13 @@ def main():
             fields += entropy_field_e
     elif args.mode == 'psnr':
         fields += psnr_field
+    elif args.mode == 'encryption':
+        fields += cc_field
+        fields += differential_field
+        fields += entropy_field
+        
+        fields += cc_field_e
+        fields += entropy_field_e
     elif args.mode == 'all':
         fields += cc_field
         fields += differential_field
@@ -127,6 +134,7 @@ def main():
         if args.decrypted != None:
             cap_decrypted = cv2.VideoCapture(args.decrypted, cv2.CAP_FFMPEG)
 
+
         mean_field = {"Frame": "Mean"}
         for i in fields:
             if i == "Frame":
@@ -152,7 +160,7 @@ def main():
 
             
 
-            if args.mode == 'correlational' or args.mode  == 'all':
+            if args.mode == 'correlational' or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Analyzing Correlation")
                 cc_d = np.array(corr.get_corr_diag(frame, args.samples))
                 cc_h = np.array(corr.get_corr_horizontal(frame, args.samples))
@@ -177,7 +185,7 @@ def main():
                     mean_field["CC_h_e"] += [np.mean(np.atanh(cc_h_e))]
                     mean_field["CC_v_e"] += [np.mean(np.atanh(cc_v_e))]
                     
-            if args.mode  == 'differential'  or args.mode  == 'all':
+            if args.mode  == 'differential'  or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Differential Analysis")
                 attacked_frame = diff.attack_pixel(frame, args.type)
                 frame_width_e = len(frame_e[0])
@@ -189,7 +197,7 @@ def main():
 
                 mean_field['NPCR'] += [npcr]
                 mean_field['UACI'] += [uaci]
-            if args.mode == 'entropy' or args.mode  == 'all':
+            if args.mode == 'entropy' or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Analyzing Entropy")
                 B_o, G_o, R_o = cv2.split(frame.copy())
                 row_field['Entropy(B)'],  row_field['Entropy(G)'], row_field['Entropy(R)'], row_field['Entropy(Combined)'] = enc_quality.get_entropy(B_o), enc_quality.get_entropy(G_o), enc_quality.get_entropy(R_o), enc_quality.get_entropy(frame)
@@ -208,7 +216,7 @@ def main():
                     mean_field['Entropy(R)_e'] += [enc_quality.get_entropy(R_e)]
                     mean_field['Entropy(Combined)_e'] += [enc_quality.get_entropy(frame_e)]
 
-            if args.mode == 'psnr' or args.mode  == 'all':
+            if args.mode == 'psnr' or args.mode  == 'all' :
                 if args.verbose : print(f"[Frame {i}] Analyzing PSNR")
                 row_field['MSE'] = enc_quality.get_mse(frame, frame_d)
                 row_field['PSNR'] = enc_quality.get_psnr(frame, frame_d)

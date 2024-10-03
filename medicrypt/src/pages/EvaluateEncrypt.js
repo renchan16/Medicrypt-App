@@ -12,8 +12,10 @@ function EvaluateEncrypt() {
   const location = useLocation();
   const { data } = location.state || {};
   
-  let encryptedFileLocation= data['outputLocation']
-  let timeFileLocation = data['timeFileLocation']
+  let algorithm= data['algorithm'];
+  let origfilepath = data['inputfilepath']
+  let processedfilepath= data['outputfilepath']
+  let timefilepath = data['timefilepath']
 
   const [outputpath, setOutputPath] = useState("");
   const [isOutputPathValid, setOutputPathValidity] = useState(true);
@@ -22,12 +24,14 @@ function EvaluateEncrypt() {
   
   const processInputData = () => {
     csvLocationRef.current.validate();
-    
+
+    console.log(data);
+
     if (isOutputPathValid) {
       navigate('/encrypt/evaluating', {
         state : {
           processType: 'Encrypt',
-          inputs : { encryptedFileLocation, timeFileLocation, outputpath }
+          inputs : { algorithm, origfilepath, processedfilepath, timefilepath, outputpath }
         }
       });
     }

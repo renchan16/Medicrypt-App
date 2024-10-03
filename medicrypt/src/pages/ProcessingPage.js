@@ -18,8 +18,10 @@ function ProcessingPage() {
   const [currentProcess, setCurrentProcess] = useState(false);
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
-  const [outputLocation, setOutputLocation] = useState("");
-  const [timeFileLocation, setTimeFileLocation] = useState("");
+  const [algorithm, setAlgorithm] = useState("");
+  const [inputfilepath, setInputFilePath] = useState("");
+  const [outputfilepath, setOutputFilePath] = useState("");
+  const [timefilepath, setTimeFilePath] = useState("");
   const [dots, setDots] = useState(''); 
 
   // Simulate loading text ellipsis effect
@@ -35,7 +37,7 @@ function ProcessingPage() {
   useEffect(() => {
     const processData = async () => {
       try {
-        const response = await axios.post(`http://localhost:8000/init_encryption_handler`, inputs);
+        const response = await axios.post(`http://localhost:8000/init_cryptographic_handler`, inputs);
         console.log(`${processType}ion response:`, response.data);
       } 
       catch (error) {
@@ -58,8 +60,10 @@ function ProcessingPage() {
           } 
           else {
             setInputFile(data['inputfile']);
-            setOutputLocation(data['outputloc']);
-            setTimeFileLocation(data['timefileloc']);
+            setInputFilePath(data['inputfilepath'])
+            setAlgorithm(data['algorithm']);
+            setOutputFilePath(data['outputfilepath']);
+            setTimeFilePath(data['timefilepath']);
             setProcessDescription(`The ${data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
           }
           eventSource.close();
@@ -100,12 +104,12 @@ function ProcessingPage() {
   const navigateEvaluatePage = () => {
     if (processType === "Encrypt"){
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: { outputLocation, timeFileLocation } }
+        state: { data: { algorithm, inputfilepath, outputfilepath, timefilepath } }
       });
     }
     else {
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: { timeFileLocation } }
+        state: { data: { algorithm, outputfilepath, timefilepath } }
       });
     }
   }
@@ -141,7 +145,7 @@ function ProcessingPage() {
             processStatus={processStatus}
             processDescription={processDescription}
             inputFile={inputFile}
-            outputLocation={outputLocation}
+            outputLocation={outputfilepath}
             navigateNextPage={navigateEvaluatePage}
             navigatePrevPage={navigateProcessPage}
             navigateHome={navigateHome}

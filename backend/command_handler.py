@@ -13,12 +13,6 @@ class EncryptionCommandHandler:
         self.password = password
         self.outputpath = outputpath
         self.hashpath = hashpath
-        
-        # Necessary variables for output
-        self.base_filename = os.path.splitext(os.path.basename(self.filepath))[0]
-        self.inputfile_ext = os.path.splitext(os.path.basename(self.filepath))[1].lower()
-        self.outputfilepath = None
-        self.timefilepath = None
 
         # Subprocess
         self.process = None
@@ -30,7 +24,14 @@ class EncryptionCommandHandler:
         """Internal method to map algorithm name to its corresponding CLI argument."""
         return "fisher-yates" if self.algorithm == "FY-Logistic" else "3d-cosine"
 
-    def _generate_command(self, process_type: str):
+    def _generate_command(self, process_type: str, filepath: str):
+        # Necessary variables for output
+        base_filename = os.path.splitext(os.path.basename(filepath))[0]
+        inputfile_ext = os.path.splitext(os.path.basename(filepath))[1].lower()
+        inputfile = base_filename + inputfile_ext
+        outputfilepath = None
+        timefilepath = None
+
         """Generate the appropriate encryption or decryption command."""
         self.algorithm = self._get_algorithm()
         
@@ -47,21 +48,21 @@ class EncryptionCommandHandler:
         if process_type == "encrypt":
             # Determine output path for encrypted file
             if self.outputpath and self.outputpath.strip():
-                self.outputfilepath = os.path.join(self.outputpath, f"{self.base_filename}_encrypted.avi")
+                outputfilepath = os.path.join(self.outputpath, f"{base_filename}_encrypted.avi")
                 
             else:
                 # Replace the original file extension with '_encrypted.avi'
-                self.outputfilepath = self.filepath.replace(self.inputfile_ext, "_encrypted.avi")
+                outputfilepath = filepath.replace(inputfile_ext, "_encrypted.avi")
 
             # Ensure the output filepath is unique
-            self.outputfilepath = get_unique_filepath(self.outputfilepath)
+            outputfilepath = get_unique_filepath(outputfilepath)
 
             # Handle hashpath only for encryption, and fall back to filepath's directory
             if self.hashpath and self.hashpath.strip():
-                key_file = os.path.join(self.hashpath, f"{self.base_filename}.key")
+                key_file = os.path.join(self.hashpath, f"{base_filename}.key")
 
             else:
-                key_file = os.path.join(os.path.dirname(self.filepath), f"{self.base_filename}.key")
+                key_file = os.path.join(os.path.dirname(filepath), f"{base_filename}.key")
 
             # Ensure the key file path is unique
             key_file = get_unique_filepath(key_file)
@@ -69,35 +70,36 @@ class EncryptionCommandHandler:
             # Set a file path for the time analysis based on the key_file path
             # Get the directory of the hashpath file and create the time file there
             hashpath_dir = os.path.dirname(key_file)
-            self.timefilepath = os.path.join(hashpath_dir, f"{self.base_filename}_encrypted_time.txt")
-            self.timefilepath = get_unique_filepath(self.timefilepath)
+            timefilepath = os.path.join(hashpath_dir, f"{base_filename}_encrypted_time.txt")
+            timefilepath = get_unique_filepath(timefilepath)
 
             # Generate the command itself
-            command = f"python -u medicrypt-cli.py encrypt -i {self.filepath} -o {self.outputfilepath} -t {self.algorithm} -k {key_file} -p {self.password} --verbose --storetime {self.timefilepath}"
+            command = f"python -u medicrypt-cli.py encrypt -i {filepath} -o {outputfilepath} -t {self.algorithm} -k {key_file} -p {self.password} --verbose --storetime {timefilepath}"
         
         else:  # Decrypt
             # Determine output path for decrypted file
             if self.outputpath and self.outputpath.strip():
-                self.outputfilepath = os.path.join(self.outputpath, f"{self.base_filename}_decrypted.avi")
+                outputfilepath = os.path.join(self.outputpath, f"{base_filename}_decrypted.avi")
                 
             else:
-                self.outputfilepath = self.filepath.replace(".avi", "_decrypted.avi")
+                outputfilepath = filepath.replace(".avi", "_decrypted.avi")
 
             # Ensure the output filepath is unique
-            self.outputfilepath = get_unique_filepath(self.outputfilepath)
+            outputfilepath = get_unique_filepath(outputfilepath)
 
             # Set a file path for the time analysis based on the hashpath (file path)
             # Get the directory of the hashpath file and create the time file there
             hashpath_dir = os.path.dirname(self.hashpath)
-            self.timefilepath = os.path.join(hashpath_dir, f"{self.base_filename}_decrypted_time.txt")
-            self.timefilepath = get_unique_filepath(self.timefilepath)
+            timefilepath = os.path.join(hashpath_dir, f"{base_filename}_decrypted_time.txt")
+            timefilepath = get_unique_filepath(timefilepath)
 
             # Generate the command itself
-            command = f"python -u medicrypt-cli.py decrypt -i {self.filepath} -o {self.outputfilepath} -t {self.algorithm} -k {self.hashpath} -p {self.password} --verbose --storetime {self.timefilepath}"
+            command = f"python -u medicrypt-cli.py decrypt -i {filepath} -o {outputfilepath} -t {self.algorithm} -k {self.hashpath} -p {self.password} --verbose --storetime {timefilepath}"
         
-        return command
+        data = { "inputfile": inputfile, "inputfilepath": filepath, "outputfilepath": outputfilepath, "timefilepath": timefilepath}
+        return command, data
 
-    def _run_subprocess(self, command: str):
+    def _run_subprocess(self, command: str, data: dict):
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
             # Use different process creation flags depending on the platform
@@ -125,14 +127,13 @@ class EncryptionCommandHandler:
 
             stdout_str = "\n".join(stdout_lines)
             stderr_str = "\n".join(stderr_lines)
-            inputfile = self.base_filename + self.inputfile_ext
-            inputfilepath = self.filepath
-            algorithm = self.algorithm
-            outputfilepath = self.outputfilepath
-            timefilepath = self.timefilepath
+            inputfile = data['inputfile']
+            inputfilepath = data['inputfilepath']
+            outputfilepath = data['outputfilepath']
+            timefilepath = data['timefilepath']
 
             if self.process.returncode == 0:
-                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'inputfile': inputfile, 'inputfilepath': inputfilepath, 'algorithm': algorithm, 'outputfilepath': outputfilepath, 'timefilepath': timefilepath})}\n\n"
+                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'inputfile': inputfile, 'inputfilepath': inputfilepath, 'algorithm': self.algorithm, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath, 'timefilepath': timefilepath})}\n\n"
                 
             else:
                 if self.is_halted:
@@ -147,11 +148,15 @@ class EncryptionCommandHandler:
 
     def process_request(self, process_type: str):
         """Handle the complete request for encryption or decryption."""
-        command = self._generate_command(process_type)
-        subprocess = self._run_subprocess(command)
+        for filepath in self.filepath:
+            command, data = self._generate_command(process_type, filepath)
+            subprocess = self._run_subprocess(command, data)
 
-        for out in subprocess:
-            yield out
+            for out in subprocess:
+                yield out
+
+            if self.is_halted:
+                break
 
     def halt_process(self):
         """Handle the stopping of the current processes."""
@@ -246,7 +251,7 @@ class AnalysisCommandHandler:
             outputfilepath = self.outputfilepath
 
             if self.process.returncode == 0:
-                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'algorithm': algorithm, 'inputfile': inputfile, 'outputfilepath': outputfilepath})}\n\n"
+                yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': stdout_str, 'stderr': stderr_str, 'algorithm': algorithm, 'inputfile': inputfile, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath})}\n\n"
                 
             else:
                 if self.is_halted:

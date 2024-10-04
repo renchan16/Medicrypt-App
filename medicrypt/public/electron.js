@@ -50,7 +50,7 @@ async function showSingleDialog(dialogOptions) {
 // Handle open File Explorer for Video Files
 ipcMain.handle('dialog:openFilePath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
-    properties: ['openFile'],
+    properties: ['openFile', 'multiSelections'],
     filters: [
       { name: 'Videos', extensions: ['mkv', 'avi', 'mp4', 'mov', 'wmv'] },
     ],
@@ -58,14 +58,14 @@ ipcMain.handle('dialog:openFilePath', async () => {
   if (canceled) {
     return null;
   } else {
-    return filePaths[0];  // Return the first selected file path
+    return filePaths;  // Return the first selected file path
   }
 });
 
 // Handle file File Explorer for Encrypted Video Files
 ipcMain.handle('dialog:openEncryptedFilePath', async () => {
   const { canceled, filePaths } = await showSingleDialog({
-    properties: ['openFile'],
+    properties: ['openFile', 'multiSelections'],
     filters: [
       { name: 'Videos', extensions: ['avi'] },
     ],
@@ -105,14 +105,21 @@ ipcMain.handle('dialog:openFolder', async () => {
 });
 
 // Handle file path checking
-ipcMain.handle('dialog:checkFilePath', (event, filePath) => {
+ipcMain.handle('dialog:checkFilePath', (event, filePaths) => {
   try {
-    const normalizedPath = path.normalize(filePath); // Normalize the path
-    if (fs.existsSync(normalizedPath)) {
-      const stat = fs.lstatSync(normalizedPath);
-      return stat.isFile() || stat.isDirectory();
+    // Ensure the input is a list of file paths
+    if (Array.isArray(filePaths)) {
+      // Iterate over each file path and check if it exists and is a file or directory
+      return filePaths.every(filePath => {
+        const normalizedPath = path.normalize(filePath); // Normalize the path
+        if (fs.existsSync(normalizedPath)) {
+          const stat = fs.lstatSync(normalizedPath);
+          return stat.isFile() || stat.isDirectory();
+        }
+        return false;
+      });
     }
-    return false;
+    return false; // If input is not an array, return false
   } catch (err) {
     return false;
   }

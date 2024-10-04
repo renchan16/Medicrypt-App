@@ -367,7 +367,9 @@ class Encrypt_cosine:
 
         return merged_img
 
-    def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False):
+    def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False, frame_limit=-1):
+        assert isinstance(frame_limit, int), "frame_limit it not an Integer"
+
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
@@ -401,7 +403,7 @@ class Encrypt_cosine:
 
         temp_encryption_path = os.path.join(temp_path, 'encryption_temp')
         os.makedirs(temp_encryption_path)
-        for count, curr_frame in enumerate(sorted_frames):
+        for count, curr_frame in enumerate(sorted_frames[:frame_limit if frame_limit > -1 else None]):
             start = time.time()
             frame_name = os.path.join(temp_path, curr_frame)
 

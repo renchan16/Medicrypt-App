@@ -233,7 +233,9 @@ class Encrypt:
 
         return row_unshuffled
 
-    def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False):
+    def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False, frame_limit=-1):
+        assert isinstance(frame_limit, int), "frame_limit it not an Integer"
+        
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key_dest = Path(key_destination)
@@ -258,7 +260,7 @@ class Encrypt:
 
         count = 0
 
-        while True:
+        while frame_limit < 0 or count < frame_limit:
             start = time.time()
             grabbed, frame = cap.read()
 

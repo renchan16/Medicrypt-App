@@ -150,7 +150,7 @@ def main():
             ret, frame = cap.read()
             
             if not ret:
-                print("frame end")
+                print("[DONE] Analyzation Completed Successfully")
                 break
 
             if args.encrypted != None:

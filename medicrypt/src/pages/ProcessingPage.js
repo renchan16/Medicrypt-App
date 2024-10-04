@@ -66,7 +66,7 @@ function ProcessingPage() {
             setOutputPath(data['outputpath'])
             setOutputFilePath(data['outputfilepath']);
             setTimeFilePath(data['timefilepath']);
-            setProcessDescription(`The ${data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
+            setProcessDescription(`The ${data['inputfile'].join(', ')} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
           }
           eventSource.close();
         }

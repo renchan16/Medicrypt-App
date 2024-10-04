@@ -20,7 +20,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
       </ProcessAlert>
 
       <p className="text-sm text-gray-600">
-        File processed: <span className="font-medium">{inputFile !== "" ? inputFile : "None"}</span>
+        File processed: <span className="font-medium">{inputFile !== "" ? inputFile.join(', ') : "None"}</span>
       </p>
 
       <div className="flex flex-col gap-4">

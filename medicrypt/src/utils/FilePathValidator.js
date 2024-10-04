@@ -5,7 +5,7 @@ export const ValidateFilePath = async (filePath, defaultDisplayText, isRequired)
 
     if (isRequired) {
         // Check both value and validity when isRequired is true
-        if (filePath === null || filePath === "") {
+        if (filePath === null || filePath === "" || (Array.isArray(filePath) && filePath.length === 0)) {
             inputValidity = false;
             inputMessage = "This field is required!"
         } 
@@ -19,7 +19,7 @@ export const ValidateFilePath = async (filePath, defaultDisplayText, isRequired)
         }
     }
     else {
-        if (filePath === null || filePath === "") {
+        if (filePath === null || filePath === "" || (Array.isArray(filePath) && filePath.length === 0)) {
             inputValidity = true;
             inputMessage = defaultDisplayText
         } 

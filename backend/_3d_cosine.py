@@ -540,7 +540,9 @@ class Encrypt_cosine:
         cap.release()
         if verbose: print("Video has been decrypted")
         self.__encryptKey__(key.resolve(), password)
-        key_file.close()  # finally, close the file
+
+        if not mem_only:
+            key_file.close()  # finally, close the file
 
         if os.path.isdir(temp_path):
             shutil.rmtree(temp_path)  # delete the temp_path and its contents

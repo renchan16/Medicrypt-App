@@ -2,8 +2,9 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
-const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, isRequired }, ref) => {
+const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, allowMultiple=false, isRequired }, ref) => {
     const [path, setFilePath] = useState("");
+    const [processedPath, setProcessedPath] = useState(allowMultiple ? [] : "");
     const [isInitialLoad, setInitialLoad] = useState(true);
     const [isInputActive, setInputActive] = useState(false);
     const [isFocused, setFocus] = useState(false);
@@ -11,51 +12,56 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     const [inputMessage, setInputMessage] = useState(defaultDisplayText);
 
     useEffect(() => {
-        // Notify the parent component about the validity whenever it changes
         onValidityChange(isValidInput);
     }, [isValidInput, onValidityChange]);
 
     useImperativeHandle(ref, () => ({
-        // Function to validate current input using parent.
         validate() {
-            handleInputValidation(path);
+            handleInputValidation(processedPath);
         }
     }));
 
-    // Handle the change in the input field and file path return value upon choosing a file path using the browse function.
     const handleBrowsePath = async () => {
         const uploadedPath = await browseHandler();
         if (uploadedPath) {
             setInitialLoad(false);
             setFilePath(uploadedPath);
-            onValueChange(uploadedPath);
-            console.log(uploadedPath);
-            handleInputValidation(uploadedPath);
+            const processed = allowMultiple ? (Array.isArray(uploadedPath) ? uploadedPath : [uploadedPath]) : uploadedPath;
+            setProcessedPath(processed);
+            onValueChange(processed);
+            handleInputValidation(processed);
         }
     };
 
-    // Handle the change in the input field and file path return value upon typing in the input field.
     const handleInputChange = (e) => {
         setInitialLoad(false);
-        setFilePath(e.target.value);
-        onValueChange(e.target.value);
+        const inputValue = e.target.value;
+        setFilePath(inputValue);
+        
+        let processed;
+        if (allowMultiple) {
+            processed = inputValue.split(',').map(item => item.trim()).filter(item => item !== '');
+        } else {
+            processed = inputValue;
+        }
+        
+        setProcessedPath(processed);
+        onValueChange(processed);
+        handleInputValidation(processed);
     };
 
-    // Handle the focus animation
     const handleFocus = () => {
         setInputActive(true);
-        setFocus(!isFocused);
+        setFocus(true);
     }
 
-    // Handle the blur of the input
-    const handleBlur = (e) => {
+    const handleBlur = () => {
         setInitialLoad(false);
         setInputActive(path !== "");
-        setFocus(!isFocused);
-        handleInputValidation(e.target.value);
+        setFocus(false);
+        handleInputValidation(processedPath);
     }
     
-    // Handles the checking of input validity.
     const handleInputValidation = async (filePath) => {
         const isValid = await ValidateFilePath(filePath, defaultDisplayText, isRequired);
         
@@ -72,7 +78,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                     id="file-path-input"
                     placeholder={placeholderText}
                     value={path} 
-                    className= {`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} focus:border-primary1  focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`} 
+                    className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} focus:border-primary1  focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`} 
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}

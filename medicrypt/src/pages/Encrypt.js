@@ -34,6 +34,7 @@ function Encrypt() {
   const [showAdditionalFields, setShowAdditionalFields] = useState(false)
 
   const processInputData = async () => {
+    console.log(filepath)
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
       passwordInputRef.current.validate();
@@ -100,6 +101,7 @@ function Encrypt() {
                   browseHandler={window.electron.openFilePath}
                   onValueChange={setFilePath}
                   onValidityChange={setFilePathValidity}
+                  allowMultiple={true}
                   isRequired={true}
                   />
                 <PasswordInput

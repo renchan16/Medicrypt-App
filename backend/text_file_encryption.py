@@ -33,7 +33,7 @@ def encryptFile(fpath, password):
     return base64.b64encode(ciphertextAndNonceAndSalt)
 
 
-def decryptFile(fpath, password):
+def decryptFile(fpath, password, mem_only=True):
     with open(fpath, "rb") as enc_file:
         base64CiphertextAndNonceAndSalt = enc_file.read()
 
@@ -51,8 +51,9 @@ def decryptFile(fpath, password):
     plaintext = decrypt(ciphertextAndNonce, key)
 
     if plaintext is not None:
-        with open(fpath, "wb") as file:
-            file.write(plaintext)
+        if not mem_only:
+            with open(fpath, "wb") as file:
+                file.write(plaintext)
 
         return plaintext.decode('utf-8')
     else:

@@ -248,8 +248,17 @@ class Encrypt_cosine:
     def __encryptKey__(self, hash_filepath, password):
         tfe.encryptFile(hash_filepath, password)
 
-    def __decryptKey__(self, hash_filepath, password):
-        tfe.decryptFile(hash_filepath, password)
+    def __decryptKey__(self, hash_filepath, password, mem_only):
+        decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
+
+        if mem_only:
+            decrypt_list = decrypted.splitlines()
+            frame_seq = eval(decrypt_list[-1])
+            keys = decrypt_list.pop()
+
+            return keys, frame_seq
+        else:
+            return None, None
 
     def encryptFrame(self, frame, verbose=False):
         blue, green, red = cv2.split(frame)  # cv2 always read in BGR mode
@@ -443,7 +452,7 @@ class Encrypt_cosine:
 
         return per_frame_runtime
 
-    def decryptVideo(self, filepath, vid_destination, key_filepath, password, verbose=False):
+    def decryptVideo(self, filepath, vid_destination, key_filepath, password, verbose=False, mem_only=True):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key = Path(key_filepath)
@@ -451,7 +460,7 @@ class Encrypt_cosine:
         # Record per frame runtime here
         per_frame_runtime = []
 
-        self.__decryptKey__(key.resolve(), password)
+        keys, FS = self.__decryptKey__(key.resolve(), password, mem_only=mem_only)
 
         # Prepare the video writer
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
@@ -475,14 +484,18 @@ class Encrypt_cosine:
         frame_filenames = sorted([f for f in os.listdir(temp_path) if f.endswith('.png')])
         sorted_frames = sorted(frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
 
-        key_file = open(key.resolve(), "r")
-        lines = key_file.readlines()
+        if mem_only:
+            lines = keys
+            frame_select_seq = FS
+        else:
+            key_file = open(key.resolve(), "r")
+            lines = key_file.readlines()
 
-        # Get the Frame Selection sequence in the last line of the key file
-        FS = lines[-1]
+            # Get the Frame Selection sequence in the last line of the key file
+            FS = lines[-1]
 
-        # Convert the string back to list
-        frame_select_seq = eval(FS)
+            # Convert the string back to list
+            frame_select_seq = eval(FS)
 
         # Create a temp folder where deshuffled frames are moved then renaming them
         temp_fs_path = os.path.join(temp_path, 'fs_temp')

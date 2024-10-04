@@ -122,8 +122,13 @@ class Encrypt:
     def encryptHashes(self, hash_filepath, password):
         tfe.encryptFile(hash_filepath, password)
 
-    def decryptHashes(self, hash_filepath, password):
-        tfe.decryptFile(hash_filepath, password)
+    def decryptHashes(self, hash_filepath, password, mem_only):
+        decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
+
+        if mem_only:
+            return decrypted.splitlines()  # transform the text into a list with newlines as separator
+        else:
+            return None
 
     def encryptFrame(self, frame, verbose=False):
         self.num_rows, self.num_cols, self.num_channels = frame.shape
@@ -291,7 +296,7 @@ class Encrypt:
 
         return per_frame_runtime
 
-    def decryptVideo(self, filepath, vid_destination, hash_filepath, password, verbose=False):
+    def decryptVideo(self, filepath, vid_destination, hash_filepath, password, verbose=False, mem_only=True):
         fpath = Path(filepath)
         vid_dest = Path(vid_destination)
         key = Path(hash_filepath)
@@ -299,7 +304,7 @@ class Encrypt:
         # Record per frame runtime here
         per_frame_runtime = []
 
-        self.decryptHashes(key.resolve(), password)
+        key_list = self.decryptHashes(key.resolve(), password, mem_only=mem_only)
         if verbose: print("Decrypted the Key Hash File")
 
         cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
@@ -314,8 +319,12 @@ class Encrypt:
             (frame_width, frame_height),
         )
 
-        hash_file = open(key.resolve(), "r")
-        lines = hash_file.readlines()
+        if mem_only:
+            lines = key_list
+        else:
+            hash_file = open(key.resolve(), "r")
+            lines = hash_file.readlines()
+
         hash_line = 0  # keep track of our line in the text file
 
         count = 0

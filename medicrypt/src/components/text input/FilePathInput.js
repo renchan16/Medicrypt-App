@@ -29,6 +29,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
             setInitialLoad(false);
             setFilePath(uploadedPath);
             onValueChange(uploadedPath);
+            console.log(uploadedPath);
             handleInputValidation(uploadedPath);
         }
     };

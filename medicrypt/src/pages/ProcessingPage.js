@@ -20,6 +20,7 @@ function ProcessingPage() {
   const [processDescription, setProcessDescription] = useState("");
   const [algorithm, setAlgorithm] = useState("");
   const [inputfilepath, setInputFilePath] = useState("");
+  const [outputpath, setOutputPath] = useState("");
   const [outputfilepath, setOutputFilePath] = useState("");
   const [timefilepath, setTimeFilePath] = useState("");
   const [dots, setDots] = useState(''); 
@@ -62,6 +63,7 @@ function ProcessingPage() {
             setInputFile(data['inputfile']);
             setInputFilePath(data['inputfilepath'])
             setAlgorithm(data['algorithm']);
+            setOutputPath(data['outputpath'])
             setOutputFilePath(data['outputfilepath']);
             setTimeFilePath(data['timefilepath']);
             setProcessDescription(`The ${data['inputfile']} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
@@ -145,7 +147,7 @@ function ProcessingPage() {
             processStatus={processStatus}
             processDescription={processDescription}
             inputFile={inputFile}
-            outputLocation={outputfilepath}
+            outputLocation={outputpath}
             nextPageButtonText={`Evaluate ${processType}ion`}
             viewFileButtonText="View File"
             navigateNextPage={navigateEvaluatePage}

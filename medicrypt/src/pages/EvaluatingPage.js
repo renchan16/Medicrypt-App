@@ -17,6 +17,7 @@ function EvaluatingPage() {
     const [currentProcess, setCurrentProcess] = useState(false);
     const [processStatus, setProcessStatus] = useState("");
     const [processDescription, setProcessDescription] = useState("");
+    const [outputpath, setOutputPath] = useState("");
     const [outputfilepath, setOutputFilePath] = useState("");
     const [dots, setDots] = useState(''); 
     
@@ -57,8 +58,9 @@ function EvaluatingPage() {
           } 
           else {
             setInputFile(data['inputfile']);
+            setOutputPath(data['outputpath'])
             setOutputFilePath(data['outputfilepath']);
-            setProcessDescription(`The ${processType}ion for the ${data['inputfile']} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
+            setProcessDescription(`The ${processType}ion for the ${data['inputfile'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
           }
           eventSource.close();
         }
@@ -143,7 +145,7 @@ function EvaluatingPage() {
             processStatus={processStatus}
             processDescription={processDescription}
             inputFile={inputFile}
-            outputLocation={outputfilepath}
+            outputLocation={outputpath}
             nextPageButtonText="View Analytics Summary"
             viewFileButtonText="View CSV File"
             navigateNextPage={navigateHome}

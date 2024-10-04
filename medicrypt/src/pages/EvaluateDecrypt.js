@@ -67,6 +67,7 @@ function EvaluateDecrypt() {
               onValueChange={setOrigFilePath}
               onValidityChange={setOrigFilePathValidity}
               isRequired={true}
+              allowMultiple={true}
               />
             <FilePathInput
               ref={csvLocationRef}

@@ -427,7 +427,7 @@ class AnalysisCommandHandler:
             # Validate video before processing
             if not self._validate_video(processedfilepath, origfilepath):
                 self.has_error = True
-                yield self._handle_error('Video validation failed', 'failure', self.stdout_str, self.stderr_str, command)
+                yield self._handle_error('Video validation failed', 'failure', 'MISMATCH VIDEO RESOLUTION', self.stderr_str, command)
                 break
 
             # Run Subprocess

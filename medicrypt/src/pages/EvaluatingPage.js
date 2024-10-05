@@ -18,7 +18,8 @@ function EvaluatingPage() {
     const [processStatus, setProcessStatus] = useState("");
     const [processDescription, setProcessDescription] = useState("");
     const [outputpath, setOutputPath] = useState("");
-    const [outputfilepath, setOutputFilePath] = useState("");
+    const [baselinespeed, setBaselineSpeed] = useState("")
+    const [csvfilepath, setCSVFilePath] = useState("");
     const [dots, setDots] = useState(''); 
     
     // Simulate loading text ellipsis effect
@@ -59,7 +60,8 @@ function EvaluatingPage() {
           else {
             setInputFile(data['inputfile']);
             setOutputPath(data['outputpath'])
-            setOutputFilePath(data['outputfilepath']);
+            setBaselineSpeed(data['baselinespeed'])
+            setCSVFilePath(data['outputfilepath']);
             setProcessDescription(`The ${processType}ion for the ${data['inputfile'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
           }
           eventSource.close();
@@ -88,6 +90,15 @@ function EvaluatingPage() {
       console.error('Error halting processing:', error);
     }
   };
+
+  const navigateEvaluateSummary = () => {
+    navigate('/results', {
+      state : {
+        processType: processType,
+        data: {inputFile, csvfilepath, baselinespeed}
+      }
+    })
+  }
 
   const navigateHome = () => {
     navigate('/');
@@ -130,13 +141,13 @@ function EvaluatingPage() {
 
           {/* Stop Processing Button */}
           <NavButton
-              className="w-60 h-12 rounded-lg"
-              buttonText="Stop Processing"
-              buttonColor="primary1"
-              hoverColor="primary0"
-              buttonTextColor="white"
-              onClickFunction={haltProcessing}
-          />
+            className="w-60 h-12 rounded-lg"
+            buttonText="Stop Processing"
+            buttonColor="primary1"
+            hoverColor="primary0"
+            buttonTextColor="white"
+            onClickFunction={haltProcessing}
+            />
           </div>
           
           {!isProcessing && (
@@ -148,7 +159,7 @@ function EvaluatingPage() {
             outputLocation={outputpath}
             nextPageButtonText="View Analytics Summary"
             viewFileButtonText="View CSV File"
-            navigateNextPage={navigateHome}
+            navigateNextPage={navigateEvaluateSummary}
             navigatePrevPage={navigateEvaluatePage}
             navigateHome={navigateHome}
           />

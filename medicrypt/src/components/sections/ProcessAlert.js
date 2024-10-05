@@ -10,4 +10,3 @@ export const ProcessAlert = ({ children, processStatus }) => {
 
 export const ProcessAlertTitle = ({ children }) => <h3 className="font-bold">{children}</h3>;
 export const ProcessAlertDescription = ({ children }) => <p>{children}</p>;
-

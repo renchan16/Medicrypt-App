@@ -72,7 +72,6 @@ async def encrypt_video(request: Request):
     if not current_handler:
         raise HTTPException(status_code=400, detail="Handler not initialized.")
 
-    # Use the executor to run the process in a separate thread
     return StreamingResponse(current_handler.process_request("encrypt"), media_type="text/event-stream")
 
 @app.get("/decrypt/processing")
@@ -80,8 +79,7 @@ async def decrypt_video(request: Request):
     global current_handler
     if not current_handler:
         raise HTTPException(status_code=400, detail="Handler not initialized.")
-    
-    # Use the executor to run the process in a separate thread
+
     return StreamingResponse(current_handler.process_request("decrypt"), media_type="text/event-stream")
 
 @app.get("/encrypt/evaluating")
@@ -90,7 +88,6 @@ async def encrypt_evaluate(request: Request):
     if not current_handler:
         raise HTTPException(status_code=400, detail="Handler not initialized.")
 
-    # Use the executor to run the process in a separate thread
     return StreamingResponse(current_handler.process_request("encrypt"), media_type="text/event-stream")
 
 @app.get("/decrypt/evaluating")
@@ -99,7 +96,6 @@ async def encrypt_evaluate(request: Request):
     if not current_handler:
         raise HTTPException(status_code=400, detail="Handler not initialized.")
 
-    # Use the executor to run the process in a separate thread
     return StreamingResponse(current_handler.process_request("decrypt"), media_type="text/event-stream")
 
 @app.post("/halt_processing")

@@ -1,6 +1,7 @@
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const Papa = require('papaparse');
 
 let mainWindow;
 let currentDialog = null;
@@ -154,4 +155,20 @@ ipcMain.handle('dialog:openFileLocation', (event, filePath) => {
     console.error('Error opening file or directory location:', err);
     return false; // Error occurred
   }
+});
+
+ipcMain.handle('parse-csv', async (event, filepath) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filepath, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        Papa.parse(data, {
+          header: true,
+          complete: (results) => resolve(results.data),
+          error: (error) => reject(error),
+        });
+      }
+    });
+  });
 });

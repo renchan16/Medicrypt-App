@@ -139,9 +139,6 @@ def main():
         for i in fields:
             if i == "Frame":
                 continue
-            if i == "ETime" or i == "DTime":
-                mean_field[i] = 0.0
-                continue
             mean_field[i] = []
         
         for i in range(args.frames):
@@ -228,13 +225,13 @@ def main():
                 with open(args.etime, 'r') as t:
                     lines = t.readlines()
                     row_field['ETime'] = float(lines[i])
-                    mean_field['ETime'] += float(lines[i])
+                    mean_field['ETime'] += [float(lines[i])]
             
             if args.dtime != None:
                 with open(args.dtime, 'r') as t:
                     lines = t.readlines()
                     row_field['DTime'] = float(lines[i])
-                    mean_field['DTime'] += float(lines[i])
+                    mean_field['DTime'] += [float(lines[i])]
             
             writer.writerow(row_field)
 

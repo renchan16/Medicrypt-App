@@ -255,6 +255,7 @@ class AnalysisCommandHandler:
 
         # List for outputs
         self.inputfile_list = []
+        self.resolution_list = []
         self.outputfilepath_list = []
         self.baselinespeed_list = []
 
@@ -269,7 +270,7 @@ class AnalysisCommandHandler:
         self.has_error = False
         self.is_halted = False
     
-    def _validate_video(self, current_processedfilepath: str, current_origfilepath: str):
+    def _validate_video(self, process_type:str, current_processedfilepath: str, current_origfilepath: str):
         """Validate whether the processed video has the same resolution with the original video"""
         orig_cap = cv2.VideoCapture(current_origfilepath)
         if not orig_cap.isOpened():
@@ -293,25 +294,27 @@ class AnalysisCommandHandler:
         # Compare resolutions
         if orig_width == processed_width and orig_height == processed_height:
             return True
-        else:
-            self._handle_error(
-                f"Resolution mismatch: Original video is {orig_width}x{orig_height}, Processed video is {processed_width}x{processed_height}.",
-                'failure',
-                self.stdout_str, self.stderr_str
-            )
+
+        elif process_type == "encrypt":
+            return True
 
         return False
 
-    def _get_baseline_speed(self, current_processedfilepath: str):
+    def _get_video_info(self, current_processedfilepath: str):
         """Get the baseline speed for the given filepath based on closest resolution from reference table"""
         
         # Define the reference table for AES performance across resolutions
         reference_table = {
-            (320, 240): [30.2, 26.5, 30.1],    
-            (720, 576): [273, 216, 272],      
-            (1280, 720): [282, 253, 281],      
-            (1920, 1080): [538, 510, 540],     
-            (3840, 2160): [2531, 2339, 2530]
+            (320, 240): [30.2, 26.5, 30.1],
+            (240, 320): [30.2, 26.5, 30.1],    
+            (720, 576): [273, 216, 272],
+            (576, 720): [273, 216, 272],      
+            (1280, 720): [282, 253, 281],
+            (720, 1280): [282, 253, 281],       
+            (1920, 1080): [538, 510, 540],
+            (1080, 1920): [538, 510, 540],     
+            (3840, 2160): [2531, 2339, 2530],
+            (2160, 3840): [2531, 2339, 2530]
         }
 
         # Open the processed video file to get its resolution
@@ -327,7 +330,7 @@ class AnalysisCommandHandler:
 
         closest_resolution = min(reference_table.keys(), key=lambda res: (res[0] - processed_width)**2 + (res[1] - processed_height)**2)
 
-        return reference_table[closest_resolution]
+        return reference_table[closest_resolution], [processed_width, processed_height]
 
     def _generate_command(self, process_type: str, current_origfilepath: str, current_processedfilepath: str, current_timefilepath: str):
         """Generate the appropriate analysis-cli.py command for either encryption or decryption evaluation."""
@@ -356,8 +359,8 @@ class AnalysisCommandHandler:
         else:
             command = f"python -u analysis-cli.py -o {current_origfilepath} -d {current_processedfilepath} -p 12345 -m psnr -w {outputfilepath} -t {self.algorithm} --dtime {current_timefilepath} --verbose"
 
-        baselinespeed = self._get_baseline_speed(current_processedfilepath)
-        data = { "inputfile": inputfile, "outputfilepath": outputfilepath, "baselinespeed": baselinespeed }
+        baselinespeed, resolution = self._get_video_info(current_processedfilepath)
+        data = { "inputfile": inputfile, "resolution": resolution, "outputfilepath": outputfilepath, "baselinespeed": baselinespeed }
         return command, data
 
     def _run_subprocess(self, command: str, data: dict, index: int):
@@ -390,11 +393,13 @@ class AnalysisCommandHandler:
             self.stdout_str = "\n".join(stdout_lines)
             self.stderr_str = "\n".join(stderr_lines)
             inputfile = data['inputfile']
+            resolution = data['resolution']
             outputfilepath = data['outputfilepath']
             baselinespeed = data['baselinespeed']
 
             if self.process.returncode == 0:
                 self.inputfile_list.append(inputfile)
+                self.resolution_list.append(resolution)
                 self.outputfilepath_list.append(outputfilepath)
                 self.baselinespeed_list.append(baselinespeed)
                 
@@ -425,7 +430,7 @@ class AnalysisCommandHandler:
             command, data = self._generate_command(process_type, origfilepath, processedfilepath, timefilepath)
 
             # Validate video before processing
-            if not self._validate_video(processedfilepath, origfilepath):
+            if not self._validate_video(process_type, processedfilepath, origfilepath):
                 self.has_error = True
                 yield self._handle_error('Video validation failed', 'failure', 'MISMATCH VIDEO RESOLUTION', self.stderr_str, command)
                 break
@@ -445,9 +450,10 @@ class AnalysisCommandHandler:
         # Return if no error occured
         if not (self.is_halted or self.has_error):
             inputfile = self.inputfile_list
+            resolution = self.resolution_list
             outputfilepath = self.outputfilepath_list
             baselinespeed = self.baselinespeed_list
-            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'algorithm': self.algorithm, 'inputfile': inputfile, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath, 'baselinespeed': baselinespeed})}\n\n"
+            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'algorithm': self.algorithm, 'inputfile': inputfile, 'resolution': resolution, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath, 'baselinespeed': baselinespeed})}\n\n"
     
     def halt_process(self):
         """Handle the stopping of the current processes."""

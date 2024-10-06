@@ -11,12 +11,13 @@ import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
 function EvaluatingPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [inputFile, setInputFile] = useState("");
     const { processType, inputs } = location.state || {};
     const [isProcessing, setIsProcessing] = useState(true);
     const [currentProcess, setCurrentProcess] = useState(false);
     const [processStatus, setProcessStatus] = useState("");
     const [processDescription, setProcessDescription] = useState("");
+    const [inputFile, setInputFile] = useState("");
+    const [resolution, setResolution] = useState("")
     const [outputpath, setOutputPath] = useState("");
     const [baselinespeed, setBaselineSpeed] = useState("")
     const [csvfilepath, setCSVFilePath] = useState("");
@@ -59,6 +60,7 @@ function EvaluatingPage() {
           } 
           else {
             setInputFile(data['inputfile']);
+            setResolution(data['resolution'])
             setOutputPath(data['outputpath'])
             setBaselineSpeed(data['baselinespeed'])
             setCSVFilePath(data['outputfilepath']);
@@ -95,7 +97,7 @@ function EvaluatingPage() {
     navigate('/results', {
       state : {
         processType: processType,
-        data: {inputFile, csvfilepath, baselinespeed}
+        data: {inputFile, resolution, outputpath, csvfilepath, baselinespeed}
       }
     })
   }
@@ -152,7 +154,7 @@ function EvaluatingPage() {
           
           {!isProcessing && (
           <ProcessComplete
-            processType={"Evaluat"}
+            processType={"Evaluation"}
             processStatus={processStatus}
             processDescription={processDescription}
             inputFile={inputFile}

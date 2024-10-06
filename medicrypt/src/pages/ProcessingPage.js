@@ -143,7 +143,7 @@ function ProcessingPage() {
 
         {!isProcessing && (
           <ProcessComplete
-            processType={processType}
+            processType={processType === "Encrypt" ? "Encryption" : "Decryption"}
             processStatus={processStatus}
             processDescription={processDescription}
             inputFile={inputFile}

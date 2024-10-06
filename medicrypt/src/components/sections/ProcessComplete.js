@@ -11,7 +11,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
   return (
     <div className="w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
       <h1 className="mb-4 text-4xl text-primary1 font-bold">
-        {processType}ion {processStatus === "success" ? "Complete" : "Failed"}!
+        {processType} {processStatus === "success" ? "Complete" : "Failed"}!
       </h1>
 
       <ProcessAlert processStatus={processStatus}>
@@ -35,14 +35,16 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
             buttonIcon={FiBarChart}
             onClickFunction={navigateNextPage}
           />
-          <NavButton
-            className="w-full h-12"
-            buttonColor="primary2"
-            buttonText={viewFileButtonText}
-            buttonTextColor="black"
-            buttonIcon={FaRegFolder}
-            filePath={outputLocation}
-          />
+          {processType !== "Evaluation" && (
+            <NavButton
+              className="w-full h-12"
+              buttonColor="primary2"
+              buttonText={viewFileButtonText}
+              buttonTextColor="black"
+              buttonIcon={FaRegFolder}
+              filePath={outputLocation}
+              />
+          )}
         </div>
 
         {/* Error Action (Try Again) */}

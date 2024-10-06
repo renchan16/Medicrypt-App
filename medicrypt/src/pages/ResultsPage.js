@@ -1,81 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md'; // Import the back arrow icon
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for navigation
+import { MdArrowBackIosNew } from 'react-icons/md';
+import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateBefore } from "react-icons/md";
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../pages-css/General.css';
 import { AnalyticsMetrics } from '../components/sections/AnalyticsMetrics';
 import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../components/sections/AnalyticsCard';
 import logo from '../assets/MedicryptLogo.png';
 import NavButton from '../components/buttons/NavButton';
 import AnalyticsCCValue from '../components/sections/AnalyticsCCValue';
+import AnalyticsSelect from '../components/sections/AnalyticsSelect';
+import { FaRegFolder } from "react-icons/fa";
 
 function ResultsPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const { processType, data } = location.state || {};
-    const [parsedCSVData, setParsedCSVData] = useState([]); // Array of arrays to hold parsed data
+    const [parsedCSVData, setParsedCSVData] = useState([]);
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
-    const [showAdditionalFields, setShowAdditionalFields] = useState(false)
-
+    const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
     let csvfilepath = data['csvfilepath'];
+    let processedfile = data['inputFile'];
+    let resolution = data['resolution'];
+    let outputpath = data['outputpath']
 
     useEffect(() => {
-        // Function to parse CSV files using Electron
         const parseCSV = async (filePath) => {
             try {
                 const parsedData = await window.electron.parseCSV(filePath);
                 const cleanedData = parsedData.filter(entry => entry.Frame !== '');
-
-                setParsedCSVData((prev) => {
-                    const newData = [...prev]; 
-                    newData.push(cleanedData);
-                    return newData; 
-                });
-            } 
-            catch (error) {
+                setParsedCSVData((prev) => [...prev, cleanedData]);
+            } catch (error) {
                 console.error('Error parsing CSV:', error);
             }
         };
 
-        // Parse each file in the csvfilepath array
         csvfilepath.forEach((filePath) => {
             parseCSV(filePath);
         });
     }, [csvfilepath]);
 
     const getBaselineSpeed = (meanSpeed) => {
-        // Create the ideal string
-        const idealString = `< ${meanSpeed.toFixed(2)} seconds`;
-
-        return idealString;
+        return `< ${meanSpeed.toFixed(2)} seconds`;
     }
 
     const showOtherFields = () => {
-        if (processType === "Encrypt") {
-            if (showAdditionalFields) {
-                setShowAdditionalFields(false)
-            }
-            else {
-                setShowAdditionalFields(true)
-            }
-        }        
+        setShowAdditionalFields(!showAdditionalFields);
     }
 
-    const handlePrevious = () => {
-        if (currentFileIndex > 0) {
-            setCurrentFileIndex((prevIndex) => prevIndex - 1);
-        }
-    };
-
-    const handleNext = () => {
-        if (currentFileIndex < parsedCSVData.length - 1) {
-            setCurrentFileIndex((prevIndex) => prevIndex + 1);
-        }
+    const handleFileChange = (event) => {
+        setCurrentFileIndex(Number(event.target.value));
     };
 
     const currentData = parsedCSVData[currentFileIndex];
-
-    // Get the Mean Value
     const lastValue = currentData && currentData.length > 0 ? currentData[currentData.length - 1] : null;
 
     let baselinespeed = data['baselinespeed'][currentFileIndex];
@@ -113,20 +91,33 @@ function ResultsPage() {
 
                 <div className='relative top-1/2 transform -translate-y-1/2'>
                     <h1 className="text-3xl font-bold mb-4">{processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results</h1>
-                    <p className="mb-4">Current File: {csvfilepath[currentFileIndex]}</p>
+                    <h2>Current File:</h2>
+                    <AnalyticsSelect 
+                        value={currentFileIndex}
+                        onChange={handleFileChange}
+                        className="mb-2"
+                    >
+                        {processedfile.map((file, index) => (
+                            <option key={index} value={index}>
+                                {file}
+                            </option>
+                        ))}
+                    </AnalyticsSelect>
+                    <p className="mb-4">Resolution: {resolution[currentFileIndex][0]}x{resolution[currentFileIndex][1]}</p>
                     <div className='h-1/4 '></div>
-                    <div className={`flex h-2/6 mb-8 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
+                    <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
                         <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
                             {lastValue && (
                                 <div className={metrics_div}>
-                                    {metrics.filter(m => m.isSingleValue || m.isEntropy).map((metric) => ( // Use curly braces to execute the map function
+                                    {metrics.filter(m => m.isSingleValue || m.isEntropy).map((metric, index) => (
                                         <AnalyticsMetrics
+                                            key={index}
                                             metric={metric}
                                             baselinespeed={meanSpeed}
                                             value={metric.name === "Entropy" 
                                                 ? [parseFloat(lastValue[metric.subMetrics[0]]), parseFloat(lastValue[metric.subMetrics[1]]), parseFloat(lastValue[metric.subMetrics[2]]), parseFloat(lastValue[metric.subMetrics[3]])]
                                                 : parseFloat(lastValue[metric.subMetrics[0]])}
-                                            />
+                                        />
                                     ))}
                                 </div>
                             )}
@@ -142,57 +133,50 @@ function ResultsPage() {
                                                 value={parseFloat(lastValue['CC_h_e'])}
                                                 idealZero={true}
                                                 metricLabel={"CCh: "}
-                                                min={-5}
-                                                max={5}
-                                                />
+                                                min={-1}
+                                                max={1}
+                                            />
                                             <AnalyticsCCValue
                                                 className='mb-1'
                                                 value={parseFloat(lastValue['CC_v_e'])}
                                                 idealZero={true}
                                                 metricLabel={"CCv: "}
-                                                min={-5}
-                                                max={5}
-                                                />
+                                                min={-1}
+                                                max={1}
+                                            />
                                             <AnalyticsCCValue
                                                 className='mb-1'
                                                 value={parseFloat(lastValue['CC_d_e'])}
                                                 idealZero={true}
                                                 metricLabel={"CCd: "}
-                                                min={-5}
-                                                max={5}
-                                                />
+                                                min={-1}
+                                                max={1}
+                                            />
                                         </div>
                                     </AnalyticsCardContent>
                                 </AnalyticsCard>
                             </div>
                         )}
                     </div>
-                    {processType === "Encrypt" && (
-                        <NavButton
-                        className="w-full h-12 mt-8"
-                        buttonText={showAdditionalFields ? "Show Previous Metrics" : "Show Additional Metrics"}
-                        buttonColor="primary1"
-                        hoverColor="primary0"
-                        buttonTextColor="white"
-                        onClickFunction={showOtherFields}
-                        />
-                    )}
-                    <div className="flex gap-2 shrink-0 justify-between mt-2">
-                        <NavButton
-                            className={`w-full h-12 ${currentFileIndex === 0 ? "opacity-70 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
-                            buttonText={"Previous Video File"}
-                            buttonColor="primary1"
-                            hoverColor="primary0"
-                            buttonTextColor="white"
-                            onClickFunction={handlePrevious}
+                    <div className='space-y-4'>
+                        {processType === "Encrypt" && (
+                            <NavButton
+                                className="w-full h-12 mt-8"
+                                buttonText={showAdditionalFields ? "Show Previous Metrics" : "Show Additional Metrics"}
+                                buttonColor="primary1"
+                                hoverColor="primary0"
+                                buttonTextColor="white"
+                                buttonIcon={showAdditionalFields ? MdNavigateBefore : MdNavigateNext}
+                                onClickFunction={showOtherFields}
                             />
+                        )}
                         <NavButton
-                            className={`w-full h-12 ${currentFileIndex === parsedCSVData.length - 1 ? "opacity-70 pointer-events-none" : "opacity-100 pointer-events-auto"}`}
-                            buttonText={"Next Video File"}
-                            buttonColor="primary1"
-                            hoverColor="primary0"
-                            buttonTextColor="white"
-                            onClickFunction={handleNext}
+                            className="w-full h-12"
+                            buttonColor="primary2"
+                            buttonText="Show CSV File"
+                            buttonTextColor="black"
+                            buttonIcon={FaRegFolder}
+                            filePath={outputpath}
                             />
                     </div>
                 </div>

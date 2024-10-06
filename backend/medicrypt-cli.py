@@ -20,7 +20,7 @@ def main():
     parser.add_argument('-k', '--key', help="(required for decryption) specifies the key path")
     parser.add_argument('-p', '--password', required=True, help="specifies the password of the key file")
     parser.add_argument('-v', '--verbose', action='store_true', help="displays the encryption process")
-    parser.add_argument('-f', '--frames', help="specifies the number of frames (for testing purposes only)")
+    parser.add_argument('-f', '--frames', type=int, help="specifies the number of frames (for testing purposes only)", default=-1)
     parser.add_argument('--storetime', type=str)
 
     args = parser.parse_args()
@@ -37,19 +37,19 @@ def main():
     if args.type == "fisher-yates":
         encrypt_mod = Encrypt()
         if args.mode == 'encrypt':
-            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password, args.verbose)
+            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password, args.verbose, args.frames)
             pass
         elif args.mode == 'decrypt':
-            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password, args.verbose)
+            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password, args.verbose, args.frames)
             pass
         
     elif args.type == "3d-cosine":
         encrypt_mod = Encrypt_cosine()
         if args.mode == 'encrypt':
-            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password, args.verbose)
+            video = encrypt_mod.encryptVideo(args.input, args.output, args.key, args.password, args.verbose, args.frames)
             pass
         elif args.mode == 'decrypt':
-            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password, args.verbose)
+            video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password, args.verbose, args.frames)
             pass
         return
     

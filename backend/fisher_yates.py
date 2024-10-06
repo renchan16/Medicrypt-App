@@ -357,9 +357,9 @@ class Encrypt:
 
         cap.release()
         if verbose: print(f"Video has been Decrypted")
-        self.encryptHashes(key.resolve(), password)
 
         if not mem_only:
-            hash_file.close()  # finally, close the file
+            self.encryptHashes(key.resolve(), password)     # re-encrypt file for safety
+            hash_file.close()   # finally, close the file
 
         return per_frame_runtime

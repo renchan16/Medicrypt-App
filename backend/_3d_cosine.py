@@ -252,11 +252,10 @@ class Encrypt_cosine:
         decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
 
         if mem_only:
-            decrypt_list = decrypted.splitlines()
-            frame_seq = eval(decrypt_list[-1])
-            keys = decrypt_list.pop()
+            key_list = decrypted.splitlines()
+            frame_seq = eval(key_list.pop())
 
-            return keys, frame_seq
+            return key_list, frame_seq
         else:
             return None, None
 

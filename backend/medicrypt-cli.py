@@ -51,9 +51,9 @@ def main():
         elif args.mode == 'decrypt':
             video = encrypt_mod.decryptVideo(args.input, args.output, args.key, args.password, args.verbose, args.frames)
             pass
-        return
     
     if (args.storetime != None):
+        
         logfilewriter.logwrite(video, args.storetime)
     
 

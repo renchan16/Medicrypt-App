@@ -305,20 +305,15 @@ class AnalysisCommandHandler:
         
         # Define the reference table for AES performance across resolutions
         reference_table = {
-            (320, 240): [30.2, 26.5, 30.1],
-            (240, 320): [30.2, 26.5, 30.1],    
-            (720, 576): [273, 216, 272],
-            (576, 720): [273, 216, 272],      
-            (1280, 720): [282, 253, 281],
-            (720, 1280): [282, 253, 281],       
-            (1920, 1080): [538, 510, 540],
-            (1080, 1920): [538, 510, 540],     
-            (3840, 2160): [2531, 2339, 2530],
-            (2160, 3840): [2531, 2339, 2530]
+            (320, 240): [30.2, 26.5, 30.1],    
+            (720, 576): [273, 216, 272],     
+            (1280, 720): [282, 253, 281],       
+            (1920, 1080): [538, 510, 540],     
+            (3840, 2160): [2531, 2339, 2530]
         }
 
-        # Open the processed video file to get its resolution
         processed_cap = cv2.VideoCapture(current_processedfilepath)
+        
         if not processed_cap.isOpened():
             self._handle_error(f"Error opening processed video file: {current_processedfilepath}")
             return None
@@ -328,7 +323,10 @@ class AnalysisCommandHandler:
         
         processed_cap.release()
 
-        closest_resolution = min(reference_table.keys(), key=lambda res: (res[0] - processed_width)**2 + (res[1] - processed_height)**2)
+        lookup_width = max(processed_width, processed_height)
+        lookup_height = min(processed_width, processed_height)
+
+        closest_resolution = min(reference_table.keys(), key=lambda res: (res[0] - lookup_width)**2 + (res[1] - lookup_height)**2)
 
         return reference_table[closest_resolution], [processed_width, processed_height]
 

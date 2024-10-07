@@ -12,6 +12,35 @@ import AnalyticsCCValue from '../components/sections/AnalyticsCCValue';
 import AnalyticsSelect from '../components/sections/AnalyticsSelect';
 import { FaRegFolder } from "react-icons/fa";
 
+const getResolutionLabel = (width, height) => {
+    const parsedWidth = parseInt(width, 10);
+    const parsedHeight = parseInt(height, 10);
+
+    if (isNaN(parsedWidth) || isNaN(parsedHeight)) {
+        return ""; // Return empty string if parsing fails
+    }
+
+    const sortedDimensions = [parsedWidth, parsedHeight].sort((a, b) => a - b); // Sort dimensions to handle portrait and landscape
+
+    if (sortedDimensions[0] === 240 && sortedDimensions[1] === 320) {
+        return "240p";
+    } 
+    else if (sortedDimensions[0] === 720 && sortedDimensions[1] === 1280) {
+        return "720p";
+    } 
+    else if (sortedDimensions[0] === 1080 && sortedDimensions[1] === 1920) {
+        return "1080p";
+    } 
+    else if (sortedDimensions[0] === 1440 && sortedDimensions[1] === 2560) {
+        return "1440p";
+    } 
+    else if (sortedDimensions[0] === 2160 && sortedDimensions[1] === 3840) {
+        return "2160p";
+    }
+
+    return ""; // No match if dimensions don't fall in known resolutions
+};
+
 function ResultsPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -57,7 +86,7 @@ function ResultsPage() {
     const lastValue = currentData && currentData.length > 0 ? currentData[currentData.length - 1] : null;
 
     let baselinespeed = data['baselinespeed'][currentFileIndex];
-    let meanSpeed = baselinespeed.reduce((acc, speed) => acc + speed, 0) / baselinespeed.length;
+    let meanSpeed = Math.min(...baselinespeed);
     let baselinespeedDesc =  getBaselineSpeed(meanSpeed);
 
     const encryptionMetrics = [
@@ -77,6 +106,8 @@ function ResultsPage() {
     const metrics = processType === 'Encrypt' ? encryptionMetrics : decryptionMetrics;
     const metrics_div = processType === 'Encrypt' ? "grid grid-cols-4 gap-4 mb-4" : "grid grid-cols-3 gap-4 mb-4";
     
+    const resolutionLabel = getResolutionLabel(resolution[currentFileIndex][0], resolution[currentFileIndex][1]);
+
     return (
         <div className='flex items-center justify-center h-full w-full select-none'>
             <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
@@ -103,7 +134,7 @@ function ResultsPage() {
                             </option>
                         ))}
                     </AnalyticsSelect>
-                    <p className="mb-4">Resolution: {resolution[currentFileIndex][0]}x{resolution[currentFileIndex][1]}</p>
+                    <p className="mb-4 flex">Resolution: {resolution[currentFileIndex][0]}x{resolution[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
                     <div className='h-1/4 '></div>
                     <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
                         <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
@@ -172,9 +203,10 @@ function ResultsPage() {
                         )}
                         <NavButton
                             className="w-full h-12"
-                            buttonColor="primary2"
+                            buttonColor="primary1"
+                            hoverColor="primary0"
                             buttonText="Show CSV File"
-                            buttonTextColor="black"
+                            buttonTextColor="white"
                             buttonIcon={FaRegFolder}
                             filePath={outputpath}
                             />

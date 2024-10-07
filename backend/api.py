@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from concurrent.futures import ThreadPoolExecutor
 from command_handler import EncryptionCommandHandler, AnalysisCommandHandler
 
 app = FastAPI()
@@ -13,9 +12,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Initialize ThreadPoolExecutor
-executor = ThreadPoolExecutor(max_workers=3)
 
 # Global variable to store the current EncryptionCommandHandler instance
 current_handler = None

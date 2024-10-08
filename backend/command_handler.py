@@ -37,11 +37,8 @@ class EncryptionCommandHandler:
 
     def _generate_command(self, process_type: str, filepath: str, current_hashpath: str):
         # Necessary variables for output
-        base_filename = os.path.splitext(os.path.basename(filepath))[0]
-        inputfile_ext = os.path.splitext(os.path.basename(filepath))[1].lower()
+        base_filename, inputfile_ext = os.path.splitext(os.path.basename(filepath))
         inputfile = base_filename + inputfile_ext
-        outputfilepath = None
-        timefilepath = None
 
         """Generate the appropriate encryption or decryption command."""
         self.algorithm = self._get_algorithm()
@@ -57,40 +54,25 @@ class EncryptionCommandHandler:
 
         if process_type == "encrypt":
             # Determine output path for encrypted file
-            if self.outputpath and self.outputpath.strip():
-                outputfilepath = os.path.join(self.outputpath, f"{base_filename}_encrypted.avi")
-                
-            else:
-                outputfilepath = filepath.replace(inputfile_ext, "_encrypted.avi")
-
+            outputfilepath = os.path.join(self.outputpath, f"{base_filename}_encrypted.avi") if self.outputpath.strip() else filepath.replace(inputfile_ext, "_encrypted.avi")
             outputfilepath = get_unique_filepath(outputfilepath)
 
             # Get the output path for view file functionality
             self.outputpath = os.path.dirname(outputfilepath)
 
-            if current_hashpath and current_hashpath.strip():
-                hashfilepath = os.path.join(current_hashpath, f"{base_filename}.key")
-
-            else:
-                hashfilepath = os.path.join(os.path.dirname(filepath), f"{base_filename}.key")
-
+            # Get Hashfilepath
+            hashfilepath = os.path.join(current_hashpath, f"{base_filename}.key") if current_hashpath.strip() else os.path.join(os.path.dirname(filepath), f"{base_filename}.key")
             hashfilepath = get_unique_filepath(hashfilepath)
 
             # Set a file path for the time analysis based on the hashfilepath path
-            hashpath_dir = os.path.dirname(hashfilepath)
-            timefilepath = os.path.join(hashpath_dir, f"{base_filename}_encrypted_time.txt")
+            timefilepath = os.path.join(os.path.dirname(hashfilepath), f"{base_filename}_encrypted_time.txt")
             timefilepath = get_unique_filepath(timefilepath)
 
             command = f"python -u medicrypt-cli.py encrypt -i {filepath} -o {outputfilepath} -t {self.algorithm} -k {hashfilepath} -p {self.password} --verbose --storetime {timefilepath}"
         
         else:  # Decrypt
             # Determine output path for decrypted file
-            if self.outputpath and self.outputpath.strip():
-                outputfilepath = os.path.join(self.outputpath, f"{base_filename}_decrypted.avi")
-                
-            else:
-                outputfilepath = filepath.replace(".avi", "_decrypted.avi")
-
+            outputfilepath = os.path.join(self.outputpath, f"{base_filename}_decrypted.mp4") if self.outputpath.strip() else filepath.replace(".avi", "_decrypted.mp4")
             outputfilepath = get_unique_filepath(outputfilepath)
 
             # Get the output path for view file functionality
@@ -99,8 +81,7 @@ class EncryptionCommandHandler:
             hashfilepath = current_hashpath
 
             # Set a file path for the time analysis based on the hashpath (file path)
-            hashpath_dir = os.path.dirname(hashfilepath)
-            timefilepath = os.path.join(hashpath_dir, f"{base_filename}_decrypted_time.txt")
+            timefilepath = os.path.join(os.path.dirname(current_hashpath), f"{base_filename}_decrypted_time.txt")
             timefilepath = get_unique_filepath(timefilepath)
 
             # Generate the command itself
@@ -112,22 +93,23 @@ class EncryptionCommandHandler:
     def _run_subprocess(self, process_type: str, command: str, data: dict, index: int):
         """Run the subprocess and handle real-time stdout and stderr logging."""
         try:
-            # Use different process creation flags depending on the platform
+            process_args = {
+                'shell': True, 
+                'stdout': subprocess.PIPE, 
+                'stderr': subprocess.PIPE, 
+                'text': True, 
+                'bufsize': 1
+            }
             if sys.platform.startswith('win'):
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+                self.process = subprocess.Popen(command, **process_args, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
             else:
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, preexec_fn=os.setsid)
+                self.process = subprocess.Popen(command, **process_args, preexec_fn=os.setsid)
 
-            stdout_lines = []
-            stderr_lines = []
-
-            # Stream stdout
+            stdout_lines, stderr_lines = [], []
+            
             for stdout_line in iter(self.process.stdout.readline, ""):
-                curr_output = f"Video {index + 1} - {stdout_line.strip()}"
-                yield f"data: {json.dumps({'stdout': curr_output, 'status': 'processing'})}\n\n"
+                yield f"data: {json.dumps({'stdout': f'Video {index + 1} - {stdout_line.strip()}', 'status': 'processing'})}\n\n"
                 stdout_lines.append(stdout_line.strip())
-
-            # Stream stderr
             for stderr_line in iter(self.process.stderr.readline, ""):
                 yield f"data: {json.dumps({'stderr': stderr_line.strip(), 'status': 'processing'})}\n\n"
                 stderr_lines.append(stderr_line.strip())
@@ -138,27 +120,22 @@ class EncryptionCommandHandler:
 
             self.stdout_str = "\n".join(stdout_lines)
             self.stderr_str = "\n".join(stderr_lines)
-            inputfile = data['inputfile']
-            inputfilepath = data['inputfilepath']
-            outputfilepath = data['outputfilepath']
-            hashfilepath = data['hashfilepath']
-            timefilepath = data['timefilepath']
 
             if self.process.returncode == 0:
-                self.inputfile_list.append(inputfile)
-                self.inputfilepath_list.append(inputfilepath)
-                self.outputfilepath_list.append(outputfilepath)
-                self.timefilepath_list.append(timefilepath)
+                self.inputfile_list.append(data['inputfile'])
+                self.inputfilepath_list.append(data['inputfilepath'])
+                self.outputfilepath_list.append(data['outputfilepath'])
+                self.timefilepath_list.append(data['timefilepath'])
                 
             else:
-                self._delete_output_files(process_type, outputfilepath, hashfilepath, timefilepath)
+                self._delete_output_files(process_type, data['outputfilepath'], data['hashfilepath'], data['timefilepath'])
 
                 if self.is_halted:
-                    yield f"data: {json.dumps({'message': 'Process halted by user request.', 'status': 'failure', 'stdout': 'HALTED', 'stderr': self.stderr_str})}\n\n"
+                    yield self._handle_error('Process halted by user', 'failure', 'HALTED', self.stderr_str)
 
                 else:
                     self.has_error = True
-                    yield f"data: {json.dumps({'message': 'Process encountered an issue', 'status': 'failure', 'stdout': self.stdout_str, 'stderr': self.stderr_str})}\n\n"
+                    yield self._handle_error('Process encountered an issue', 'failure', self.stdout_str, self.stderr_str)
             
         except Exception as e:
             print(f"Subprocess error: {str(e)}")
@@ -166,38 +143,18 @@ class EncryptionCommandHandler:
 
     def process_request(self, process_type: str):
         """Handle the complete request for encryption or decryption."""
-        i = 0  
-        while i < len(self.filepath):
-            filepath = self.filepath[i]
-
-            # Check if hashpath is a list (for decryption) and handle it
-            if isinstance(self.hashpath, list) and process_type == "decrypt":
-                current_hashpath = self.hashpath[i]
-
-            else:
-                current_hashpath = self.hashpath  # Use the string hashpath for encryption
-
-            # Generate the command based on process type (encrypt or decrypt)
+        for i, filepath in enumerate(self.filepath):
+            current_hashpath = self.hashpath[i] if isinstance(self.hashpath, list) and process_type == "decrypt" else self.hashpath
             command, data = self._generate_command(process_type, filepath, current_hashpath)
-            subprocess = self._run_subprocess(process_type, command, data, i)
 
-            # Stream the output from the subprocess
-            for out in subprocess:
+            for out in self._run_subprocess(process_type, command, data, i):
                 yield out
 
-            # Check if the process was halted or encountered an error
             if self.is_halted or self.has_error:
                 break
 
-            i += 1 
-
-        # If not halted or with errors, send success message
         if not (self.is_halted or self.has_error):
-            inputfile = self.inputfile_list
-            inputfilepath = self.inputfilepath_list
-            outputfilepath = self.outputfilepath_list
-            timefilepath = self.timefilepath_list
-            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'inputfile': inputfile, 'inputfilepath': inputfilepath, 'algorithm': self.algorithm, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath, 'timefilepath': timefilepath})}\n\n"
+            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'inputfile': self.inputfile_list, 'inputfilepath': self.inputfilepath_list, 'algorithm': self.algorithm, 'outputpath': self.outputpath, 'outputfilepath': self.outputfilepath_list, 'timefilepath': self.timefilepath_list})}\n\n"
     
     def halt_process(self):
         """Handle the stopping of the current processes."""
@@ -244,6 +201,17 @@ class EncryptionCommandHandler:
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def _handle_error(self, message: str, status: str, stdout:str, stderr:str):
+        """Centralized error handling method."""
+        self.has_error = True
+        error_response = {
+            'message': message,
+            'status': status,
+            'stdout': self.stdout_str,
+            'stderr': self.stderr_str
+        }
+        return f"data: {json.dumps(error_response)}\n\n"
+
 class AnalysisCommandHandler:
     def __init__(self, algorithm: str, origfilepath: dict[str], processedfilepath: dict[str], timefilepath: dict[str], outputpath:str) -> None:
         # User Inputs
@@ -282,23 +250,13 @@ class AnalysisCommandHandler:
             self._handle_error(f"Error opening processed video file: {current_processedfilepath}")
             return False
 
-        orig_width = int(orig_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        orig_height = int(orig_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        processed_width = int(processed_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        processed_height = int(processed_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        orig_width, orig_height = int(orig_cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(orig_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        processed_width, processed_height = int(processed_cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(processed_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         orig_cap.release()
         processed_cap.release()
 
-        # Compare resolutions
-        if orig_width == processed_width and orig_height == processed_height:
-            return True
-
-        elif process_type == "encrypt":
-            return True
-
-        return False
+        return orig_width == processed_width and orig_height == processed_height or process_type == "encrypt"
 
     def _get_video_info(self, current_processedfilepath: str):
         """Get the baseline speed for the given filepath based on closest resolution from reference table"""
@@ -333,10 +291,8 @@ class AnalysisCommandHandler:
     def _generate_command(self, process_type: str, current_origfilepath: str, current_processedfilepath: str, current_timefilepath: str):
         """Generate the appropriate analysis-cli.py command for either encryption or decryption evaluation."""
         # Necessary variables for output
-        base_processedfilename = os.path.splitext(os.path.basename(current_processedfilepath))[0]
-        inputfile_ext = os.path.splitext(os.path.basename(current_processedfilepath))[1].lower()
+        base_processedfilename, inputfile_ext = os.path.splitext(os.path.basename(current_processedfilepath))
         inputfile = base_processedfilename + inputfile_ext
-        outputfilepath = None
 
         def get_unique_filepath(filepath):
             base, ext = os.path.splitext(filepath)
@@ -364,14 +320,19 @@ class AnalysisCommandHandler:
     def _run_subprocess(self, command: str, data: dict, index: int):
         """Run the command using a subprocess."""
         try:
-            # Use different process creation flags depending on the platform
+            process_args = {
+                'shell': True, 
+                'stdout': subprocess.PIPE, 
+                'stderr': subprocess.PIPE, 
+                'text': True, 
+                'bufsize': 1
+            }
             if sys.platform.startswith('win'):
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
+                self.process = subprocess.Popen(command, **process_args, creationflags=subprocess.CREATE_NEW_PROCESS_GROUP)
             else:
-                self.process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, preexec_fn=os.setsid)
+                self.process = subprocess.Popen(command, **process_args, preexec_fn=os.setsid)
 
-            stdout_lines = []
-            stderr_lines = []
+            stdout_lines, stderr_lines= [],[]
     
             # Stream stdout
             for stdout_line in iter(self.process.stdout.readline, ""):
@@ -390,26 +351,22 @@ class AnalysisCommandHandler:
 
             self.stdout_str = "\n".join(stdout_lines)
             self.stderr_str = "\n".join(stderr_lines)
-            inputfile = data['inputfile']
-            resolution = data['resolution']
-            outputfilepath = data['outputfilepath']
-            baselinespeed = data['baselinespeed']
 
             if self.process.returncode == 0:
-                self.inputfile_list.append(inputfile)
-                self.resolution_list.append(resolution)
-                self.outputfilepath_list.append(outputfilepath)
-                self.baselinespeed_list.append(baselinespeed)
+                self.inputfile_list.append(data['inputfile'])
+                self.resolution_list.append(data['resolution'])
+                self.outputfilepath_list.append(data['outputfilepath'])
+                self.baselinespeed_list.append(data['baselinespeed'])
                 
             else:
-                self._delete_output_files(outputfilepath)
+                self._delete_output_files(data['outputfilepath'])
 
                 if self.is_halted:
-                    yield f"data: {json.dumps({'message': 'Process halted by user request.', 'status': 'failure', 'stdout': 'HALTED', 'stderr': self.stderr_str})}\n\n"
+                    yield self._handle_error('Process halted by user', 'failure', 'HALTED', self.stderr_str)
 
                 else:
                     self.has_error = True
-                    yield self._handle_error('Process encountered an issue', 'failure', self.stdout_str, self.stderr_str, command)
+                    yield self._handle_error('Process encountered an issue', 'failure', self.stdout_str, self.stderr_str)
             
         except Exception as e:
             print(f"Subprocess error: {str(e)}")
@@ -417,41 +374,19 @@ class AnalysisCommandHandler:
     
     def process_request(self, process_type: str):
         """Handle the complete request for analysis of encryption or decryption."""
-        i = 0
-        while i < len(self.processedfilepath):
-            # Access current files
-            origfilepath = self.origfilepath[i]
-            processedfilepath = self.processedfilepath[i]
-            timefilepath = self.timefilepath[i]
+        for i, filepath in enumerate(self.processedfilepath):
+            current_origfilepath = self.origfilepath[i]
+            current_timefilepath = self.timefilepath[i]
+            command, data = self._generate_command(process_type, current_origfilepath, filepath, current_timefilepath)
 
-            # Generate Command and Data for Outputs
-            command, data = self._generate_command(process_type, origfilepath, processedfilepath, timefilepath)
-
-            # Validate video before processing
-            if not self._validate_video(process_type, processedfilepath, origfilepath):
-                self.has_error = True
-                yield self._handle_error('Video validation failed', 'failure', 'MISMATCH VIDEO RESOLUTION', self.stderr_str, command)
-                break
-
-            # Run Subprocess
-            subprocess = self._run_subprocess(command, data, i)
-
-            for out in subprocess:
+            for out in self._run_subprocess(command, data, i):
                 yield out
-            
-            # Check if the process was halted or encountered an error
+
             if self.is_halted or self.has_error:
                 break
 
-            i += 1 
-
-        # Return if no error occured
         if not (self.is_halted or self.has_error):
-            inputfile = self.inputfile_list
-            resolution = self.resolution_list
-            outputfilepath = self.outputfilepath_list
-            baselinespeed = self.baselinespeed_list
-            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'algorithm': self.algorithm, 'inputfile': inputfile, 'resolution': resolution, 'outputpath': self.outputpath, 'outputfilepath': outputfilepath, 'baselinespeed': baselinespeed})}\n\n"
+            yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'inputfile': self.inputfile_list, 'resolution': self.resolution_list, 'algorithm': self.algorithm, 'outputpath': self.outputpath, 'outputfilepath': self.outputfilepath_list, 'baselinespeed': self.baselinespeed_list})}\n\n"
     
     def halt_process(self):
         """Handle the stopping of the current processes."""
@@ -483,7 +418,7 @@ class AnalysisCommandHandler:
         except Exception as e:
             print(f"An error occurred: {e}")
 
-    def _handle_error(self, message: str, status: str, stdout:str, stderr:str, command: str = None):
+    def _handle_error(self, message: str, status: str, stdout:str, stderr:str):
         """Centralized error handling method."""
         self.has_error = True
         error_response = {
@@ -492,6 +427,4 @@ class AnalysisCommandHandler:
             'stdout': self.stdout_str,
             'stderr': self.stderr_str
         }
-        if command:
-            error_response['command'] = command
         return f"data: {json.dumps(error_response)}\n\n"

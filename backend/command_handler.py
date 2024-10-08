@@ -68,7 +68,7 @@ class EncryptionCommandHandler:
             timefilepath = os.path.join(os.path.dirname(hashfilepath), f"{base_filename}_encrypted_time.txt")
             timefilepath = get_unique_filepath(timefilepath)
 
-            command = f"python -u medicrypt-cli.py encrypt -i {filepath} -o {outputfilepath} -t {self.algorithm} -k {hashfilepath} -p {self.password} --verbose --storetime {timefilepath}"
+            command = f"python -u medicrypt-cli.py encrypt -i \"{filepath}\" -o \"{outputfilepath}\" -t {self.algorithm} -k \"{hashfilepath}\" -p {self.password} --verbose --storetime \"{timefilepath}\""
         
         else:  # Decrypt
             # Determine output path for decrypted file
@@ -85,7 +85,7 @@ class EncryptionCommandHandler:
             timefilepath = get_unique_filepath(timefilepath)
 
             # Generate the command itself
-            command = f"python -u medicrypt-cli.py decrypt -i {filepath} -o {outputfilepath} -t {self.algorithm} -k {hashfilepath} -p {self.password} --verbose --storetime {timefilepath}"
+            command = f"python -u medicrypt-cli.py decrypt -i \"{filepath}\" -o \"{outputfilepath}\" -t {self.algorithm} -k \"{hashfilepath}\" -p {self.password} --verbose --storetime \"{timefilepath}\""
         
         data = { "inputfile": inputfile, "inputfilepath": filepath, "outputfilepath": outputfilepath, "hashfilepath": hashfilepath, "timefilepath": timefilepath }
         return command, data
@@ -308,10 +308,10 @@ class AnalysisCommandHandler:
         outputfilepath = get_unique_filepath(outputfilepath)
 
         if process_type == "encrypt":
-            command = f"python -u analysis-cli.py -o {current_origfilepath} -e {current_processedfilepath} -p 12345 -m encryption -w {outputfilepath} -t {self.algorithm} --etime {current_timefilepath} --verbose"
+            command = f"python -u analysis-cli.py -o \"{current_origfilepath}\" -e \"{current_processedfilepath}\" -p 12345 -m encryption -w \"{outputfilepath}\" -t {self.algorithm} --etime \"{current_timefilepath}\" --verbose"
 
         else:
-            command = f"python -u analysis-cli.py -o {current_origfilepath} -d {current_processedfilepath} -p 12345 -m psnr -w {outputfilepath} -t {self.algorithm} --dtime {current_timefilepath} --verbose"
+            command = f"python -u analysis-cli.py -o \"{current_origfilepath}\" -d \"{current_processedfilepath}\" -p 12345 -m psnr -w \"{outputfilepath}\" -t {self.algorithm} --dtime \"{current_timefilepath}\" --verbose"
 
         baselinespeed, resolution = self._get_video_info(current_processedfilepath)
         data = { "inputfile": inputfile, "resolution": resolution, "outputfilepath": outputfilepath, "baselinespeed": baselinespeed }

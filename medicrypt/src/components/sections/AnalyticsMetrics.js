@@ -15,7 +15,7 @@ export const AnalyticsMetrics = ({metric, baselinespeed, value}) => {
 
     const isGood = 
         (metric.name === 'Entropy' && value[0] > 7.9) ||
-        (metric.name === 'UACI' && value > 33 && value < 35) ||
+        (metric.name === 'UACI' && value > 31 && value < 35) ||
         (metric.name === 'NPCR' && value > 0.99) ||
         (metric.name === 'PSNR' && value > 30) ||
         (metric.name === 'MSE' && value < 0.1) ||

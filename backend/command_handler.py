@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 import os
+import shutil
 import signal
 import sys
 import subprocess
@@ -151,6 +152,9 @@ class EncryptionCommandHandler:
                 yield out
 
             if self.is_halted or self.has_error:
+                if self.algorithm == "3d-cosine":
+                    self._delete_frameGen_folder()
+                    
                 break
 
         if not (self.is_halted or self.has_error):
@@ -168,6 +172,25 @@ class EncryptionCommandHandler:
             self.is_halted = True
             return { "message": "Process halted successfully" }
         return {"message": "No active process to halt"} 
+
+    def _delete_frameGen_folder(self):
+        """Handle the deletion of the frameGen_temp folder upon halt."""
+        try:
+            folderpath = os.path.join(self.outputpath, "frameGen_temp")
+            
+            # Check if the frameGen_temp folder exists
+            if os.path.exists(folderpath):
+                shutil.rmtree(folderpath)  # Remove the folder and its contents
+                print(f"Deleted: {folderpath}")
+
+            else:
+                print(f"{folderpath} does not exist.")
+
+        except PermissionError as e:
+            print(f"Permission denied: {e}")
+            
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
     def _delete_output_files(self, process_type: str, outputfilepath: str, hashfilepath: str, timefilepath: str):
         """Handle the deletion of the output files upon error or halt."""

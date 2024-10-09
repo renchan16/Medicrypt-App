@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
-const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, allowMultiple=false, isRequired }, ref) => {
+const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, allowMultiple=false, isRequired, isEnabled = true }, ref) => {
     const [path, setFilePath] = useState("");
     const [processedPath, setProcessedPath] = useState(allowMultiple ? [] : "");
     const [isInitialLoad, setInitialLoad] = useState(true);
@@ -82,6 +82,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    disabled = {!isEnabled}
                 />
                 <label 
                     htmlFor="file-path-input"
@@ -89,7 +90,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                 >
                     {componentHeader}
                 </label>
-                <button className="absolute w-6 h-6 right-4 text-primary2 hover:text-primary1 transition-colors duration-300" onClick={handleBrowsePath}>
+                <button className="absolute w-6 h-6 right-4 text-primary2 hover:text-primary1 transition-colors duration-300" onClick={handleBrowsePath} tabindex="-1">
                     {browseIcon}
                 </button>
             </div>

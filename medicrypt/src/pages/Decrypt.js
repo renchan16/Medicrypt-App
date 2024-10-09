@@ -103,6 +103,7 @@ function Decrypt() {
                   onValidityChange={setFilePathValidity}
                   isRequired={true}
                   allowMultiple={true}
+                  isEnabled={showAdditionalFields ? false : true}
                   />
                 <PasswordInput
                   ref={passwordInputRef}
@@ -112,6 +113,7 @@ function Decrypt() {
                   processType="Decrypt"
                   onValueChange={setPassword}
                   onValidityChange={setPasswordValidity}
+                  isEnabled={showAdditionalFields ? false : true}
                   />
               </div>
             </div>
@@ -128,6 +130,7 @@ function Decrypt() {
                   onValidityChange={setHashPathValidity}
                   isRequired={true}
                   allowMultiple={true}
+                  isEnabled={showAdditionalFields ? true : false}
                   />
                 <FilePathInput
                   ref={outputPathInputRef}
@@ -139,6 +142,7 @@ function Decrypt() {
                   onValueChange={setOutputPath}
                   onValidityChange={setOutputPathValidity}
                   isRequired={false}
+                  isEnabled={showAdditionalFields ? true : false}
                   />
               </div>
             </div>

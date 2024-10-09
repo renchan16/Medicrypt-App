@@ -3,7 +3,7 @@ import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
-const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange}, ref) => {
+const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange, isEnabled = true}, ref) => {
     const [isInputActive, setInputActive] = useState(false);
     const [isInitialLoad, setInitialLoad] = useState(true);
     const [isFocused, setFocus] = useState(false);
@@ -96,6 +96,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     onFocus={handleFocus}
                     onBlur={handleBlur}
                     className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`}
+                    disabled = {!isEnabled}
                 />
                 <label 
                     htmlFor="password-input"
@@ -107,6 +108,7 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     type="button"
                     className="absolute w-6 h-6 right-4 text-xl text-primary2 hover:text-primary1 focus:outline-none transition-colors duration-300"
                     onClick={togglePasswordVisibility}
+                    tabindex="-1"
                 >
                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>

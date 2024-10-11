@@ -60,13 +60,13 @@ function ProcessingPage() {
             setProcessDescription(ProcessErrorMessage(data));
           } 
           else {
-            setInputFile(data['inputfile']);
-            setInputFilePath(data['inputfilepath'])
+            setInputFile(data['input_files']);
+            setInputFilePath(data['input_filepaths'])
             setAlgorithm(data['algorithm']);
-            setOutputPath(data['outputpath'])
-            setOutputFilePath(data['outputfilepath']);
-            setTimeFilePath(data['timefilepath']);
-            setProcessDescription(`The ${data['inputfile'].join(', ')} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
+            setOutputPath(data['output_dirpath'])
+            setOutputFilePath(data['output_filepaths']);
+            setTimeFilePath(data['time_filepaths']);
+            setProcessDescription(`The ${data['input_files'].join(', ')} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
           }
           eventSource.close();
         }

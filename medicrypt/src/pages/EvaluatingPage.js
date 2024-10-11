@@ -59,12 +59,12 @@ function EvaluatingPage() {
             setProcessDescription(ProcessErrorMessage(data));
           } 
           else {
-            setInputFile(data['inputfile']);
-            setResolution(data['resolution'])
-            setOutputPath(data['outputpath'])
-            setBaselineSpeed(data['baselinespeed'])
-            setCSVFilePath(data['outputfilepath']);
-            setProcessDescription(`The ${processType}ion for the ${data['inputfile'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
+            setInputFile(data['input_files']);
+            setResolution(data['resolutions'])
+            setOutputPath(data['output_dirpath'])
+            setBaselineSpeed(data['baseline_speed_metrics'])
+            setCSVFilePath(data['output_filepaths']);
+            setProcessDescription(`The ${processType}ion for the ${data['input_files'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
           }
           eventSource.close();
         }

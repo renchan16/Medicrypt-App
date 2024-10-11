@@ -16,11 +16,11 @@ function EvaluatingPage() {
     const [currentProcess, setCurrentProcess] = useState(false);
     const [processStatus, setProcessStatus] = useState("");
     const [processDescription, setProcessDescription] = useState("");
-    const [inputFile, setInputFile] = useState("");
-    const [resolution, setResolution] = useState("")
-    const [outputpath, setOutputPath] = useState("");
-    const [baselinespeed, setBaselineSpeed] = useState("")
-    const [csvfilepath, setCSVFilePath] = useState("");
+    const [inputFiles, setInputFiles] = useState("");
+    const [resolutions, setResolutions] = useState("")
+    const [outputDirpath, setOutputDirpath] = useState("");
+    const [baselineSpeedMetrics, setBaselineSpeedMetrics] = useState("")
+    const [csvFilepaths, setCSVFilepaths] = useState("");
     const [dots, setDots] = useState(''); 
     
     // Simulate loading text ellipsis effect
@@ -59,12 +59,12 @@ function EvaluatingPage() {
             setProcessDescription(ProcessErrorMessage(data));
           } 
           else {
-            setInputFile(data['inputfile']);
-            setResolution(data['resolution'])
-            setOutputPath(data['outputpath'])
-            setBaselineSpeed(data['baselinespeed'])
-            setCSVFilePath(data['outputfilepath']);
-            setProcessDescription(`The ${processType}ion for the ${data['inputfile'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
+            setInputFiles(data['input_files']);
+            setResolutions(data['resolutions'])
+            setOutputDirpath(data['output_dirpath'])
+            setBaselineSpeedMetrics(data['baseline_speed_metrics'])
+            setCSVFilepaths(data['output_filepaths']);
+            setProcessDescription(`The ${processType}ion for the ${data['input_files'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
           }
           eventSource.close();
         }
@@ -97,7 +97,7 @@ function EvaluatingPage() {
     navigate('/results', {
       state : {
         processType: processType,
-        data: {inputFile, resolution, outputpath, csvfilepath, baselinespeed}
+        data: {inputFiles, resolutions, outputDirpath, csvFilepaths, baselineSpeedMetrics}
       }
     })
   }
@@ -157,8 +157,8 @@ function EvaluatingPage() {
             processType={"Evaluation"}
             processStatus={processStatus}
             processDescription={processDescription}
-            inputFile={inputFile}
-            outputLocation={outputpath}
+            inputFiles={inputFiles}
+            outputLocation={outputDirpath}
             nextPageButtonText="View Analytics Summary"
             viewFileButtonText="View CSV File"
             navigateNextPage={navigateEvaluateSummary}

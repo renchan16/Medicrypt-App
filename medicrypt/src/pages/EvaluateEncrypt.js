@@ -13,25 +13,25 @@ function EvaluateEncrypt() {
   const { data } = location.state || {};
   
   let algorithm= data['algorithm'];
-  let origfilepath = data['inputfilepath']
-  let processedfilepath= data['outputfilepath']
-  let timefilepath = data['timefilepath']
+  let origFilepaths = data['inputFilepaths']
+  let processedFilepaths = data['outputFilepaths']
+  let timeFilepaths = data['timeFilepaths']
 
-  const [outputpath, setOutputPath] = useState("");
-  const [isOutputPathValid, setOutputPathValidity] = useState(true);
+  const [outputDirpath, setOutputDirpath] = useState("");
+  const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
 
-  const csvLocationRef = useRef(null);
+  const csvOutputLocationRef = useRef(null);
   
   const processInputData = () => {
-    csvLocationRef.current.validate();
+    csvOutputLocationRef.current.validate();
 
     console.log(data);
 
-    if (isOutputPathValid) {
+    if (isOutputDirpathValid) {
       navigate('/encrypt/evaluating', {
         state : {
           processType: 'Encrypt',
-          inputs : { algorithm, origfilepath, processedfilepath, timefilepath, outputpath }
+          inputs : { algorithm, origFilepaths, processedFilepaths , timeFilepaths, outputDirpath }
         }
       });
     }
@@ -54,14 +54,14 @@ function EvaluateEncrypt() {
           <p className='mb-4 text-sm italic text-primary1 text-justify'>This page serves as a tool to help measure the performance metrics of the encryption process including the Correlation Coefficient, Entropy, UACI, NPCR, and Encryption Time.</p>
           <div className='space-y-4'>
             <FilePathInput
-              ref={csvLocationRef}
+              ref={csvOutputLocationRef}
               componentHeader="CSV File Destination*"
               placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
               defaultDisplayText="Enter a valid directory."
               browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
               browseHandler={window.electron.openFolder}
-              onValueChange={setOutputPath}
-              onValidityChange={setOutputPathValidity}
+              onValueChange={setOutputDirpath}
+              onValidityChange={setOutputDirpathValidity}
               isRequired={true}
               />
             <ProcessButton

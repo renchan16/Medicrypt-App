@@ -49,10 +49,10 @@ function ResultsPage() {
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
     const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
-    let csvfilepath = data['csvfilepath'];
-    let processedfile = data['inputFile'];
-    let resolution = data['resolution'];
-    let outputpath = data['outputpath']
+    let csvFilepaths = data['csvFilepaths'];
+    let processedFiles = data['inputFiles'];
+    let resolutions = data['resolutions'];
+    let outputDirpath = data['outputDirpath']
 
     useEffect(() => {
         const parseCSV = async (filePath) => {
@@ -65,10 +65,10 @@ function ResultsPage() {
             }
         };
 
-        csvfilepath.forEach((filePath) => {
+        csvFilepaths.forEach((filePath) => {
             parseCSV(filePath);
         });
-    }, [csvfilepath]);
+    }, [csvFilepaths]);
 
     const getBaselineSpeed = (meanSpeed) => {
         return `< ${meanSpeed.toFixed(2)} seconds`;
@@ -85,28 +85,28 @@ function ResultsPage() {
     const currentData = parsedCSVData[currentFileIndex];
     const lastValue = currentData && currentData.length > 0 ? currentData[currentData.length - 1] : null;
 
-    let baselinespeed = data['baselinespeed'][currentFileIndex];
-    let meanSpeed = Math.min(...baselinespeed);
-    let baselinespeedDesc =  getBaselineSpeed(meanSpeed);
+    let baselineSpeedMetrics = data['baselineSpeedMetrics'][currentFileIndex];
+    let meanSpeed = Math.min(...baselineSpeedMetrics);
+    let baselineSpeedDesc =  getBaselineSpeed(meanSpeed);
 
     const encryptionMetrics = [
         { name: 'Correlation Coefficient', subMetrics: ['CC_h_e', 'CC_v_e', 'CC_d_e'], baseline: 0, ideal: 'Close to 0', max: 1 },
         { name: 'Entropy', subMetrics: ['Entropy(Combined)_e', 'Entropy(R)_e', 'Entropy(G)_e', 'Entropy(B)_e'], baseline: 8, ideal: '8', max: 8, isEntropy: true },
-        { name: 'UACI', subMetrics: ['UACI'], baseline: 0.33, ideal: '33%', max: 1, isSingleValue: true },
-        { name: 'NPCR', subMetrics: ['NPCR'], baseline: 0.99, ideal: '> 99%', max: 1, isSingleValue: true },
-        { name: 'Encryption Time', subMetrics: ['ETime'], baseline: baselinespeed, ideal: baselinespeedDesc, max: 10, isSingleValue: true }
+        { name: 'UACI', subMetrics: ['UACI'], baseline: 0.33, ideal: 'Close to 33%', min: 31, max: 35, isSingleValue: true },
+        { name: 'NPCR', subMetrics: ['NPCR'], baseline: 0.99, ideal: '> 99%', max: 99, isSingleValue: true },
+        { name: 'Encryption Time', subMetrics: ['ETime'], baseline: baselineSpeedMetrics, ideal: baselineSpeedDesc, max: meanSpeed, isSingleValue: true }
     ];
       
     const decryptionMetrics = [
-        { name: 'MSE', subMetrics: ['MSE'], baseline: 100, ideal: 'Close to 0', max: 1000, isSingleValue: true },
-        { name: 'PSNR', subMetrics: ['PSNR'], baseline: 30, ideal: '> 30 dB', max: 100, isSingleValue: true },
-        { name: 'Decryption Time', subMetrics: ['DTime'], baseline: baselinespeed, ideal: baselinespeedDesc, max: 10, isSingleValue: true }
+        { name: 'MSE', subMetrics: ['MSE'], baseline: 0, ideal: 'Close to 0', max: 0, isSingleValue: true },
+        { name: 'PSNR', subMetrics: ['PSNR'], baseline: 30, ideal: '> 30 dB', max: 30, isSingleValue: true },
+        { name: 'Decryption Time', subMetrics: ['DTime'], baseline: baselineSpeedMetrics, ideal: baselineSpeedDesc, max: meanSpeed, isSingleValue: true }
     ];
 
     const metrics = processType === 'Encrypt' ? encryptionMetrics : decryptionMetrics;
     const metrics_div = processType === 'Encrypt' ? "grid grid-cols-4 gap-4 mb-4" : "grid grid-cols-3 gap-4 mb-4";
     
-    const resolutionLabel = getResolutionLabel(resolution[currentFileIndex][0], resolution[currentFileIndex][1]);
+    const resolutionLabel = getResolutionLabel(resolutions[currentFileIndex][0], resolutions[currentFileIndex][1]);
 
     return (
         <div className='flex items-center justify-center h-full w-full select-none'>
@@ -128,13 +128,13 @@ function ResultsPage() {
                         onChange={handleFileChange}
                         className="mb-2"
                     >
-                        {processedfile.map((file, index) => (
+                        {processedFiles.map((file, index) => (
                             <option key={index} value={index}>
                                 {file}
                             </option>
                         ))}
                     </AnalyticsSelect>
-                    <p className="mb-4 flex">Resolution: {resolution[currentFileIndex][0]}x{resolution[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
+                    <p className="mb-4 flex">Resolution: {resolutions[currentFileIndex][0]}x{resolutions[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
                     <div className='h-1/4 '></div>
                     <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
                         <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
@@ -144,7 +144,7 @@ function ResultsPage() {
                                         <AnalyticsMetrics
                                             key={index}
                                             metric={metric}
-                                            baselinespeed={meanSpeed}
+                                            baselineSpeed={meanSpeed}
                                             value={metric.name === "Entropy" 
                                                 ? [parseFloat(lastValue[metric.subMetrics[0]]), parseFloat(lastValue[metric.subMetrics[1]]), parseFloat(lastValue[metric.subMetrics[2]]), parseFloat(lastValue[metric.subMetrics[3]])]
                                                 : parseFloat(lastValue[metric.subMetrics[0]])}
@@ -208,7 +208,7 @@ function ResultsPage() {
                             buttonText="Show CSV File"
                             buttonTextColor="white"
                             buttonIcon={FaRegFolder}
-                            filePath={outputpath}
+                            filePath={outputDirpath}
                             />
                     </div>
                 </div>

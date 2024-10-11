@@ -8,7 +8,8 @@ const AnalyticsCCValue = ({ value, min, max, className = '', metricLabel, idealZ
     const clampedValue = Math.max(min, Math.min(max, value));
     const closenessTo0 = 1 - Math.abs(clampedValue) / Math.max(Math.abs(min), Math.abs(max));
     progressValue = closenessTo0 * 100;
-  } else {
+  } 
+  else {
     // For metrics where higher values are better, use the original logic
     progressValue = ((value - min) / (max - min)) * 100;
   }

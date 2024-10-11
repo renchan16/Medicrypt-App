@@ -19,17 +19,17 @@ function Decrypt() {
 
   const fileInputRef = useRef(null);
   const passwordInputRef = useRef(null);
-  const outputPathInputRef = useRef(null);
+  const outputDirpathInputRef = useRef(null);
   const hashInputRef = useRef(null);
 
   const [algorithm, setAlgorithm] = useState("");
-  const [filepath, setFilePath] = useState("");
+  const [filepaths, setFilepaths] = useState("");
   const [password, setPassword] = useState("");
-  const [outputpath, setOutputPath] = useState("");
-  const [hashpath, setHashPath] = useState("");
-  const [isFilePathValid, setFilePathValidity] = useState(false);
+  const [outputDirpath, setOutputDirpath] = useState("");
+  const [hashPath, setHashPath] = useState("");
+  const [isFilepathValid, setFilepathValidity] = useState(false);
   const [isPasswordValid, setPasswordValidity] = useState(false);
-  const [isOutputPathValid, setOutputPathValidity] = useState(true);
+  const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
   const [isHashPathValid, setHashPathValidity] = useState(true);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false)
 
@@ -38,7 +38,7 @@ function Decrypt() {
       fileInputRef.current.validate();
       passwordInputRef.current.validate();
 
-      if (isFilePathValid && isPasswordValid) {
+      if (isFilepathValid && isPasswordValid) {
         setShowAdditionalFields(true);
       }
       else {
@@ -46,14 +46,14 @@ function Decrypt() {
       }
     }
     else {
-      outputPathInputRef.current.validate();
+      outputDirpathInputRef.current.validate();
       hashInputRef.current.validate();
 
-      if (isOutputPathValid && isHashPathValid){
+      if (isOutputDirpathValid && isHashPathValid){
         navigate('/decrypt/processing', {
           state : {
             processType: 'Decrypt',
-            inputs : {algorithm, filepath, password, outputpath, hashpath}
+            inputs : {algorithm, filepaths, password, outputDirpath, hashPath}
           }
         });
       }
@@ -64,7 +64,7 @@ function Decrypt() {
   }
   
   const showPreviousFields = () => {
-    console.log("TEST")
+    console.log(filepaths)
     setShowAdditionalFields(false);
   };
 
@@ -99,8 +99,8 @@ function Decrypt() {
                   defaultDisplayText="Enter a valid .avi video file path."  
                   browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                   browseHandler={window.electron.openEncryptedFilePath}
-                  onValueChange={setFilePath}
-                  onValidityChange={setFilePathValidity}
+                  onValueChange={setFilepaths}
+                  onValidityChange={setFilepathValidity}
                   isRequired={true}
                   allowMultiple={true}
                   isEnabled={showAdditionalFields ? false : true}
@@ -130,17 +130,20 @@ function Decrypt() {
                   onValidityChange={setHashPathValidity}
                   isRequired={true}
                   allowMultiple={true}
+                  allowMultipleText1={"keyfiles"}
+                  allowMultipleText2={"encrypted videos"}
+                  dependencyList={filepaths}
                   isEnabled={showAdditionalFields ? true : false}
                   />
                 <FilePathInput
-                  ref={outputPathInputRef}
+                  ref={outputDirpathInputRef}
                   componentHeader="Decrypted Video File Destination"
                   defaultDisplayText="Enter a valid directory path." 
                   placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
                   browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                   browseHandler={window.electron.openFolder}
-                  onValueChange={setOutputPath}
-                  onValidityChange={setOutputPathValidity}
+                  onValueChange={setOutputDirpath}
+                  onValidityChange={setOutputDirpathValidity}
                   isRequired={false}
                   isEnabled={showAdditionalFields ? true : false}
                   />

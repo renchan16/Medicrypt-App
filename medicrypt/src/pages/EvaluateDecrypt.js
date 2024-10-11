@@ -14,28 +14,28 @@ function EvaluateDecrypt() {
   const { data } = location.state || {};
 
   let algorithm= data['algorithm'];
-  let processedfilepath= data['outputfilepath'];
-  let timefilepath = data['timefilepath'];
+  let processedFilepaths = data['outputFilepaths'];
+  let timeFilepaths = data['timeFilepaths'];
 
   const origFileInputRef = useRef(null);
-  const csvLocationRef = useRef(null);
+  const csvOutputLocationRef = useRef(null);
 
-  const [origfilepath, setOrigFilePath] = useState("");
-  const [isOrigFilePathValid, setOrigFilePathValidity] = useState(false);
-  const [outputpath, setOutputPath] = useState("");
-  const [isOutputPathValid, setOutputPathValidity] = useState(true);
+  const [origFilepaths, setOrigFilepaths] = useState("");
+  const [areOrigFilepathsValid, setOrigFilepathsValidity] = useState(false);
+  const [outputDirpath, setOutputDirpath] = useState("");
+  const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
   
   const processInputData = () => {
-    csvLocationRef.current.validate();
+    csvOutputLocationRef.current.validate();
     origFileInputRef.current.validate();
 
     console.log(data);
 
-    if (isOrigFilePathValid && isOutputPathValid) {
+    if (areOrigFilepathsValid && isOutputDirpathValid) {
       navigate('/encrypt/evaluating', {
         state : {
           processType: 'Decrypt',
-          inputs : { algorithm, origfilepath, processedfilepath, timefilepath, outputpath }
+          inputs : { algorithm, origFilepaths, processedFilepaths, timeFilepaths, outputDirpath }
         }
       });
     }
@@ -64,20 +64,23 @@ function EvaluateDecrypt() {
               defaultDisplayText="Enter a valid video file path." 
               browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
               browseHandler={window.electron.openFilePath}
-              onValueChange={setOrigFilePath}
-              onValidityChange={setOrigFilePathValidity}
+              onValueChange={setOrigFilepaths}
+              onValidityChange={setOrigFilepathsValidity}
               isRequired={true}
+              dependencyList = {processedFilepaths}
               allowMultiple={true}
+              allowMultipleText1={"original videos"}
+              allowMultipleText2={"encrypted videos"}
               />
             <FilePathInput
-              ref={csvLocationRef}
+              ref={csvOutputLocationRef}
               componentHeader="CSV File Destination*"
               placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
               defaultDisplayText="Enter a valid directory."
               browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
               browseHandler={window.electron.openFolder}
-              onValueChange={setOutputPath}
-              onValidityChange={setOutputPathValidity}
+              onValueChange={setOutputDirpath}
+              onValidityChange={setOutputDirpathValidity}
               isRequired={true}
               />
             <ProcessButton

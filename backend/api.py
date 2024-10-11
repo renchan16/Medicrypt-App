@@ -19,22 +19,22 @@ current_handler = None
 @app.post("/init_cryptographic_handler")
 async def init_cryptographic_handler(request: Request):
     global current_handler
-    body = await request.json()
+    _body = await request.json()
 
-    # Extract values from the body
-    algorithm = body.get("algorithm")
-    filepath = body.get("filepath")
-    password = body.get("password")
-    outputpath = body.get("outputpath")
-    hashpath = body.get("hashpath")
+    # Extract values from the _body
+    _algorithm = _body.get("algorithm")
+    _input_filepaths = _body.get("filepaths")
+    _password = _body.get("password")
+    _output_dirpath = _body.get("outputDirpath")
+    _hash_path = _body.get("hashPath")
     
     # Initialize the EncryptionCommandHandler
     current_handler = EncryptionCommandHandler(
-        algorithm=algorithm,
-        filepath=filepath,
-        password=password,
-        outputpath=outputpath,
-        hashpath=hashpath
+        algorithm=_algorithm,
+        input_filepaths=_input_filepaths,
+        password=_password,
+        output_dirpath=_output_dirpath,
+        hash_path=_hash_path
     )
     
     return {"message": "Handler initialized successfully"}
@@ -42,22 +42,22 @@ async def init_cryptographic_handler(request: Request):
 @app.post("/init_analysis_handler")
 async def init_analysis_handler(request: Request):
     global current_handler
-    body = await request.json()
+    _body = await request.json()
 
-    # Extract values from the body
-    algorithm = body.get("algorithm")
-    origfilepath = body.get("origfilepath")
-    processedfilepath = body.get("processedfilepath")
-    timefilepath = body.get('timefilepath')
-    outputpath = body.get('outputpath')
+    # Extract values from the _body
+    algorithm = _body.get("algorithm")
+    orig_filepaths = _body.get("origFilepaths")
+    processed_filepaths = _body.get("processedFilepaths")
+    time_filepaths = _body.get('timeFilepaths')
+    output_dirpath = _body.get('outputDirpath')
 
     # Initialize the AnalysisCommandHandler
     current_handler = AnalysisCommandHandler(
         algorithm=algorithm,
-        origfilepath=origfilepath,
-        processedfilepath= processedfilepath,
-        timefilepath=timefilepath,
-        outputpath=outputpath
+        orig_filepaths=orig_filepaths,
+        processed_filepaths=processed_filepaths,
+        time_filepaths=time_filepaths,
+        output_dirpath=output_dirpath
     )
 
     return {"message": "Handler initialized successfully"}
@@ -100,4 +100,3 @@ async def halt_processing():
     if current_handler:
         return current_handler.halt_process()
     return {"message": "No active process to halt"}
-

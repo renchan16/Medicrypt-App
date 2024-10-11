@@ -175,12 +175,12 @@ def main():
                     cc_d_e = np.array(corr.get_corr_diag(frame_e, args.samples))
                     cc_h_e = np.array(corr.get_corr_horizontal(frame_e, args.samples))
                     cc_v_e = np.array(corr.get_corr_vertical(frame_e, args.samples))
-                    row_field["CC_d_e"] = np.tanh(np.mean(np.arctanh(cc_d_e)))
-                    row_field["CC_h_e"] = np.tanh(np.mean(np.arctanh(cc_h_e)))
-                    row_field["CC_v_e"] = np.tanh(np.mean(np.arctanh(cc_v_e)))
-                    mean_field["CC_d_e"] += [np.mean(np.arctanh(cc_d_e))]
-                    mean_field["CC_h_e"] += [np.mean(np.arctanh(cc_h_e))]
-                    mean_field["CC_v_e"] += [np.mean(np.arctanh(cc_v_e))]
+                    row_field["CC_d_e"] = np.mean(cc_d_e)
+                    row_field["CC_h_e"] = np.mean(cc_h_e)
+                    row_field["CC_v_e"] = np.mean(cc_v_e)
+                    mean_field["CC_d_e"] += [np.mean(cc_d_e)]
+                    mean_field["CC_h_e"] += [np.mean(cc_h_e)]
+                    mean_field["CC_v_e"] += [np.mean(cc_v_e)]
                     
             if args.mode  == 'differential'  or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Differential Analysis")

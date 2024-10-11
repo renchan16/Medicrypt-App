@@ -55,39 +55,7 @@ function LandingPage() {
           </motion.div>
         </Card>
 
-        <Card width="col-span-1 row-span-2" height="h-[165px]">
-          <motion.div
-            className="bg-primary1 h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#101e31] hover:shadow-lg hover:scale-105"
-            whileHover={{ scale: 1.05 }}
-            onClick={() => handleNavigate('/encrypt')}
-          >
-            <div className="flex-grow flex items-end">
-              <p className="text-white font-bold text-xl transition-colors duration-300 hover:text-gray-200">Encrypt</p>
-            </div>
-            <div>
-              <p className="text-white text-xxs">Encrypt a video file</p>
-            </div>
-            <HiArrowRight className="text-white font-semibold absolute bottom-4 right-4 transition-transform duration-300 transform hover:translate-x-2" />
-          </motion.div>
-        </Card>
-
-        <Card width="col-span-1 row-span-2" height="h-[165px]">
-          <motion.div
-            className="bg-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#0d0d0e] hover:shadow-lg hover:scale-105"
-            whileHover={{ scale: 1.05 }}
-            onClick={() => handleNavigate('/decrypt')}
-          >
-            <div className="flex-grow flex items-end">
-              <p className="text-white font-bold text-xl transition-colors duration-300 hover:text-gray-200">Decrypt</p>
-            </div>
-            <div>
-              <p className="text-white text-xxs">Decrypt a video file</p>
-            </div>
-            <HiArrowRight className="text-white font-semibold absolute bottom-4 right-4 transition-transform duration-300 transform hover:translate-x-2" />
-          </motion.div>
-        </Card>
-
-        <Card width="col-span-2 row-span-3" height="h-[170px]">
+        <Card width="col-span-2 row-span-3" height="h-[120px]">
           <motion.div
             className="section-transparent border-2 border-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:border-[#000000] hover:bg-gray-100 hover:shadow-lg hover:scale-105"
             whileHover={{ scale: 1.05 }}
@@ -99,6 +67,40 @@ function LandingPage() {
             <HiArrowRight className="text-black font-semibold absolute bottom-4 right-4 transition-transform duration-300 transform hover:translate-x-2" />
           </motion.div>
         </Card>
+
+        <Card width="col-span-1 row-span-2" height="h-[190px]">
+          <motion.div
+            className="bg-primary1 h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#101e31] hover:shadow-lg hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            onClick={() => handleNavigate('/encrypt')}
+          >
+            <div className="flex-grow flex items-end">
+              <p className="text-white font-bold text-xl transition-colors duration-300 hover:text-gray-200">Encrypt</p>
+            </div>
+            <div>
+              <p className="text-white text-xxs">Secure your video files</p>
+            </div>
+            <HiArrowRight className="text-white font-semibold absolute bottom-4 right-4 transition-transform duration-300 transform hover:translate-x-2" />
+          </motion.div>
+        </Card>
+
+        <Card width="col-span-1 row-span-2" height="h-[190px]">
+          <motion.div
+            className="bg-black h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-[#0d0d0e] hover:shadow-lg hover:scale-105"
+            whileHover={{ scale: 1.05 }}
+            onClick={() => handleNavigate('/decrypt')}
+          >
+            <div className="flex-grow flex items-end">
+              <p className="text-white font-bold text-xl transition-colors duration-300 hover:text-gray-200">Decrypt</p>
+            </div>
+            <div>
+              <p className="text-white text-xxs">Access your video files</p>
+            </div>
+            <HiArrowRight className="text-white font-semibold absolute bottom-4 right-4 transition-transform duration-300 transform hover:translate-x-2" />
+          </motion.div>
+        </Card>
+
+        
       </motion.div>
     </motion.div>
   );

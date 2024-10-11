@@ -6,18 +6,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#0162E2',
-        primary0: '#17224d',
-        primary1: '#21316F',
-        primary2: '#21316f40',
-        primary3: '#21316f26',
-        secondary: '#60C6E4',
-        secondary1: '#CBE2F5',
-        black: '#1D1B20',
-        white: '#D4D4D4',
+        primary: '#0A1F44', // Dark navy blue for trust and professionalism
+        primary0: '#102A55', // Slightly lighter blue for backgrounds or accents
+        primary1: '#0E7490', // Medium cyan-blue for active elements
+        primary2: '#1C2D3E', // Dark grayish blue for deeper accents
+        primary3: '#162337', // Even darker blue for shadows or highlights
+        secondary: '#00CC88', // Bright green for success indicators (secure, encrypted)
+        secondary1: '#99FFC2', // Light green for subtle accents
+        black: '#131517', // Very dark gray for text or icons
+        white: '#F0F4F8', // Off-white for contrast with dark elements
       },
       fontSize: {
-        'xxs': '0.8rem',
+        'xxs': '0.75rem', // Slightly smaller for very subtle text
       },
     },
   },

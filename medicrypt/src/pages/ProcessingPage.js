@@ -13,16 +13,16 @@ function ProcessingPage() {
   const location = useLocation();
   const { processType, inputs } = location.state || {};
   
-  const [inputFile, setInputFile] = useState("");
+  const [inputFiles, setInputFiles] = useState("");
   const [isProcessing, setIsProcessing] = useState(true);
   const [currentProcess, setCurrentProcess] = useState(false);
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
+  const [inputFilepaths, setInputFilePaths] = useState("")
   const [algorithm, setAlgorithm] = useState("");
-  const [inputfilepath, setInputFilePath] = useState("");
-  const [outputpath, setOutputPath] = useState("");
-  const [outputfilepath, setOutputFilePath] = useState("");
-  const [timefilepath, setTimeFilePath] = useState("");
+  const [outputDirpath, setOutputDirpath] = useState("");
+  const [outputFilepaths, setOutputFilepaths] = useState("");
+  const [timeFilepaths, setTimeFilepaths] = useState("");
   const [dots, setDots] = useState(''); 
 
   // Simulate loading text ellipsis effect
@@ -60,12 +60,12 @@ function ProcessingPage() {
             setProcessDescription(ProcessErrorMessage(data));
           } 
           else {
-            setInputFile(data['input_files']);
-            setInputFilePath(data['input_filepaths'])
+            setInputFiles(data['input_files']);
+            setInputFilePaths(data['input_filepaths'])
             setAlgorithm(data['algorithm']);
-            setOutputPath(data['output_dirpath'])
-            setOutputFilePath(data['output_filepaths']);
-            setTimeFilePath(data['time_filepaths']);
+            setOutputDirpath(data['output_dirpath'])
+            setOutputFilepaths(data['output_filepaths']);
+            setTimeFilepaths(data['time_filepaths']);
             setProcessDescription(`The ${data['input_files'].join(', ')} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
           }
           eventSource.close();
@@ -106,12 +106,12 @@ function ProcessingPage() {
   const navigateEvaluatePage = () => {
     if (processType === "Encrypt"){
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: { algorithm, inputfilepath, outputfilepath, timefilepath } }
+        state: { data: { algorithm, inputFilepaths, outputFilepaths, timeFilepaths } }
       });
     }
     else {
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: { algorithm, outputfilepath, timefilepath } }
+        state: { data: { algorithm, outputFilepaths, timeFilepaths } }
       });
     }
   }
@@ -146,8 +146,8 @@ function ProcessingPage() {
             processType={processType === "Encrypt" ? "Encryption" : "Decryption"}
             processStatus={processStatus}
             processDescription={processDescription}
-            inputFile={inputFile}
-            outputLocation={outputpath}
+            inputFiles={inputFiles}
+            outputLocation={outputDirpath}
             nextPageButtonText={`Evaluate ${processType}ion`}
             viewFileButtonText="View File"
             navigateNextPage={navigateEvaluatePage}

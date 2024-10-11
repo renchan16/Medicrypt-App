@@ -6,7 +6,7 @@ import { TbReload } from "react-icons/tb";
 import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from './ProcessAlert';
 import NavButton from '../buttons/NavButton';
 
-const ProcessComplete = ({ processType, processStatus, processDescription, inputFile, outputLocation, nextPageButtonText, viewFileButtonText, navigateNextPage, navigatePrevPage, navigateHome
+const ProcessComplete = ({ processType, processStatus, processDescription, inputFiles, outputLocation, nextPageButtonText, viewFileButtonText, navigateNextPage, navigatePrevPage, navigateHome
 }) => {
   return (
     <div className="w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -20,7 +20,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
       </ProcessAlert>
 
       <p className="text-sm text-gray-600">
-        File processed: <span className="font-medium">{inputFile !== "" ? inputFile.join(', ') : "None"}</span>
+        File processed: <span className="font-medium">{inputFiles !== "" ? inputFiles.join(', ') : "None"}</span>
       </p>
 
       <div className="flex flex-col gap-4">

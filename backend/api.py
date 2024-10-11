@@ -23,10 +23,10 @@ async def init_cryptographic_handler(request: Request):
 
     # Extract values from the _body
     _algorithm = _body.get("algorithm")
-    _input_filepaths = _body.get("filepath")
+    _input_filepaths = _body.get("filepaths")
     _password = _body.get("password")
-    _output_dirpath = _body.get("outputpath")
-    _hash_path = _body.get("hashpath")
+    _output_dirpath = _body.get("outputDirpath")
+    _hash_path = _body.get("hashPath")
     
     # Initialize the EncryptionCommandHandler
     current_handler = EncryptionCommandHandler(
@@ -46,10 +46,10 @@ async def init_analysis_handler(request: Request):
 
     # Extract values from the _body
     algorithm = _body.get("algorithm")
-    orig_filepaths = _body.get("origfilepath")
-    processed_filepaths = _body.get("processedfilepath")
-    time_filepaths = _body.get('timefilepath')
-    output_dirpath = _body.get('outputpath')
+    orig_filepaths = _body.get("origFilepaths")
+    processed_filepaths = _body.get("processedFilepaths")
+    time_filepaths = _body.get('timeFilepaths')
+    output_dirpath = _body.get('outputDirpath')
 
     # Initialize the AnalysisCommandHandler
     current_handler = AnalysisCommandHandler(

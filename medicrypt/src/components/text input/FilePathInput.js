@@ -2,7 +2,7 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
-const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, allowMultiple=false, isRequired, isEnabled = true }, ref) => {
+const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, dependencyList = [], allowMultiple = false, allowMultipleText1="", allowMultipleText2="", isRequired, isEnabled = true }, ref) => {
     const [path, setFilePath] = useState("");
     const [processedPath, setProcessedPath] = useState(allowMultiple ? [] : "");
     const [isInitialLoad, setInitialLoad] = useState(true);
@@ -63,8 +63,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     }
     
     const handleInputValidation = async (filePath) => {
-        const isValid = await ValidateFilePath(filePath, defaultDisplayText, isRequired);
-        
+        const isValid = await ValidateFilePath(filePath, defaultDisplayText, allowMultiple, allowMultipleText1, allowMultipleText2, dependencyList, isRequired);
         setInitialLoad(false);
         setInputValidity(isValid['inputValidity']);
         setInputMessage(isValid['inputMessage']);

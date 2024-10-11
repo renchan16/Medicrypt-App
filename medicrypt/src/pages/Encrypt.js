@@ -10,7 +10,6 @@ import AlgorithmSelector from '../components/switches/AlgorithmSelector';
 import FilePathInput from '../components/text input/FilePathInput';
 import PasswordInput from '../components/text input/PasswordInput';
 import ProcessButton from '../components/buttons/ProcessButton';
-import BackgroundImage from '../assets/background.png';
 import { FaPaperclip } from "react-icons/fa6";
 import { FaFolder } from 'react-icons/fa6';
 
@@ -19,27 +18,27 @@ function Encrypt() {
 
   const fileInputRef = useRef(null);
   const passwordInputRef = useRef(null);
-  const outputPathInputRef = useRef(null);
+  const outputDirpathInputRef = useRef(null);
   const hashInputRef = useRef(null);
 
   const [algorithm, setAlgorithm] = useState("");
-  const [filepath, setFilePath] = useState("");
+  const [filepaths, setFilePaths] = useState("");
   const [password, setPassword] = useState("");
-  const [outputpath, setOutputPath] = useState("");
-  const [hashpath, setHashPath] = useState("");
-  const [isFilePathValid, setFilePathValidity] = useState(false);
+  const [outputDirpath, setOutputDirpath] = useState("");
+  const [hashPath, setHashPath] = useState("");
+  const [isFilepathValid, setFilepathValidity] = useState(false);
   const [isPasswordValid, setPasswordValidity] = useState(false);
-  const [isOutputPathValid, setOutputPathValidity] = useState(true);
+  const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
   const [isHashPathValid, setHashPathValidity] = useState(true);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false)
 
   const processInputData = async () => {
-    console.log(filepath)
+    console.log(filepaths)
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
       passwordInputRef.current.validate();
 
-      if (isFilePathValid && isPasswordValid) {
+      if (isFilepathValid && isPasswordValid) {
         setShowAdditionalFields(true);
       }
       else {
@@ -47,14 +46,14 @@ function Encrypt() {
       }
     }
     else {
-      outputPathInputRef.current.validate();
+      outputDirpathInputRef.current.validate();
       hashInputRef.current.validate();
 
-      if (isOutputPathValid && isHashPathValid){
+      if (isOutputDirpathValid && isHashPathValid){
         navigate('/encrypt/processing', {
           state : {
             processType: 'Encrypt',
-            inputs : {algorithm, filepath, password, outputpath, hashpath}
+            inputs : {algorithm, filepaths, password, outputDirpath, hashPath}
           }
         });
       }
@@ -99,8 +98,8 @@ function Encrypt() {
                   defaultDisplayText="Enter a valid video file path." 
                   browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
                   browseHandler={window.electron.openFilePath}
-                  onValueChange={setFilePath}
-                  onValidityChange={setFilePathValidity}
+                  onValueChange={setFilePaths}
+                  onValidityChange={setFilepathValidity}
                   allowMultiple={true}
                   isRequired={true}
                   isEnabled={showAdditionalFields ? false : true}
@@ -120,14 +119,14 @@ function Encrypt() {
             <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
               <div className='space-y-4'>
                 <FilePathInput
-                  ref={outputPathInputRef}
+                  ref={outputDirpathInputRef}
                   componentHeader="Encrypted Video File Destination"
                   placeholderText="C:\Users\YourUsername\Documents\EncryptedVideoDest..." 
                   defaultDisplayText="Enter a valid directory path." 
                   browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
                   browseHandler={window.electron.openFolder}
-                  onValueChange={setOutputPath}
-                  onValidityChange={setOutputPathValidity}
+                  onValueChange={setOutputDirpath}
+                  onValidityChange={setOutputDirpathValidity}
                   isRequired={false}
                   isEnabled={showAdditionalFields ? true : false}
                   />

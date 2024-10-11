@@ -144,11 +144,9 @@ ipcMain.handle('dialog:openFileLocation', (event, filePath) => {
         // Open the directory containing the file
         const dirPath = path.dirname(normalizedPath);
         shell.showItemInFolder(dirPath);
-        shell.openPath(dirPath);
       } else if (stat.isDirectory()) {
         // Open the directory itself
         shell.showItemInFolder(normalizedPath);
-        shell.openPath(normalizedPath);
       }
       return true;
     }

@@ -6,16 +6,22 @@ This Electron application manages the main window, file dialog interactions, and
 Functions:
 ----------
 1. createWindow():
-   - Initializes the Electron main window (`BrowserWindow`) with a predefined size and loads the application at 'http://localhost:3000'.
-   
-2. app.whenReady():
-   - Runs the `createWindow` function when the Electron app is ready and handles window activation events.
-   
-3. app.on('window-all-closed'):
-   - Quits the application when all windows are closed unless the platform is macOS (`darwin`).
+   - Initializes the Electron main window (`BrowserWindow`) with a predefined size (1024x768) and loads the application from 'http://localhost:3000'.
 
-4. showSingleDialog(dialogOptions):
-   - Opens a dialog window to select files or directories based on the given `dialogOptions`. Ensures only one dialog is open at a time.
+2. startProcesses():
+   - Starts the React development server and the Uvicorn server for the FastAPI backend. Both processes are spawned as child processes and output their logs to the console.
+
+3. stopProcesses():
+   - Kills the React and Uvicorn processes if they are running, allowing for clean shutdown of the application.
+
+4. app.whenReady():
+   - Runs the `createWindow` function when the Electron app is ready and handles window activation events.
+
+5. app.on('window-all-closed'):
+   - Quits the application when all windows are closed unless the platform is macOS (`darwin`), which allows the application to remain active in the background.
+
+6. showSingleDialog(dialogOptions):
+   - Opens a dialog window to select files or directories based on the provided `dialogOptions`. Ensures only one dialog is open at a time and returns a Promise that resolves with the selected paths.
 
 IPC Handlers:
 -------------
@@ -32,10 +38,10 @@ IPC Handlers:
    - Opens a directory selection dialog. Returns the selected directory path or `null` if the dialog was canceled.
 
 5. dialog:checkFilePath (ipcMain.handle):
-   - Checks if the provided file paths (either a string or an array of strings) exist and are valid files or directories. Returns `true` if all paths are valid, otherwise `false`.
+   - Checks if the provided file paths (either a string or an array of strings) exist and are valid files or directories. Returns `true` if all paths are valid; otherwise, `false`.
 
 6. dialog:openFileLocation (ipcMain.handle):
-   - Opens the directory containing the provided file path or opens the directory itself if it's a folder. Returns `true` if the location was successfully opened, otherwise `false`.
+   - Opens the directory containing the provided file path or opens the directory itself if it's a folder. Returns `true` if the location was successfully opened; otherwise, `false`.
 
 7. parse-csv (ipcMain.handle):
    - Parses a CSV file located at the provided file path using the `papaparse` library. Returns the parsed data or an error if parsing fails.

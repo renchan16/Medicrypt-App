@@ -1,3 +1,5 @@
+from key_validator import EncryptionMode
+from key_validator import validateKey
 from pathlib import Path
 import text_file_encryption as tfe
 import numpy as np
@@ -259,6 +261,11 @@ class Encrypt_cosine:
         else:
             return None, None
 
+    def __validateKeyCompatibility__(self, key_sample):
+        validateKey(key_sample, mode=EncryptionMode.COSINE_3D)
+
+        return
+
     def encryptFrame(self, frame, verbose=False):
         _blue, _green, _red = cv2.split(frame)  # cv2 always read in BGR mode
         if verbose: print("\tSplitted Frame into RGB channels")
@@ -465,6 +472,21 @@ class Encrypt_cosine:
 
         _keys, _frame_sequence = self.__decryptKey__(_key.resolve(), password, mem_only=mem_only)
 
+        if mem_only:
+            _lines = _keys
+            _frame_select_seq = _frame_sequence
+        else:
+            _key_file = open(_key.resolve(), "r")
+            _lines = _key_file.readlines()
+
+            # Get the Frame Selection sequence in the last line of the key file
+            _frame_sequence = _lines[-1]
+
+            # Convert the string back to list
+            _frame_select_seq = eval(_frame_sequence)
+
+        self.__validateKeyCompatibility__(_lines[0])  # validate first if we are working with compatible key file
+
         # Prepare the video writer
         _cap = cv2.VideoCapture(str(_fpath.resolve()), cv2.CAP_FFMPEG)
 
@@ -488,19 +510,6 @@ class Encrypt_cosine:
 
         _frame_filenames = sorted([f for f in os.listdir(_temp_path) if f.endswith('.png')])
         _sorted_frames = sorted(_frame_filenames, key=lambda x: int(x.split('_')[1].split('.')[0]))
-
-        if mem_only:
-            _lines = _keys
-            _frame_select_seq = _frame_sequence
-        else:
-            _key_file = open(_key.resolve(), "r")
-            _lines = _key_file.readlines()
-
-            # Get the Frame Selection sequence in the last line of the key file
-            _frame_sequence = _lines[-1]
-
-            # Convert the string back to list
-            _frame_select_seq = eval(_frame_sequence)
 
         # Create a temp folder where deshuffled frames are moved then renaming them
         _temp_fs_path = os.path.join(_temp_path, 'fs_temp')

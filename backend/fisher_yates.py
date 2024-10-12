@@ -1,5 +1,7 @@
-from math import ceil
+from key_validator import EncryptionMode
+from key_validator import validateKey
 from pathlib import Path
+from math import ceil
 import text_file_encryption as tfe
 import numpy as np
 import hashlib
@@ -129,6 +131,11 @@ class Encrypt:
             return decrypted.splitlines()  # transform the text into a list with newlines as separator
         else:
             return None
+
+    def __validateKeyCompatibility__(self, key_sample):
+        validateKey(key_sample, mode=EncryptionMode.FISHER_YATES)
+
+        return
 
     def encryptFrame(self, frame, verbose=False):
         self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
@@ -308,6 +315,14 @@ class Encrypt:
         _key_list = self.__decryptHashes__(_key.resolve(), password, mem_only=mem_only)
         if verbose: print("Decrypted the Key Hash File")
 
+        if mem_only:
+            _lines = _key_list
+        else:
+            _hash_file = open(_key.resolve(), "r")
+            _lines = _hash_file.readlines()
+
+        self.__validateKeyCompatibility__(_lines[0])  # validate first if we are working with compatible key file
+
         _cap = cv2.VideoCapture(str(_fpath.resolve()), cv2.CAP_FFMPEG)
 
         _frame_width = int(_cap.get(3))
@@ -319,12 +334,6 @@ class Encrypt:
             _cap.get(cv2.CAP_PROP_FPS),
             (_frame_width, _frame_height),
         )
-
-        if mem_only:
-            _lines = _key_list
-        else:
-            _hash_file = open(_key.resolve(), "r")
-            _lines = _hash_file.readlines()
 
         _hash_line = 0  # keep track of our line in the text file
 

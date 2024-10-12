@@ -9,120 +9,120 @@ import cv2
 
 class Encrypt:
     def __init__(self):
-        self.num_rows = 0
-        self.num_cols = 0
-        self.num_channels = 3
+        self.NUM_ROWS = 0
+        self.NUM_COLS = 0
+        self.NUM_CHANNELS = 3
 
-    def hashArray(self, array):
-        hash = hashlib.sha512(array.tobytes()).hexdigest()
+    def __arrayToHash__(self, array):
+        _hash = hashlib.sha512(array.tobytes()).hexdigest()
 
-        return hash
+        return _hash
 
-    def splitHash(self, hash):
-        quarters = len(hash) // 4
+    def __splitHash__(self, hash):
+        _quarters = len(hash) // 4
 
-        return [hash[i: i + quarters] for i in range(0, len(hash), quarters)]
+        return [hash[i: i + _quarters] for i in range(0, len(hash), _quarters)]
 
-    def convertToDecimal(self, hashes):
-        into_decimal = [int(hash, 16) for hash in hashes]
+    def __convertToDecimal__(self, hashes):
+        _into_decimal = [int(hash, 16) for hash in hashes]
 
-        return into_decimal
+        return _into_decimal
 
-    def transformDecimal(self, converted_hashes):
-        transformedHash = []
+    def __transformDecimal__(self, converted_hashes):
+        _transformedHash = []
         for i, decimal in enumerate(converted_hashes):
             if i % 2 == 0:  # Even indices (0, 2)
-                transformedHash.append((float(f"0.{decimal}") * 0.43) + 3.57)
+                _transformedHash.append((float(f"0.{decimal}") * 0.43) + 3.57)
             else:  # Odd indices (1, 3)
-                # transformedHash.append(decimal * (10 ** (-39)))
-                transformedHash.append(float(f"0.{decimal}"))
+                # _transformedHash.append(decimal * (10 ** (-39)))
+                _transformedHash.append(float(f"0.{decimal}"))
 
-        return transformedHash
+        return _transformedHash
 
-    def rowShuffle(self, image, size, x0, r):
-        x = x0
-        x = r * x * (1 - x)
+    def __shuffleRow__(self, image, size, x0, r):
+        _x = x0
+        _x = r * _x * (1 - _x)
         for i in range(size - 1, 0, -1):
-            j = ceil(i * x)
+            _j = ceil(i * _x)
 
-            image[[i, j]] = image[[j, i]]
-            x = r * x * (1 - x)
+            image[[i, _j]] = image[[_j, i]]
+            _x = r * _x * (1 - _x)
 
         # Reshape back to original dimensions
-        shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
+        _shuffled_pixels = image.reshape(self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS)
 
-        return shuffled_pixels
+        return _shuffled_pixels
 
-    def colShuffle(self, image, size, x0, r):
-        x = x0
-        x = r * x * (1 - x)
+    def __shuffleCol__(self, image, size, x0, r):
+        _x = x0
+        _x = r * _x * (1 - _x)
         for i in range(size - 1, 0, -1):
-            j = ceil(i * x)
+            _j = ceil(i * _x)
 
-            image[:, [i, j]] = image[:, [j, i]]
-            x = r * x * (1 - x)
+            image[:, [i, _j]] = image[:, [_j, i]]
+            _x = r * _x * (1 - _x)
 
         # Reshape back to original dimensions
-        shuffled_pixels = image.reshape(self.num_rows, self.num_cols, self.num_channels)
+        _shuffled_pixels = image.reshape(self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS)
 
-        return shuffled_pixels
+        return _shuffled_pixels
 
-    def rowUnshuffle(self, image, swap_indices):
-        for i in range(1, self.num_rows):
-            u = swap_indices.pop(-1)
+    def __unshuffleRow__(self, image, swap_indices):
+        for i in range(1, self.NUM_ROWS):
+            _u = swap_indices.pop(-1)
 
-            image[[i, u]] = image[[u, i]]
+            image[[i, _u]] = image[[_u, i]]
 
         return image
 
-    def colUnshuffle(self, image, swap_indices):
-        for i in range(1, self.num_cols):
-            u = swap_indices.pop(-1)
+    def __unshuffleCol__(self, image, swap_indices):
+        for i in range(1, self.NUM_COLS):
+            _u = swap_indices.pop(-1)
 
-            image[:, [i, u]] = image[:, [u, i]]
+            image[:, [i, _u]] = image[:, [_u, i]]
 
         return image
 
-    def generateSwapIndex(self, size, x0, r):
-        swap_index = []
-        x = x0
+    def __generateSwapIndex__(self, size, x0, r):
+        _swap_index = []
+        _x = x0
 
-        x = r * x * (1 - x)
-        swap_index.append(x)
+        _x = r * _x * (1 - _x)
+        _swap_index.append(_x)
         for i in range(size - 1, 0, -1):
-            j = ceil(i * x)
-            x = r * x * (1 - x)
-            swap_index.append(j)
+            j = ceil(i * _x)
+            _x = r * _x * (1 - _x)
+            _swap_index.append(j)
 
-        return swap_index
+        return _swap_index
 
-    def keystream(self, res, x0, r):
-        x = x0
-        ks = [x0]
+    def __generateKeystream__(self, res, x0, r):
+        _x = x0
+        _ks = [x0]
         # create keystream
         for i in range(2000 + ((res * 3) - 1)):
-            x = r * x * (1 - x)
-            ks.append(x)
+            _x = r * _x * (1 - _x)
+            _ks.append(_x)
 
         # discard first 2000
-        del ks[:2000]
+        del _ks[:2000]
 
         # convert into numpy array
-        ks_array = np.array(ks)
+        _ks_array = np.array(_ks)
 
         # produce keystream vector
-        kv = np.floor(ks_array * 10 ** 16) % 256
-        kv = kv.astype(dtype="int16")
+        _kv = np.floor(_ks_array * 10 ** 16) % 256
+        _kv = _kv.astype(dtype="int16")
 
-        return kv
+        return _kv
 
-    def xor(self, a, b):
+    def __xor__(self, a, b):
         return np.bitwise_xor(a, b)
 
-    def encryptHashes(self, hash_filepath, password):
+    def __encryptHashes__(self, hash_filepath, password):
         tfe.encryptFile(hash_filepath, password)
 
-    def decryptHashes(self, hash_filepath, password, mem_only):
+    def __decryptHashes__(self, hash_filepath, password, mem_only):
         decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
 
         if mem_only:
@@ -131,235 +131,236 @@ class Encrypt:
             return None
 
     def encryptFrame(self, frame, verbose=False):
-        self.num_rows, self.num_cols, self.num_channels = frame.shape
+        self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 
         if verbose: print("\tGenerating Logistic Map Seeds")
-        hashed = self.hashArray(frame)
+        _hashed = self.__arrayToHash__(frame)
 
-        splits = self.splitHash(hashed)
-        converted = self.convertToDecimal(splits)
-        transform = self.transformDecimal(
-            converted
+        _splits = self.__splitHash__(_hashed)
+        _converted = self.__convertToDecimal__(_splits)
+        _transform = self.__transformDecimal__(
+            _converted
         )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2, x0]
-        if verbose: print(f"\tGenerated Logistic Map Seeds: {transform}")
+        if verbose: print(f"\tGenerated Logistic Map Seeds: {_transform}")
 
         # Permutate
         if verbose: print("\tRunning Fisher-Yates Permutation")
-        row_permutated = self.rowShuffle(
-            frame, self.num_rows, transform[1], transform[0]
+        _row_permutated = self.__shuffleRow__(
+            frame, self.NUM_ROWS, _transform[1], _transform[0]
         )
-        col_permutated = self.colShuffle(
-            row_permutated, self.num_cols, transform[1], transform[0]
+        _col_permutated = self.__shuffleCol__(
+            _row_permutated, self.NUM_COLS, _transform[1], _transform[0]
         )  # final permutation
         if verbose: print("\tPermutation Done")
 
-        flatten = col_permutated.reshape(-1, self.num_channels)
+        _flatten = _col_permutated.reshape(-1, self.NUM_CHANNELS)
 
         # Create keystream vector
         if verbose: print("\tCreating Keystream Vector")
-        kv = self.keystream(
-            self.num_rows * self.num_cols, transform[3], transform[2]
+        _kv = self.__generateKeystream__(
+            self.NUM_ROWS * self.NUM_COLS, _transform[3], _transform[2]
         )
-        kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
-        comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
-        uint8_ks = comb_ks.astype(
+        _kr, _kg, _kb = np.array_split(_kv, 3)  # split keystream into three
+        _comb_ks = np.vstack((_kb, _kg, _kr)).T  # this is the 2d array of the keystream
+        _uint8_ks = _comb_ks.astype(
             np.uint8
         )  # change to uint8 datatype for correct cv2 data type
         if verbose: print("\tCreated Keystream Vector")
 
-        # diffuse the pixels
+        # _diffuse the pixels
         if verbose: print("\tSplitted Frames and Running Diffusion (XOR)")
-        diffuse = self.xor(flatten, uint8_ks)
+        _diffuse = self.__xor__(_flatten, _uint8_ks)
         if verbose: print("\tDiffusion Done and Channels Merged")
 
         # reshape the array into a required cv2 format
-        diffuse_pixels = diffuse.reshape(
-            self.num_rows, self.num_cols, self.num_channels
+        _diffuse_pixels = _diffuse.reshape(
+            self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS
         )
 
-        return diffuse_pixels, hashed
+        return _diffuse_pixels, _hashed
 
     def decryptFrame(self, frame, hash, verbose=False):
-        self.num_rows, self.num_cols, self.num_channels = frame.shape
+        self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 
         if verbose: print("\tGenerating Logistic Map Seeds")
-        splits = self.splitHash(hash)
-        converted = self.convertToDecimal(splits)
-        transform = self.transformDecimal(
-            converted
+        _splits = self.__splitHash__(hash)
+        _converted = self.__convertToDecimal__(_splits)
+        _transform = self.__transformDecimal__(
+            _converted
         )  # [Logmap1 r, Logmap1 x0, Logmap2 r, Logmap2 x0]
-        if verbose: print(f"\tGenerated Logistic Map Seeds: {transform}")
+        if verbose: print(f"\tGenerated Logistic Map Seeds: {_transform}")
 
         # flatten array
-        flatten = frame.reshape(-1, self.num_channels)
+        _flatten = frame.reshape(-1, self.NUM_CHANNELS)
 
         if verbose: print("\tGenerating Keystream Vector")
         # create keystream vector
-        kv = self.keystream(
-            self.num_rows * self.num_cols, transform[3], transform[2]
+        _kv = self.__generateKeystream__(
+            self.NUM_ROWS * self.NUM_COLS, _transform[3], _transform[2]
         )
-        kr, kg, kb = np.array_split(kv, 3)  # split keystream into three
-        comb_ks = np.vstack((kb, kg, kr)).T  # this is the 2d array of the keystream
-        uint8_ks = comb_ks.astype(
+        _kr, _kg, _kb = np.array_split(_kv, 3)  # split keystream into three
+        _comb_ks = np.vstack((_kb, _kg, _kr)).T  # this is the 2d array of the keystream
+        _uint8_ks = _comb_ks.astype(
             np.uint8
         )  # change to uint8 datatype for correct cv2 data type
         if verbose: print("\tGenerated Keystream Vector")
 
-        # undiffuse the pixels
+        # _undiffuse the pixels
         if verbose: print("\tSplitted Frames and Running Reverse Diffusion (XOR)")
-        undiffuse = self.xor(flatten, uint8_ks)
+        _undiffuse = self.__xor__(_flatten, _uint8_ks)
 
         # rejoin channels into one frame
-        undiffused_frame = undiffuse.reshape(
-            self.num_rows, self.num_cols, self.num_channels
+        _undiffused_frame = _undiffuse.reshape(
+            self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS
         )
         if verbose: print("\tReverse Diffusion Done and Channels Merged")
 
         # generate swap index array for row and column
         if verbose: print("\tGenerate Swap Index Array for Row and Columns")
-        row_swap_indices = self.generateSwapIndex(
-            self.num_rows, transform[1], transform[0]
+        _row_swap_indices = self.__generateSwapIndex__(
+            self.NUM_ROWS, _transform[1], _transform[0]
         )
-        col_swap_indices = self.generateSwapIndex(
-            self.num_cols, transform[1], transform[0]
+        _col_swap_indices = self.__generateSwapIndex__(
+            self.NUM_COLS, _transform[1], _transform[0]
         )
         if verbose: print("\tSwap Index Array Generated")
 
         # unshuffle the undiffused frame, then the unshuffled column frame
         if verbose: print("\tRunning Reverse Fisher-Yates Permutation")
-        col_unshuffled = self.colUnshuffle(undiffused_frame, col_swap_indices)
-        row_unshuffled = self.rowUnshuffle(col_unshuffled, row_swap_indices)
+        _col_unshuffled = self.__unshuffleCol__(_undiffused_frame, _col_swap_indices)
+        _row_unshuffled = self.__unshuffleRow__(_col_unshuffled, _row_swap_indices)
         if verbose: print("\tReverse Fisher-Yates Permutation Done")
 
-        return row_unshuffled
+        return _row_unshuffled
 
     def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False, frame_limit=-1):
-        fpath = Path(filepath)
-        vid_dest = Path(vid_destination)
-        key_dest = Path(key_destination)
+        _fpath = Path(filepath)
+        _vid_dest = Path(vid_destination)
+        _key_dest = Path(key_destination)
 
         # Record per frame runtime here
-        per_frame_runtime = []
+        _per_frame_runtime = []
 
-        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
+        _cap = cv2.VideoCapture(str(_fpath.resolve()), cv2.CAP_FFMPEG)
 
-        frame_width = int(cap.get(3))
-        frame_height = int(cap.get(4))
-        result = cv2.VideoWriter(
-            str(vid_dest.absolute()),
+        _frame_width = int(_cap.get(3))
+        _frame_height = int(_cap.get(4))
+
+        _result = cv2.VideoWriter(
+            str(_vid_dest.absolute()),
             cv2.VideoWriter_fourcc(*"HFYU"),
-            cap.get(cv2.CAP_PROP_FPS),
-            (frame_width, frame_height),
+            _cap.get(cv2.CAP_PROP_FPS),
+            (_frame_width, _frame_height),
         )
 
         cv2.VideoWriter_fourcc("H", "F", "Y", "U")
         # open the text file that will contain the list of hashes
-        hash_file = open(key_dest.absolute(), "w")
+        _hash_file = open(_key_dest.absolute(), "w")
 
-        count = 0
+        _count = 0
 
-        while frame_limit < 0 or count < frame_limit:
-            start = time.time()
-            grabbed, frame = cap.read()
+        while frame_limit < 0 or _count < frame_limit:
+            _start = time.time()
+            _grabbed, _frame = _cap.read()
 
-            if not grabbed:
+            if not _grabbed:
                 break
 
-            if verbose: print(f"[Frame {count}] Encrypting Frame")
-            diffuse_pixels, hashed = self.encryptFrame(frame, verbose)
-            if verbose: print(f"[Frame {count}]  Frame Encrypted")
+            if verbose: print(f"[Frame {_count}] Encrypting Frame")
+            diffuse_pixels, hashed = self.encryptFrame(_frame, verbose)
+            if verbose: print(f"[Frame {_count}]  Frame Encrypted")
 
-            if verbose: print(f"[Frame {count}] Writing Hash to key text file")
-            hash_file.write(
+            if verbose: print(f"[Frame {_count}] Writing Hash to key text file")
+            _hash_file.write(
                 hashed + "\n"
             )  # write with newline at the end so every writes will start on new line
-            if verbose: print(f"[Frame {count}] Writing Done")
+            if verbose: print(f"[Frame {_count}] Writing Done")
 
-            if verbose: print(f"[Frame {count}] Writing Encrypted Frame to video")
-            result.write(diffuse_pixels)
-            if verbose: print(f"[Frame {count}] Writing Done")
+            if verbose: print(f"[Frame {_count}] Writing Encrypted Frame to video")
+            _result.write(diffuse_pixels)
+            if verbose: print(f"[Frame {_count}] Writing Done")
 
-            count += 1
+            _count += 1
 
-            stop = time.time()
-            duration = stop - start
-            per_frame_runtime.append(duration)
+            _stop = time.time()
+            _duration = _stop - _start
+            _per_frame_runtime.append(_duration)
 
-        cap.release()
+        _cap.release()
         if verbose: print(f"Video has been encrypted")
 
-        hash_file.close()  # finally, close the file
-        self.encryptHashes(
-            key_dest.resolve(), password
+        _hash_file.close()  # finally, close the file
+        self.__encryptHashes__(
+            _key_dest.resolve(), password
         )  # and encrypt the hash file
         if verbose: print(f"Key file has been encrypted")
 
-        return per_frame_runtime
+        return _per_frame_runtime
 
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password, verbose=False, mem_only=True):
-        fpath = Path(filepath)
-        vid_dest = Path(vid_destination)
-        key = Path(hash_filepath)
+        _fpath = Path(filepath)
+        _vid_dest = Path(vid_destination)
+        _key = Path(hash_filepath)
 
         # Record per frame runtime here
-        per_frame_runtime = []
+        _per_frame_runtime = []
 
-        key_list = self.decryptHashes(key.resolve(), password, mem_only=mem_only)
+        _key_list = self.__decryptHashes__(_key.resolve(), password, mem_only=mem_only)
         if verbose: print("Decrypted the Key Hash File")
 
-        cap = cv2.VideoCapture(str(fpath.resolve()), cv2.CAP_FFMPEG)
+        _cap = cv2.VideoCapture(str(_fpath.resolve()), cv2.CAP_FFMPEG)
 
-        frame_width = int(cap.get(3))
-        frame_height = int(cap.get(4))
+        _frame_width = int(_cap.get(3))
+        _frame_height = int(_cap.get(4))
 
-        result = cv2.VideoWriter(
-            str(vid_dest.absolute()),
+        _result = cv2.VideoWriter(
+            str(_vid_dest.absolute()),
             cv2.VideoWriter_fourcc(*"mp4v"),
-            cap.get(cv2.CAP_PROP_FPS),
-            (frame_width, frame_height),
+            _cap.get(cv2.CAP_PROP_FPS),
+            (_frame_width, _frame_height),
         )
 
         if mem_only:
-            lines = key_list
+            _lines = _key_list
         else:
-            hash_file = open(key.resolve(), "r")
-            lines = hash_file.readlines()
+            _hash_file = open(_key.resolve(), "r")
+            _lines = _hash_file.readlines()
 
-        hash_line = 0  # keep track of our line in the text file
+        _hash_line = 0  # keep track of our line in the text file
 
-        count = 0
+        _count = 0
 
         while True:
-            start = time.time()
-            grabbed, frame = cap.read()
+            _start = time.time()
+            _grabbed, _frame = _cap.read()
 
-            if not grabbed:
+            if not _grabbed:
                 break
 
-            if verbose: print(f"[Frame {count}] Grabbing the Hash for Frame {count}")
-            hashed = lines[hash_line].rstrip()
+            if verbose: print(f"[Frame {_count}] Grabbing the Hash for Frame {_count}")
+            _hashed = _lines[_hash_line].rstrip()
 
             # Decrypt
-            if verbose: print(f"[Frame {count}] Decrypting Frame")
-            row_unshuffled = self.decryptFrame(frame, hashed)
-            if verbose: print(f"[Frame {count}] Frame Decrypted")
+            if verbose: print(f"[Frame {_count}] Decrypting Frame")
+            _row_unshuffled = self.decryptFrame(_frame, _hashed)
+            if verbose: print(f"[Frame {_count}] Frame Decrypted")
 
-            if verbose: print(f"[Frame {count}] Writing Decrypted Frame to video")
-            result.write(row_unshuffled)
-            if verbose: print(f"[Frame {count}] Writing Done")
+            if verbose: print(f"[Frame {_count}] Writing Decrypted Frame to video")
+            _result.write(_row_unshuffled)
+            if verbose: print(f"[Frame {_count}] Writing Done")
 
-            count += 1
-            hash_line += 1
+            _count += 1
+            _hash_line += 1
 
-            stop = time.time()
-            duration = stop - start
-            per_frame_runtime.append(duration)
+            _stop = time.time()
+            _duration = _stop - _start
+            _per_frame_runtime.append(_duration)
 
-        cap.release()
+        _cap.release()
         if verbose: print(f"Video has been Decrypted")
 
         if not mem_only:
-            self.encryptHashes(key.resolve(), password)     # re-encrypt file for safety
-            hash_file.close()   # finally, close the file
+            self.__encryptHashes__(_key.resolve(), password)     # re-encrypt file for safety
+            _hash_file.close()   # finally, close the file
 
-        return per_frame_runtime
+        return _per_frame_runtime

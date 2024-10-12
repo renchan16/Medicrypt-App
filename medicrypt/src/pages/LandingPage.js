@@ -55,7 +55,7 @@ function LandingPage() {
           {/* Instructions Card */}
           <Card width="col-span-1 row-span-5" height="h-[350px]">
             <motion.div
-              className="bg-primary3 h-full flex flex-col justify-between p-3 rounded-[18px] relative transition-all duration-300 hover:bg-secondary hover:shadow-lg hover:scale-105 z-10"
+              className="bg-primary3 h-full flex flex-col justify-between p-4 rounded-[18px] relative transition-all duration-300 hover:bg-secondary hover:shadow-lg hover:scale-105 z-10"
               whileHover={{ scale: 1.05 }}
               onClick={() => handleNavigate('/howtouse')}
             >

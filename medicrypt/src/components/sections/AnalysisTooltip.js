@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export const AnalyticsTooltip = ({ content, children }) => {
+export const AnalyticsTooltip = ({ metric, children }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -13,7 +13,7 @@ export const AnalyticsTooltip = ({ content, children }) => {
       </div>
       {isVisible && (
         <div className="absolute z-10 px-3 py-2 w-full text-sm font-medium text-white text-center bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700 top-full left-0">
-          {content}
+          {metric}
         </div>
       )}
     </div>

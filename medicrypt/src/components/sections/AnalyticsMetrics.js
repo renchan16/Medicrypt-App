@@ -1,9 +1,9 @@
 import React from "react"
 import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from "./AnalyticsCard";
-import { AnalyticsTooltip } from "./AnalysisTooltop";
+import { AnalyticsTooltip } from "./AnalysisTooltip";
 
 const metricFullNames = {
-    "Entropy": "Information Entropy",
+    "Entropy": "Frame Entropy",
     "UACI": "Unified Average Changing Intensity",
     "NPCR": "Number of Pixels Change Rate",
     "PSNR": "Peak Signal-to-Noise Ratio",
@@ -16,7 +16,7 @@ export const AnalyticsMetrics = ({metric, baselineSpeed, value}) => {
             case "Entropy":
                 return (value[0] / metric.max) * 100;
             case "UACI":
-                // Normalize the UACI value between min and max (min: 31%, max: 35%)
+                // Normalize the UACI value between min and max
                 const clampedUACIValue = Math.max(metric.min, Math.min(metric.max, value));
                 // Calculate how close the value is to the ideal 33%
                 const uaciDeviation = Math.abs(clampedUACIValue - 33);
@@ -25,7 +25,6 @@ export const AnalyticsMetrics = ({metric, baselineSpeed, value}) => {
                 const uaciProgressValue = (1 - (uaciDeviation / uaciMaxDeviation)) * 100;
                 return Math.min(Math.max(uaciProgressValue, 0), 100);
             case "MSE":
-                // For MSE, we'll use an exponential decay function
                 // This will give 100% for 0, and approach 0% as the value increases
                 return Math.exp(-value) * 100;
             default:
@@ -57,7 +56,9 @@ export const AnalyticsMetrics = ({metric, baselineSpeed, value}) => {
 
     return (
         <AnalyticsCard>
-            <AnalyticsTooltip content={metricFullNames[metric.name] || metric.name}>
+            <AnalyticsTooltip 
+                metric={metricFullNames[metric.name] || metric.name} 
+                >
                 <AnalyticsCardTitle>
                     {metric.name}
                 </AnalyticsCardTitle>

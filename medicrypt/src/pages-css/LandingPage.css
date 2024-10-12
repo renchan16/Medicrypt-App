@@ -1,9 +1,9 @@
-.gradient-text {
-  background: linear-gradient(to right, #0A1F44, #102A55, #0E7490); 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* LandingPage.css */
+.landing-background {
+  background-color: #1583fe; /* Replace with your desired color */
+  width: 100vw;
 }
+
 .sibling-fade {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

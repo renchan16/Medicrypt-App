@@ -237,7 +237,7 @@ class EncryptionProcessHandler:
                 self._delete_output_files(process_type, data['output_filepath'], data['hash_filepath'], data['time_filepath'])
 
                 if self.is_halted:
-                    yield self._handle_error('Process halted by user', 'failure', 'HALTED', self.stderr_str)
+                    yield self._handle_error('Process halted by user', 'failure', self.stdout_str, 'HALTED')
 
                 else:
                     self.has_error = True
@@ -389,8 +389,9 @@ class AnalysisProcessHandler:
 
         _orig_cap.release()
         _processed_cap.release()
-
-        return _orig_width == _processed_width and _orig_height == _processed_height or process_type == "encrypt"
+        
+        # Returns true if resolutions are similar or if process_type is encrypt.
+        return _orig_width == _processed_width and _orig_height == _processed_height and process_type == "encrypt"
 
     def _get_video_info(self, processed_filepath: str):
         """Get the baseline speed for the given filepath based on closest resolution from reference table"""
@@ -497,7 +498,7 @@ class AnalysisProcessHandler:
                 self._delete_output_files(data['output_filepath'])
 
                 if self.is_halted:
-                    yield self._handle_error('Process halted by user', 'failure', 'HALTED', self.stderr_str)
+                    yield self._handle_error('Process halted by user', 'failure', self.stdout_str, 'HALTED')
 
                 else:
                     self.has_error = True
@@ -512,13 +513,18 @@ class AnalysisProcessHandler:
         for _i, _filepath in enumerate(self.processed_filepaths):
             _orig_filepath = self.orig_filepaths[_i]
             _time_filepath = self.time_filepaths[_i]
-            _command, _data = self._generate_command(process_type, _orig_filepath, _filepath, _time_filepath)
 
-            for out in self._run_subprocess(_command, _data, _i):
-                yield out
+            if self._validate_video(process_type, _filepath, _orig_filepath) == True:
+                _command, _data = self._generate_command(process_type, _orig_filepath, _filepath, _time_filepath)
+                
+                for out in self._run_subprocess(_command, _data, _i):
+                    yield out
 
-            if self.is_halted or self.has_error:
-                break
+                if self.is_halted or self.has_error:
+                    break
+            
+            else:
+                yield self._handle_error('Unable to proceed with analysis', 'failure', "None\n", 'MISMATCH RESOLUTION')
 
         if not (self.is_halted or self.has_error):
             yield f"data: {json.dumps({'message': 'Process completed', 'status': 'success', 'stdout': self.stdout_str, 'stderr': self.stderr_str, 'input_files': self.input_files, 'resolutions': self.resolutions, 'algorithm': self.algorithm, 'output_dirpath': self.output_dirpath, 'output_filepaths': self.output_filepaths, 'baseline_speed_metrics': self.baseline_speed_metrics})}\n\n"

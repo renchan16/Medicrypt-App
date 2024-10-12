@@ -62,9 +62,13 @@ const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const Papa = require('papaparse');
+const { spawn } = require('child_process');
+const waitOn = require('wait-on');
 
 let mainWindow;
 let currentDialog = null;
+let reactProcess;
+let uvicornProcess;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
@@ -78,8 +82,40 @@ function createWindow() {
   mainWindow.loadURL('http://localhost:3000');
 }
 
+function startProcesses() {
+  // Start React development server
+  reactProcess = spawn('yarn', ['start'], { shell: true, stdio: 'pipe' });
+  
+  // Start Uvicorn server
+  uvicornProcess = spawn('uvicorn', ['api:app', '--reload'], { 
+    shell: true, 
+    stdio: 'pipe',
+    cwd: path.join(__dirname, '../../backend')
+  });
+}
+
+function stopProcesses() {
+  if (reactProcess) {
+    reactProcess.kill();
+  }
+  if (uvicornProcess) {
+    uvicornProcess.kill();
+  }
+}
+
 app.whenReady().then(() => {
-  createWindow();
+  startProcesses();
+  
+  // Wait for React server to be ready
+  waitOn({
+    resources: ['http://localhost:3000'],
+    timeout: 30000, // 30 seconds timeout
+  }).then(() => {
+    createWindow();
+  }).catch((err) => {
+    console.error('Failed to start React server:', err);
+    app.quit();
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -89,9 +125,14 @@ app.whenReady().then(() => {
 });
 
 app.on('window-all-closed', () => {
+  stopProcesses();
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', () => {
+  stopProcesses();
 });
 
 async function showSingleDialog(dialogOptions) {

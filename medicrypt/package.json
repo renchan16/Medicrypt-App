@@ -26,7 +26,7 @@
     "eject": "react-scripts eject",
     "electron": "electron .",
     "electron:build": "electron-builder",
-    "dev": "concurrently \"cd ./ && cross-env BROWSER=none yarn start\" \"cd ../backend && uvicorn api:app --reload\" \"wait-on http://localhost:3000 && cd ./ && yarn electron\""
+    "dev": "electron ."
   },
   "build": {
     "appId": "com.myapp.electron",

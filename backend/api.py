@@ -45,7 +45,7 @@ Code Author: [Author Name]
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from backend.process_handler import EncryptionProcessHandler, AnalysisProcessHandler
+from process_handler import EncryptionProcessHandler, AnalysisProcessHandler
 
 app = FastAPI()
 

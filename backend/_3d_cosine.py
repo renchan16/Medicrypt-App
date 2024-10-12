@@ -255,6 +255,9 @@ class Encrypt_cosine:
 
         if mem_only:
             _key_list = _decrypted.splitlines()
+
+            self.__validateKeyCompatibility__(_key_list[0])  # validate first if we are working with compatible key file
+
             _frame_seq = eval(_key_list.pop())
 
             return _key_list, _frame_seq
@@ -485,7 +488,7 @@ class Encrypt_cosine:
             # Convert the string back to list
             _frame_select_seq = eval(_frame_sequence)
 
-        self.__validateKeyCompatibility__(_lines[0])  # validate first if we are working with compatible key file
+            self.__validateKeyCompatibility__(_lines[0])  # validate first if we are working with compatible key file
 
         # Prepare the video writer
         _cap = cv2.VideoCapture(str(_fpath.resolve()), cv2.CAP_FFMPEG)

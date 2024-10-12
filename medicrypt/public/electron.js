@@ -90,7 +90,7 @@ function createWindow() {
 
 function startProcesses() {
   // Start React development server
-  reactProcess = spawn('yarn', ['start'], { shell: true, stdio: 'pipe' });
+  reactProcess = spawn('yarn', ['start', '--no-browser'], { shell: true, stdio: 'pipe' });
   
   // Start Uvicorn server
   uvicornProcess = spawn('uvicorn', ['api:app', '--reload'], { 

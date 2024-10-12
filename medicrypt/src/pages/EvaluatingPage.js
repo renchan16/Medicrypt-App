@@ -109,20 +109,20 @@ function EvaluatingPage() {
   const navigateEvaluatePage = () => {
     if (processType === "Encrypt") {
       let algorithm= inputs['algorithm'];
-      let inputfilepath = inputs['origfilepath']
-      let outputfilepath = inputs['processedfilepath']
-      let timefilepath = inputs['timefilepath']
+      let inputFilepaths = inputs['origFilepaths']
+      let outputFilepaths = inputs['processedFilepaths']
+      let timeFilepaths = inputs['timeFilepaths']
 
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: {algorithm, inputfilepath, outputfilepath, timefilepath} }
+        state: { data: {algorithm, inputFilepaths, outputFilepaths, timeFilepaths} }
       });
     }
     else {
       let algorithm= inputs['algorithm'];
-      let outputfilepath = inputs['processedfilepath']
-      let timefilepath = inputs['timefilepath']
+      let outputFilepaths = inputs['processedFilepaths']
+      let timeFilepaths = inputs['timeFilepaths']
       navigate(`/${processType.toLowerCase()}/evaluate`, {
-        state: { data: { algorithm, outputfilepath, timefilepath } }
+        state: { data: { algorithm, outputFilepaths, timeFilepaths } }
       });
     }
   };

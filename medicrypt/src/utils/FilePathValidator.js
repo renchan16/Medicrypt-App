@@ -24,7 +24,7 @@ export const ValidateFilePath = async (filePath, defaultDisplayText, allowMultip
         case isRequired && isValidPath:
             if (allowMultiple === true && dependencyList.length > 0) {  // Check if dependencyList has elements
                 ({ valid: inputValidity, message: inputMessage } = validateMultipleFiles());
-            } 
+            }
             else {
                 inputValidity = true;
                 inputMessage = "Great choice! The file path looks good.";

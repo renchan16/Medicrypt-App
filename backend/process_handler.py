@@ -337,8 +337,8 @@ class EncryptionProcessHandler:
         _error_response = {
             'message': message,
             'status': status,
-            'stdout': self.stdout_str,
-            'stderr': self.stderr_str
+            'stdout': stdout,
+            'stderr': stderr
         }
         return f"data: {json.dumps(_error_response)}\n\n"
 
@@ -559,7 +559,7 @@ class AnalysisProcessHandler:
         _error_response = {
             'message': message,
             'status': status,
-            'stdout': self.stdout_str,
-            'stderr': self.stderr_str
+            'stdout': stdout,
+            'stderr': stderr
         }
         return f"data: {json.dumps(_error_response)}\n\n"

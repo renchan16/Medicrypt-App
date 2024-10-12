@@ -1,10 +1,18 @@
 import React from "react";
 
-export default function ProcessButton({ className, buttonText, buttonIcon: Icon, iconLocation = "left", isEnabled = true, onClickFunction }) {
+export default function ProcessButton({
+    className,
+    buttonText,
+    buttonIcon: Icon,
+    iconLocation = "left",
+    isEnabled = true,
+    onClickFunction
+}) {
     return (
         <div className={`${className} ${isEnabled ? 'pointer-events-auto' : 'pointer-events-none'}`}>
             <button
-                className={`w-full h-full flex items-center justify-center bg-primary1 rounded-2xl font-bold text-white text-lg transition-all duration-300 hover:bg-primary0 ${isEnabled ? "opacity-100" : "opacity-50"}`}
+                className={`w-full h-full flex items-center justify-center bg-white text-secondary border-2 border-secondary rounded-2xl font-bold text-lg transition-all duration-300 
+                    hover:bg-secondary hover:text-white hover:border-transparent ${isEnabled ? "opacity-100" : "opacity-0"}`}
                 onClick={onClickFunction}
                 disabled={!isEnabled}
             >

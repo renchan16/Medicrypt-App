@@ -40,7 +40,7 @@ function LandingPage() {
         exit="exit"
         variants={panVariants}
       >
-        <div className="flex items-center mb-7">
+        <div className="flex items-center mb-3">
           <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
           <h1 className="text-7xl font-bold text-white bg-clip-text leading-tight pb-1 font-avantGarde">medicrypt</h1>
         </div>

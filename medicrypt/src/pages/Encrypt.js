@@ -32,13 +32,14 @@ function Encrypt() {
   const [isHashPathValid, setHashPathValidity] = useState(true);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false)
 
+  // Moves on to the next set of input upon first trigger and processes the data upon second trigger.
   const processInputData = async () => {
     console.log(filepaths)
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
-      passwordInputRef.current.validate();
+      outputDirpathInputRef.current.validate();
 
-      if (isFilepathValid && isPasswordValid) {
+      if (isFilepathValid && isOutputDirpathValid) {
         setShowAdditionalFields(true);
       }
       else {
@@ -46,10 +47,10 @@ function Encrypt() {
       }
     }
     else {
-      outputDirpathInputRef.current.validate();
+      passwordInputRef.current.validate();
       hashInputRef.current.validate();
 
-      if (isOutputDirpathValid && isHashPathValid){
+      if (isPasswordValid && isHashPathValid){
         navigate('/encrypt/processing', {
           state : {
             processType: 'Encrypt',
@@ -63,6 +64,7 @@ function Encrypt() {
     }
   }
  
+  // Function that allows the user to move back to the previous inputs
   const showPreviousFields = () => {
     setShowAdditionalFields(false);
   };
@@ -104,20 +106,6 @@ function Encrypt() {
                   isRequired={true}
                   isEnabled={showAdditionalFields ? false : true}
                   />
-                <PasswordInput
-                  ref={passwordInputRef}
-                  componentHeader="Hash Key Password*"
-                  placeholderText="e.g. ILoveM3d!Crypt143"
-                  defaultDisplayText="Enter a password with atleast 8 characters, an Uppercase Letter, a Lowercase Letter, a Digit, and a Special Character." 
-                  processType="Encrypt"
-                  onValueChange={setPassword}
-                  onValidityChange={setPasswordValidity}
-                  isEnabled={showAdditionalFields ? false : true}
-                  />
-              </div>
-            </div>
-            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
-              <div className='space-y-4'>
                 <FilePathInput
                   ref={outputDirpathInputRef}
                   componentHeader="Encrypted Video File Destination"
@@ -128,6 +116,20 @@ function Encrypt() {
                   onValueChange={setOutputDirpath}
                   onValidityChange={setOutputDirpathValidity}
                   isRequired={false}
+                  isEnabled={showAdditionalFields ? false : true}
+                  />
+              </div>
+            </div>
+            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
+              <div className='space-y-4'>
+                <PasswordInput
+                  ref={passwordInputRef}
+                  componentHeader="Hash Key Password*"
+                  placeholderText="e.g. ILoveM3d!Crypt143"
+                  defaultDisplayText="Enter a password with atleast 8 characters, an Uppercase Letter, a Lowercase Letter, a Digit, and a Special Character." 
+                  processType="Encrypt"
+                  onValueChange={setPassword}
+                  onValidityChange={setPasswordValidity}
                   isEnabled={showAdditionalFields ? true : false}
                   />
                 <FilePathInput

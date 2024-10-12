@@ -1,3 +1,63 @@
+/* 
+Electron Main Process:
+----------------------
+This Electron application manages the main window, file dialog interactions, and CSV parsing. It uses `BrowserWindow` to create the application's window, `dialog` to open file and folder selection dialogs, and `ipcMain` to handle inter-process communication with the renderer process.
+
+Functions:
+----------
+1. createWindow():
+   - Initializes the Electron main window (`BrowserWindow`) with a predefined size and loads the application at 'http://localhost:3000'.
+   
+2. app.whenReady():
+   - Runs the `createWindow` function when the Electron app is ready and handles window activation events.
+   
+3. app.on('window-all-closed'):
+   - Quits the application when all windows are closed unless the platform is macOS (`darwin`).
+
+4. showSingleDialog(dialogOptions):
+   - Opens a dialog window to select files or directories based on the given `dialogOptions`. Ensures only one dialog is open at a time.
+
+IPC Handlers:
+-------------
+1. dialog:openFilePath (ipcMain.handle):
+   - Opens a file dialog for selecting video files (`mkv`, `avi`, `mp4`, `mov`, `wmv`) and allows multiple file selections. Returns the selected file paths or `null` if the dialog was canceled.
+
+2. dialog:openEncryptedFilePath (ipcMain.handle):
+   - Opens a file dialog for selecting encrypted video files (`avi`). Returns the selected file paths or `null` if the dialog was canceled.
+
+3. dialog:openHashKeyPath (ipcMain.handle):
+   - Opens a file dialog for selecting key files (`key`). Returns the selected file paths or `null` if the dialog was canceled.
+
+4. dialog:openFolder (ipcMain.handle):
+   - Opens a directory selection dialog. Returns the selected directory path or `null` if the dialog was canceled.
+
+5. dialog:checkFilePath (ipcMain.handle):
+   - Checks if the provided file paths (either a string or an array of strings) exist and are valid files or directories. Returns `true` if all paths are valid, otherwise `false`.
+
+6. dialog:openFileLocation (ipcMain.handle):
+   - Opens the directory containing the provided file path or opens the directory itself if it's a folder. Returns `true` if the location was successfully opened, otherwise `false`.
+
+7. parse-csv (ipcMain.handle):
+   - Parses a CSV file located at the provided file path using the `papaparse` library. Returns the parsed data or an error if parsing fails.
+
+Variables:
+----------
+- mainWindow:
+  Global variable that stores the reference to the main application window (`BrowserWindow`).
+  
+- currentDialog:
+  Global variable that tracks the currently active dialog window to prevent multiple dialogs from opening simultaneously.
+
+Dependencies:
+-------------
+- Electron modules: `app`, `BrowserWindow`, `dialog`, `ipcMain`, `shell` for managing the application, dialogs, and inter-process communication.
+- `path`: Node.js module for handling file paths.
+- `fs`: Node.js module for filesystem interactions.
+- `Papa`: Library for parsing CSV files.
+
+Code Author: Renz Carlo T. Caritativo, Charles Andre C. Bandala
+*/
+
 const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');

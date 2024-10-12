@@ -36,9 +36,9 @@ function Decrypt() {
   const processInputData = async () => {
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
-      passwordInputRef.current.validate();
+      outputDirpathInputRef.current.validate();
 
-      if (isFilepathValid && isPasswordValid) {
+      if (isFilepathValid && isOutputDirpathValid) {
         setShowAdditionalFields(true);
       }
       else {
@@ -46,10 +46,10 @@ function Decrypt() {
       }
     }
     else {
-      outputDirpathInputRef.current.validate();
+      passwordInputRef.current.validate();
       hashInputRef.current.validate();
 
-      if (isOutputDirpathValid && isHashPathValid){
+      if (isPasswordValid && isHashPathValid){
         navigate('/decrypt/processing', {
           state : {
             processType: 'Decrypt',
@@ -105,6 +105,22 @@ function Decrypt() {
                   allowMultiple={true}
                   isEnabled={showAdditionalFields ? false : true}
                   />
+                <FilePathInput
+                  ref={outputDirpathInputRef}
+                  componentHeader="Decrypted Video File Destination"
+                  defaultDisplayText="Enter a valid directory path." 
+                  placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
+                  browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
+                  browseHandler={window.electron.openFolder}
+                  onValueChange={setOutputDirpath}
+                  onValidityChange={setOutputDirpathValidity}
+                  isRequired={false}
+                  isEnabled={showAdditionalFields ? false : true}
+                  />
+              </div>
+            </div>
+            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
+              <div className='space-y-4'>
                 <PasswordInput
                   ref={passwordInputRef}
                   componentHeader="Hash Key Password*"
@@ -113,12 +129,8 @@ function Decrypt() {
                   processType="Decrypt"
                   onValueChange={setPassword}
                   onValidityChange={setPasswordValidity}
-                  isEnabled={showAdditionalFields ? false : true}
+                  isEnabled={showAdditionalFields ? true : false}
                   />
-              </div>
-            </div>
-            <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
-              <div className='space-y-4'>
                 <FilePathInput
                   ref={hashInputRef}
                   componentHeader="Hash Key File *"
@@ -130,21 +142,9 @@ function Decrypt() {
                   onValidityChange={setHashPathValidity}
                   isRequired={true}
                   allowMultiple={true}
-                  allowMultipleText1={"keyfiles"}
+                  allowMultipleText1={".key files"}
                   allowMultipleText2={"encrypted videos"}
                   dependencyList={filepaths}
-                  isEnabled={showAdditionalFields ? true : false}
-                  />
-                <FilePathInput
-                  ref={outputDirpathInputRef}
-                  componentHeader="Decrypted Video File Destination"
-                  defaultDisplayText="Enter a valid directory path." 
-                  placeholderText="C:\Users\YourUsername\Documents\DecryptedVideoDest..." 
-                  browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
-                  browseHandler={window.electron.openFolder}
-                  onValueChange={setOutputDirpath}
-                  onValidityChange={setOutputDirpathValidity}
-                  isRequired={false}
                   isEnabled={showAdditionalFields ? true : false}
                   />
               </div>

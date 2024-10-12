@@ -1,3 +1,108 @@
+"""
+This module provides classes `EncryptionProcessHandler` and `AnalysisProcessHandler` to manage encryption, decryption, and analysis processes 
+for video files. These classes handle file inputs, manage subprocesses, and handle errors and halting of processes.
+
+Classes:
+--------
+1. EncryptionProcessHandler:
+   - Manages the encryption and decryption of video files using subprocess to run MediCrypt CLI commands.
+   - Provides support for halting the process, error handling, and cleanup of generated files.
+
+   Attributes:
+   -----------
+   - algorithm (str): The encryption algorithm to use (FY-Logistic or 3D-cosine).
+   - input_filepaths (dict[str]): Dictionary of input file paths for videos to be processed.
+   - password (str): The password used for encryption/decryption.
+   - output_dirpath (str): The directory path where output files will be saved.
+   - hash_path (str): Path for storing or retrieving hash keys used in encryption.
+   - input_files (list): Stores the names of input files.
+   - output_filepaths (list): Stores the file paths of processed output files.
+   - time_filepaths (list): Stores the file paths for time analysis results.
+   - process (subprocess.Popen): Manages the subprocess handling encryption or decryption.
+   - stdout_str (str): Captures standard output from the process.
+   - stderr_str (str): Captures standard error from the process.
+   - has_error (bool): Flag to track if the process encountered an error.
+   - is_halted (bool): Flag to check if the process was halted by the user.
+
+   Public Methods:
+   ---------------
+   - process_request(process_type: str):
+     Handles the complete request for encryption or decryption of video files by initializing the process.
+
+   - halt_process():
+     Stops the currently running encryption or decryption process if it is active.
+
+   Private/Internal Methods:
+   -------------------------
+   - _get_algorithm():
+     Returns the corresponding CLI argument for the encryption algorithm.
+
+   - _generate_command(process_type: str, filepath: str, hash_path: str):
+     Generates the command for encryption or decryption based on the input parameters.
+
+   - _run_subprocess(process_type: str, command: str, data: dict[str], index: int):
+     Executes the subprocess for encryption/decryption and yields real-time output while managing errors and success.
+
+   - _delete_frameGen_folder():
+     Deletes the temporary folder used for frame generation in 3D-cosine encryption when the process is halted.
+
+   - _delete_output_files(process_type: str, output_filepath: str, hash_filepath: str, time_filepath: str):
+     Deletes output files if an error occurs or the process is halted.
+
+   - _handle_error(message: str, status: str, stdout: str, stderr: str):
+     Centralized error handling for process failures.
+
+2. AnalysisProcessHandler:
+   - Manages the analysis of encryption/decryption results, including resolution validation and speed metrics based on video files.
+
+   Attributes:
+   -----------
+   - algorithm (str): The encryption algorithm used for the analysis (FY-Logistic or 3D-cosine).
+   - orig_filepaths (dict[str]): Dictionary of original file paths for comparison with processed files.
+   - processed_filepaths (dict[str]): Dictionary of processed (encrypted/decrypted) file paths.
+   - time_filepaths (dict[str]): Dictionary of file paths for time analysis results.
+   - output_dirpath (str): Directory path for saving analysis results.
+   - input_files (list): Stores the names of input files.
+   - resolutions (list): Stores the video resolutions after processing.
+   - output_filepaths (list): Stores the file paths of analysis results.
+   - baseline_speed_metrics (list): Stores speed metrics based on video resolution.
+   - process (subprocess.Popen): Manages the subprocess for running the analysis.
+   - stdout_str (str): Captures standard output from the analysis process.
+   - stderr_str (str): Captures standard error from the analysis process.
+   - has_error (bool): Flag to track if an error occurred during analysis.
+   - is_halted (bool): Flag to check if the analysis process was halted.
+
+   Public Methods:
+   ---------------
+   - process_request(process_type: str):
+     Handles the request for analyzing encryption/decryption results.
+
+   - halt_process():
+     Stops the currently running analysis process if it is active.
+
+   Private/Internal Methods:
+   -------------------------
+   - _get_algorithm():
+     Returns the corresponding CLI argument based on the chosen algorithm.
+
+   - _validate_video(process_type: str, processed_filepath: str, orig_filepath: str):
+     Validates whether the processed video has the same resolution as the original video.
+
+   - _get_video_info(processed_filepath: str):
+     Retrieves speed metrics based on the video’s resolution for baseline analysis.
+
+Dependencies:
+-------------
+- subprocess: Used to manage the execution of external CLI commands for encryption, decryption, and analysis.
+- os: Provides functionality for file management, such as deleting temporary files and directories.
+- shutil: For deletion of the generated folders.
+- signal: For sending appropriate signals to halt the subprocess
+- json: For handling the transfer of data back to the React.js frontend
+- cv2: For validation of resolution.
+
+Code Author: Charles Andre C. Bandala
+"""
+
 from fastapi import HTTPException
 import os
 import shutil
@@ -7,7 +112,7 @@ import subprocess
 import json
 import cv2
 
-class EncryptionCommandHandler:
+class EncryptionProcessHandler:
     def __init__(self, algorithm: str, input_filepaths: dict[str], password: str, output_dirpath: str, hash_path: str):
         # User Inputs
         self.algorithm = algorithm
@@ -237,7 +342,7 @@ class EncryptionCommandHandler:
         }
         return f"data: {json.dumps(_error_response)}\n\n"
 
-class AnalysisCommandHandler:
+class AnalysisProcessHandler:
     def __init__(self, algorithm: str, orig_filepaths: dict[str], processed_filepaths: dict[str], time_filepaths: dict[str], output_dirpath: str) -> None:
         # User Inputs
         self.algorithm = algorithm

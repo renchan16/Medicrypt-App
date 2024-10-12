@@ -27,7 +27,7 @@ function LandingPage() {
       opacity: 1,
       transition: { type: 'spring', duration: 2, bounce: 0.5 },
     },
-    exit: { x: '100vw', opacity: 0, transition: { duration: 0.5 } },
+    exit: { x: '80vw', opacity: 0, transition: { duration: 0.5 } },
   };
 
   return (
@@ -42,7 +42,7 @@ function LandingPage() {
       >
         <div className="flex items-center mb-7">
           <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
-          <h1 className="text-7xl font-bold text-white bg-clip-text leading-tight pb-1">medicrypt</h1>
+          <h1 className="text-7xl font-bold text-white bg-clip-text leading-tight pb-1 font-avantGarde">medicrypt</h1>
         </div>
 
         <motion.div

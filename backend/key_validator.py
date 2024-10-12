@@ -17,9 +17,9 @@ def __checkNumLiteral__(sample: str) -> bool:
 def validateKey(sample: str, mode: EncryptionMode) -> None:
     if mode == EncryptionMode.FISHER_YATES:
         if __checkNumLiteral__(sample):
-            raise ValueError("Invalid key for Fisher-Yates mode: must be non-numeric")
+            raise ValueError("INVALID KEY: The key file doesn't work with FY-Logistic decryption")
     elif mode == EncryptionMode.COSINE_3D:
         if not __checkNumLiteral__(sample):
-            raise ValueError("Invalid key for 3D Cosine mode: must be numeric")
+            raise ValueError("INVALID KEY: The key file doesn't work with 3D-Cosine decryption")
     else:
-        raise ValueError(f"Unknown encryption mode: {mode}")
+        raise ValueError(f"Unknown key file for mode: {mode}")

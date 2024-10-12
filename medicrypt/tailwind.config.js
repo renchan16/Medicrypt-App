@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        avantGarde: ['AvantGardeGothic', 'sans-serif'],
+      },
       colors: {
         primary: '#1e63dc', //encrypt
         primary0: '#1644b3', //text in Explore

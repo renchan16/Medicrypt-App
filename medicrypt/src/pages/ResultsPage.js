@@ -52,7 +52,6 @@ function ResultsPage() {
     let csvFilepaths = data['csvFilepaths'];
     let processedFiles = data['inputFiles'];
     let resolutions = data['resolutions'];
-    let outputDirpath = data['outputDirpath']
 
     useEffect(() => {
         const parseCSV = async (filePath) => {
@@ -208,7 +207,7 @@ function ResultsPage() {
                             buttonText="Show CSV File"
                             buttonTextColor="white"
                             buttonIcon={FaRegFolder}
-                            filePath={outputDirpath}
+                            filePath={csvFilepaths[currentFileIndex]}
                             />
                     </div>
                 </div>

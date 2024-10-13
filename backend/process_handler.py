@@ -391,7 +391,7 @@ class AnalysisProcessHandler:
         _processed_cap.release()
         
         # Returns true if resolutions are similar or if process_type is encrypt.
-        return _orig_width == _processed_width and _orig_height == _processed_height and process_type == "encrypt"
+        return True if process_type == "encrypt" else _orig_width == _processed_width and _orig_height == _processed_height
 
     def _get_video_info(self, processed_filepath: str):
         """Get the baseline speed for the given filepath based on closest resolution from reference table"""

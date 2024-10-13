@@ -198,16 +198,7 @@ ipcMain.handle('dialog:openFileLocation', (event, filePath) => {
     const normalizedPath = path.normalize(filePath);
     
     if (fs.existsSync(normalizedPath)) {
-      const stat = fs.lstatSync(normalizedPath);
-
-      if (stat.isFile()) {
-        // Open the directory containing the file
-        const dirPath = path.dirname(normalizedPath);
-        shell.showItemInFolder(dirPath);
-      } else if (stat.isDirectory()) {
-        // Open the directory itself
-        shell.showItemInFolder(normalizedPath);
-      }
+      shell.showItemInFolder(normalizedPath);
       return true;
     }
     return false; // Path does not exist

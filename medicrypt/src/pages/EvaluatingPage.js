@@ -18,7 +18,6 @@ function EvaluatingPage() {
     const [processDescription, setProcessDescription] = useState("");
     const [inputFiles, setInputFiles] = useState("");
     const [resolutions, setResolutions] = useState("")
-    const [outputDirpath, setOutputDirpath] = useState("");
     const [baselineSpeedMetrics, setBaselineSpeedMetrics] = useState("")
     const [csvFilepaths, setCSVFilepaths] = useState("");
     const [dots, setDots] = useState(''); 
@@ -61,7 +60,6 @@ function EvaluatingPage() {
           else {
             setInputFiles(data['input_files']);
             setResolutions(data['resolutions'])
-            setOutputDirpath(data['output_dirpath'])
             setBaselineSpeedMetrics(data['baseline_speed_metrics'])
             setCSVFilepaths(data['output_filepaths']);
             setProcessDescription(`The ${processType}ion for the ${data['input_files'].join(', ')} has been successfully evaluated! You can either go back to the home page or click "View Analytics Summary" or "View CSV File" to view the results.`);
@@ -97,7 +95,7 @@ function EvaluatingPage() {
     navigate('/results', {
       state : {
         processType: processType,
-        data: {inputFiles, resolutions, outputDirpath, csvFilepaths, baselineSpeedMetrics}
+        data: {inputFiles, resolutions, csvFilepaths, baselineSpeedMetrics}
       }
     })
   }
@@ -158,9 +156,7 @@ function EvaluatingPage() {
             processStatus={processStatus}
             processDescription={processDescription}
             inputFiles={inputFiles}
-            outputLocation={outputDirpath}
             nextPageButtonText="View Analytics Summary"
-            viewFileButtonText="View CSV File"
             navigateNextPage={navigateEvaluateSummary}
             navigatePrevPage={navigateEvaluatePage}
             navigateHome={navigateHome}

@@ -136,10 +136,13 @@ def main():
 
 
         mean_field = {"Frame": "Mean"}
+        total_field = {"Frame": "Total"}
+        
         for i in fields:
             if i == "Frame":
                 continue
             mean_field[i] = []
+            total_field[i] = 0                                      
         
         for i in range(args.frames):
             
@@ -162,13 +165,17 @@ def main():
                 cc_d = np.array(corr.get_corr_diag(frame, args.samples))
                 cc_h = np.array(corr.get_corr_horizontal(frame, args.samples))
                 cc_v = np.array(corr.get_corr_vertical(frame, args.samples))
-                row_field["CC_d"] = np.tanh(np.mean(np.arctanh(cc_d)))
-                row_field["CC_h"] = np.tanh(np.mean(np.arctanh(cc_h)))
-                row_field["CC_v"] = np.tanh(np.mean(np.arctanh(cc_v)))
+                row_field["CC_d"] = np.mean(cc_d)
+                row_field["CC_h"] = np.mean(cc_h)
+                row_field["CC_v"] = np.mean(cc_v)
+                
+                total_field["CC_d"] += np.mean(cc_d)
+                total_field["CC_h"] += np.mean(cc_h)
+                total_field["CC_v"] += np.mean(cc_v)
 
-                mean_field["CC_d"] += [np.mean(np.arctanh(cc_d))]
-                mean_field["CC_h"] += [np.mean(np.arctanh(cc_h))]
-                mean_field["CC_v"] += [np.mean(np.arctanh(cc_v))]
+                mean_field["CC_d"] += [np.mean(cc_d)]
+                mean_field["CC_h"] += [np.mean(cc_h)]
+                mean_field["CC_v"] += [np.mean(cc_v)]
                 
 
                 if  args.encrypted != None:
@@ -178,6 +185,11 @@ def main():
                     row_field["CC_d_e"] = np.mean(cc_d_e)
                     row_field["CC_h_e"] = np.mean(cc_h_e)
                     row_field["CC_v_e"] = np.mean(cc_v_e)
+
+                    total_field["CC_d_e"] += np.mean(cc_d)
+                    total_field["CC_h_e"] += np.mean(cc_h)                      
+                    total_field["CC_v_e"] += np.mean(cc_v)
+
                     mean_field["CC_d_e"] += [np.mean(cc_d_e)]
                     mean_field["CC_h_e"] += [np.mean(cc_h_e)]
                     mean_field["CC_v_e"] += [np.mean(cc_v_e)]
@@ -191,6 +203,9 @@ def main():
                 uaci = np.mean(diff.get_uaci(frame_e, attacked_frame, frame_width_e, frame_height_e))
                 row_field['NPCR'] = npcr
                 row_field['UACI'] = uaci
+                
+                total_field['NPCR'] += npcr
+                total_field['UACI'] += uaci
 
                 mean_field['NPCR'] += [npcr]
                 mean_field['UACI'] += [uaci]
@@ -198,6 +213,11 @@ def main():
                 if args.verbose : print(f"[Frame {i}] Analyzing Entropy")
                 B_o, G_o, R_o = cv2.split(frame.copy())
                 row_field['Entropy(B)'],  row_field['Entropy(G)'], row_field['Entropy(R)'], row_field['Entropy(Combined)'] = enc_quality.get_entropy(B_o), enc_quality.get_entropy(G_o), enc_quality.get_entropy(R_o), enc_quality.get_entropy(frame)
+
+                total_field['Entropy(B)'] += enc_quality.get_entropy(B_o)
+                total_field['Entropy(G)'] += enc_quality.get_entropy(G_o)
+                total_field['Entropy(R)'] += enc_quality.get_entropy(R_o)
+                total_field['Entropy(Combined)'] += enc_quality.get_entropy(frame)
 
                 mean_field['Entropy(B)'] += [enc_quality.get_entropy(B_o)]
                 mean_field['Entropy(G)'] += [enc_quality.get_entropy(G_o)]
@@ -208,6 +228,11 @@ def main():
                     B_e, G_e, R_e = cv2.split(frame_e.copy())
                     row_field['Entropy(B)_e'],  row_field['Entropy(G)_e'], row_field['Entropy(R)_e'], row_field["Entropy(Combined)_e"] = enc_quality.get_entropy(B_e), enc_quality.get_entropy(G_e), enc_quality.get_entropy(R_e), enc_quality.get_entropy(frame_e)
 
+                    total_field['Entropy(B)_e'] += enc_quality.get_entropy(B_e)
+                    total_field['Entropy(G)_e'] += enc_quality.get_entropy(G_e)
+                    total_field['Entropy(R)_e'] += enc_quality.get_entropy(R_e)
+                    total_field['Entropy(Combined)_e'] += enc_quality.get_entropy(frame_e)
+
                     mean_field['Entropy(B)_e'] += [enc_quality.get_entropy(B_e)]
                     mean_field['Entropy(G)_e'] += [enc_quality.get_entropy(G_e)]
                     mean_field['Entropy(R)_e'] += [enc_quality.get_entropy(R_e)]
@@ -215,22 +240,31 @@ def main():
 
             if args.mode == 'psnr' or args.mode  == 'all' :
                 if args.verbose : print(f"[Frame {i}] Analyzing PSNR")
-                row_field['MSE'] = enc_quality.get_mse(frame, frame_d)
-                row_field['PSNR'] = enc_quality.get_psnr(frame, frame_d)
 
-                mean_field['MSE'] += [enc_quality.get_mse(frame, frame_d)]
-                mean_field['PSNR'] +=[enc_quality.get_psnr(frame, frame_d)]
+                mse = enc_quality.get_mse(frame, frame_d)
+                psnr = enc_quality.get_psnr(frame, frame_d)
+
+                row_field['MSE'] = mse
+                row_field['PSNR'] = psnr
+
+                total_field['MSE'] +=  mse
+                total_field['PSNR'] += psnr
+
+                mean_field['MSE'] += [mse]
+                mean_field['PSNR'] +=[psnr]
 
             if args.etime != None:
                 with open(args.etime, 'r') as t:
                     lines = t.readlines()
                     row_field['ETime'] = float(lines[i])
+                    total_field['ETime'] += float(lines[i])
                     mean_field['ETime'] += [float(lines[i])]
             
             if args.dtime != None:
                 with open(args.dtime, 'r') as t:
                     lines = t.readlines()
                     row_field['DTime'] = float(lines[i])
+                    total_field['DTime'] += float(lines[i])
                     mean_field['DTime'] += [float(lines[i])]
             
             writer.writerow(row_field)
@@ -244,6 +278,7 @@ def main():
 
             mean_field[i] = np.tanh(np.mean(mean_field[i]))
 
+        writer.writerow(total_field)
         writer.writerow(mean_field)
 
 if __name__ == "__main__":

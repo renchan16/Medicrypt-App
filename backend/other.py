@@ -1,4 +1,3 @@
-from ast import While
 from filepath_parser import FilepathParser
 from fisher_yates import Encrypt
 from scipy.stats import entropy

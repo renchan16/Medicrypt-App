@@ -3,8 +3,6 @@ from _3d_cosine import Encrypt_cosine
 
 import cv2
 import numpy as np
-import math
-from filepath_parser import FilepathParser
 
 class Differential:
 

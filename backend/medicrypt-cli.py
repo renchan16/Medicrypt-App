@@ -1,10 +1,8 @@
-from filepath_parser import FilepathParser
 from fisher_yates import Encrypt
 from _3d_cosine import Encrypt_cosine
 from pathlib import Path
 
 import logfilewriter
-import sys
 import argparse
 
 

@@ -1,7 +1,3 @@
-import os
-import pathlib
-
-
 def logwrite(logs: list, log_source: str):
 
     with open(log_source, 'w') as log:

@@ -15,7 +15,8 @@ module.exports = {
         primary2: '#1645b4', 
         primary3: '#1644b3', //Instructions Blue
         secondary: '#102a6b', //text color
-        secondary1: '#103d8b', 
+        secondary1: '#103d8b',
+        secondary2: '#d7eaff',
         black: '#1d1d1f', 
         white: '#F0F4F8', 
         background:'#1583fe',

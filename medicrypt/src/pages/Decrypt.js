@@ -5,14 +5,16 @@ import { MdNavigateBefore } from "react-icons/md";
 import { FaUnlock } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../pages-css/General.css';
-import logo from '../assets/MedicryptLogo.png';
 import AlgorithmSelector from '../components/switches/AlgorithmSelector';
 import FilePathInput from '../components/text input/FilePathInput';
 import PasswordInput from '../components/text input/PasswordInput';
 import ProcessButton from '../components/buttons/ProcessButton';
-import BackgroundImage from '../assets/background.png';
 import { FaPaperclip } from "react-icons/fa6";
 import { FaFolder } from 'react-icons/fa6';
+import { FaArrowCircleLeft, FaLock } from "react-icons/fa";
+import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
+import { IoDocumentLock } from "react-icons/io5";
+
 
 function Decrypt() {
   const navigate = useNavigate();
@@ -72,16 +74,18 @@ function Decrypt() {
     <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
         <button
-          onClick={() => navigate('/')} 
+          onClick={() => navigate('/')}
           className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
-          >
-          <MdArrowBackIosNew className="mr-2" />
+        >
+          <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
         </button>
 
-        <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
-
         <div className='relative top-1/2 transform -translate-y-1/2'>
-          <h1 className="mb-3 text-4xl font-bold text-primary1 ">Decrypt a Video</h1>
+
+        <h1 className="mb-3 text-4xl font-bold text-secondary font-avantGarde flex items-center">
+            <IoDocumentLock className="mr-2 text-5xl" />
+            Decrypt a Video
+          </h1>
           <AlgorithmSelector
             className='mt-4 mb-4' 
             componentHeader="Choose an Algorithm for Decryption" 
@@ -152,24 +156,24 @@ function Decrypt() {
           </div>
           <div className='flex justify-between'>
             <ProcessButton
-              className={`w-56 h-14`} 
-              buttonText="BACK"
-              buttonIcon={MdNavigateBefore}
+              className={`w-40 h-14`}
+              buttonText="Prev"
+              buttonIcon={FaChevronCircleLeft}
               iconLocation='left'
               isEnabled={showAdditionalFields ? true : false}
               onClickFunction={showPreviousFields}
-              />
+            />
             <ProcessButton
-              className={`w-56 h-14`}  
-              buttonText={`${showAdditionalFields ? "DECRYPT" : "NEXT" }`}
-              buttonIcon={showAdditionalFields ? FaUnlock : MdNavigateNext }
-              iconLocation={showAdditionalFields ? 'left' : 'right' }
+              className={`w-40 h-14`}
+              buttonText={`${showAdditionalFields ? "Decrypt" : "Next"}`}
+              buttonIcon={showAdditionalFields ? FaLock : FaChevronCircleRight}
+              iconLocation={showAdditionalFields ? 'left' : 'left'}
               onClickFunction={processInputData}
-              />
+            />
           </div>
         </div>
+        </div>
       </div>
-    </div>
   );
 }
 

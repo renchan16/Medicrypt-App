@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BarLoader } from 'react-spinners';  // Import BarLoader
+import { BarLoader } from 'react-spinners';  
 import ProcessComplete from '../components/sections/ProcessComplete';
 import NavButton from '../components/buttons/NavButton';
 import '../pages-css/General.css';
 import axios from 'axios';
-import logo from '../assets/MedicryptLogo.png';
 import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
-import { FaRegStopCircle } from 'react-icons/fa';  // Import FaRegStopCircle
+import { FaRegStopCircle } from 'react-icons/fa'; 
 
 function ProcessingPage() {
   const navigate = useNavigate();
@@ -124,7 +123,7 @@ function ProcessingPage() {
         {/* Processing Loader */}
         <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
           {/* Centered Processing Content */}
-          <h1 className='text-4xl font-bold text-secondary -mb-10'>{processType}ing{dots}</h1>
+          <h1 className='text-4xl font-bold text-secondary font-avantGarde -mb-10'>{processType}ing{dots}</h1>
           <div className="w-full h-60 flex flex-col items-center justify-center -mb-20">
             <BarLoader color="#102a6b" loading={true} width={300} />
             <p className="text-secondary mt-4">{currentProcess}</p>

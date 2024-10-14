@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const FeatureCard = ({ icon: Icon, title, description, metrics, isActive, onClick }) => (
   <motion.div
-    className={`bg-white rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 ${
+    className={`bg-secondary2 rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 ${
       isActive ? 'ring-4 ring-secondary' : ''
     }`}
     whileHover={{ scale: 1.05 }}

@@ -444,10 +444,10 @@ class AnalysisProcessHandler:
         _output_filepath = _get_unique_filepath(_output_filepath)
 
         if process_type == "encrypt":
-            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -e \"{processed_filepath}\" -p 12345 -m encryption -w \"{_output_filepath}\" -t {self.algorithm} --etime \"{time_filepath}\" --verbose"
+            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -e \"{processed_filepath}\" -m encryption -w \"{_output_filepath}\" -t {self.algorithm} --etime \"{time_filepath}\" --verbose"
 
         else:
-            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -d \"{processed_filepath}\" -p 12345 -m psnr -w \"{_output_filepath}\" -t {self.algorithm} --dtime \"{time_filepath}\" --verbose"
+            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -d \"{processed_filepath}\" -m psnr -w \"{_output_filepath}\" -t {self.algorithm} --dtime \"{time_filepath}\" --verbose"
 
         _baseline_speed, _resolution = self._get_video_info(processed_filepath)
         _data = { "input_file": _input_file, "resolution": _resolution, "output_filepath": _output_filepath, "baseline_speed": _baseline_speed}

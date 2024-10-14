@@ -70,6 +70,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1024,
     height: 768,
+    title: "medicrypt",
+    icon: path.join(__dirname, '..', 'public', 'logo192.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

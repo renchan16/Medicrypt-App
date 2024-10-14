@@ -61,7 +61,7 @@ function Encrypt() {
     setShowAdditionalFields(false);
   };
 
-  // Define animation variants
+  // Same animation variants as in Decrypt
   const variants = {
     initial: { opacity: 0, x: '-100%' }, // Start from left
     animate: { opacity: 1, x: 0 },       // End at center
@@ -78,7 +78,7 @@ function Encrypt() {
       transition={{ duration: 0.5 }}
     >
       <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-      <button
+        <button
           onClick={() => navigate('/')}
           className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
         >

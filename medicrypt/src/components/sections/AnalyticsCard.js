@@ -3,7 +3,7 @@ import React from "react";
 export const AnalyticsCard = ({ className, children, onClick }) => {
     return (
         <div
-            className={`${className} relative overflow-hidden p-6 shadow-[0_0_4px_1px_rgba(0,0,0,0.10)] rounded-xl ${onClick ? "cursor-pointer" : "cursor-auto"}`}
+            className={`${className} bg-secondary2 relative overflow-hidden p-6 shadow-[0_0_4px_1px_rgba(0,0,0,0.10)] rounded-xl ${onClick ? "cursor-pointer" : "cursor-auto"}`}
             onClick={onClick}
         >
             {children}

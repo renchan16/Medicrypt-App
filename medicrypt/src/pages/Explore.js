@@ -72,7 +72,6 @@ export default function Features() {
         "Mean Square Error (MSE)",
         "Peak Signal to Noise Ratio (PSNR)",
         "Decryption Time",
-        "Correlation Coefficient (CC)",
       ],
     },
   ];

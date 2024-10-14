@@ -147,7 +147,7 @@ function HowToUse() {
           {(activeTab === 'encrypt' ? encryptInstructions : decryptInstructions).map((instruction, index) => (
             <motion.div
               key={index}
-              className="bg-white rounded-lg p-6 cursor-pointer shadow-md border-2 border-secondary"
+              className="bg-secondary2 rounded-lg p-6 cursor-pointer shadow-md border-2 border-secondary"
               whileHover={{ scale: 1.05, boxShadow: '0px 0px 15px rgba(21, 131, 254, 0.5)' }}
               onClick={() => setActiveInstruction(activeInstruction === index ? null : index)}
             >

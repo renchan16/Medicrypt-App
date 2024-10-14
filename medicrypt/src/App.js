@@ -46,7 +46,7 @@ function App() {
         {loading ? (
           <div className="flex flex-col justify-center items-center h-full">
             <PropagateLoader color="#1D1B20" loading={loading} size={15} />
-            <p className="mb-6 text-xl font-bold text-black">
+            <p className="mt-10 text-xl font-bold text-black">
               Loading{dots}
             </p>
           </div>

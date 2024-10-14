@@ -6,11 +6,12 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../pages-css/General.css';
 import { AnalyticsMetrics } from '../components/sections/AnalyticsMetrics';
 import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../components/sections/AnalyticsCard';
-import logo from '../assets/MedicryptLogo.png';
 import NavButton from '../components/buttons/NavButton';
 import AnalyticsCCValue from '../components/sections/AnalyticsCCValue';
 import AnalyticsSelect from '../components/sections/AnalyticsSelect';
 import { FaRegFolder } from "react-icons/fa";
+import { FaArrowCircleLeft } from "react-icons/fa";
+
 
 const getResolutionLabel = (width, height) => {
     const parsedWidth = parseInt(width, 10);
@@ -114,18 +115,16 @@ function ResultsPage() {
                     onClick={() => navigate('/')} 
                     className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
                 >
-                    <MdArrowBackIosNew className="mr-2" />
+                    <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
                 </button>
 
-                <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
-
                 <div className='relative top-1/2 transform -translate-y-1/2'>
-                    <h1 className="text-3xl font-bold mb-4">{processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results</h1>
-                    <h2>Current File:</h2>
+                    <h1 className="text-4xl text-secondary font-avantGarde  mt-5 font-bold mb-4">{processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results</h1>
+                    <h2 className="text-lg text-secondary font-semibold ">Current File:</h2>
                     <AnalyticsSelect 
                         value={currentFileIndex}
                         onChange={handleFileChange}
-                        className="mb-2"
+                        className="mb-2 text-md border-secondary rounded-lg text-secondary"
                     >
                         {processedFiles.map((file, index) => (
                             <option key={index} value={index}>
@@ -133,7 +132,7 @@ function ResultsPage() {
                             </option>
                         ))}
                     </AnalyticsSelect>
-                    <p className="mb-4 flex">Resolution: {resolutions[currentFileIndex][0]}x{resolutions[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
+                    <p className="mb-4 text-secondary flex">Resolution: {resolutions[currentFileIndex][0]}x{resolutions[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
                     <div className='h-1/4 '></div>
                     <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
                         <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
@@ -191,21 +190,23 @@ function ResultsPage() {
                     <div className='space-y-4'>
                         {processType === "Encrypt" && (
                             <NavButton
-                                className="w-full h-12 mt-8"
+                                className="w-full h-12 mt-8 rounded-lg border-2 border-secondary"
                                 buttonText={showAdditionalFields ? "Show Previous Metrics" : "Show Additional Metrics"}
-                                buttonColor="primary1"
-                                hoverColor="primary0"
-                                buttonTextColor="white"
+                                buttonColor="white"
+                                hoverColor="secondary1"
+                                buttonTextColor="secondary"
+                                hoverTextColor= "white"
                                 buttonIcon={showAdditionalFields ? MdNavigateBefore : MdNavigateNext}
                                 onClickFunction={showOtherFields}
                             />
                         )}
                         <NavButton
-                            className="w-full h-12"
-                            buttonColor="primary1"
-                            hoverColor="primary0"
+                            className="w-full h-12 mt-8 rounded-lg border-2 border-secondary"
+                            buttonColor="white"
+                            hoverColor="secondary1"
+                            buttonTextColor="secondary"
+                            hoverTextColor= "white"
                             buttonText="Show CSV File"
-                            buttonTextColor="white"
                             buttonIcon={FaRegFolder}
                             filePath={csvFilepaths[currentFileIndex]}
                             />

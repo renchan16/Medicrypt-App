@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ClimbingBoxLoader } from 'react-spinners';
+import { BarLoader } from 'react-spinners';  // Import BarLoader
 import ProcessComplete from '../components/sections/ProcessComplete';
 import NavButton from '../components/buttons/NavButton';
 import '../pages-css/General.css';
 import axios from 'axios';
 import logo from '../assets/MedicryptLogo.png';
 import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
+import { FaRegStopCircle } from 'react-icons/fa';  // Import FaRegStopCircle
 
 function ProcessingPage() {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function ProcessingPage() {
   const [currentProcess, setCurrentProcess] = useState(false);
   const [processStatus, setProcessStatus] = useState("");
   const [processDescription, setProcessDescription] = useState("");
-  const [inputFilepaths, setInputFilePaths] = useState("")
+  const [inputFilepaths, setInputFilePaths] = useState("");
   const [algorithm, setAlgorithm] = useState("");
   const [outputDirpath, setOutputDirpath] = useState("");
   const [outputFilepaths, setOutputFilepaths] = useState("");
@@ -61,9 +62,9 @@ function ProcessingPage() {
           } 
           else {
             setInputFiles(data['input_files']);
-            setInputFilePaths(data['input_filepaths'])
+            setInputFilePaths(data['input_filepaths']);
             setAlgorithm(data['algorithm']);
-            setOutputDirpath(data['output_dirpath'])
+            setOutputDirpath(data['output_dirpath']);
             setOutputFilepaths(data['output_filepaths']);
             setTimeFilepaths(data['time_filepaths']);
             setProcessDescription(`The ${data['input_files'].join(', ')} has been successfully ${processType}ed! You can either go back to the home page or click "Evaluate ${processType}ion" to analyze the results.`);
@@ -87,7 +88,7 @@ function ProcessingPage() {
       const response = await axios.post('http://localhost:8000/halt_processing');
       console.log(`${processType}ion response:`, response.data);
       setProcessStatus(response.data['status']);
-      setProcessDescription(ProcessErrorMessage(response.data))
+      setProcessDescription(ProcessErrorMessage(response.data));
       setIsProcessing(false);
     } 
     catch (error) {
@@ -104,39 +105,40 @@ function ProcessingPage() {
   };
 
   const navigateEvaluatePage = () => {
-    if (processType === "Encrypt"){
+    if (processType === "Encrypt") {
       navigate(`/${processType.toLowerCase()}/evaluate`, {
         state: { data: { algorithm, inputFilepaths, outputFilepaths, timeFilepaths } }
       });
-    }
+    } 
     else {
       navigate(`/${processType.toLowerCase()}/evaluate`, {
         state: { data: { algorithm, outputFilepaths, timeFilepaths } }
       });
     }
-  }
+  };
 
   return (
     <div className='flex items-center justify-center h-full w-full select-none'>
       <div className="relative h-full w-11/12 p-6">
-        <img src={logo} alt="Medicrypt Logo" className="absolute w-15 h-16 right-1" />
-        
+
         {/* Processing Loader */}
         <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
           {/* Centered Processing Content */}
-          <h1 className='mt-6 text-4xl font-bold text-black'>{processType}ing{dots}</h1>
-          <div className="w-full h-60 flex flex-col items-center justify-center">
-            <ClimbingBoxLoader color="#1D1B20" loading={true} size={20} />
-            <p className="text-black mt-4">{currentProcess}</p>
+          <h1 className='text-4xl font-bold text-secondary -mb-10'>{processType}ing{dots}</h1>
+          <div className="w-full h-60 flex flex-col items-center justify-center -mb-20">
+            <BarLoader color="#102a6b" loading={true} width={300} />
+            <p className="text-secondary mt-4">{currentProcess}</p>
           </div>
 
-          {/* Stop Processing Button */}
+          {/* Stop Processing Button with Icon */}
           <NavButton
-            className="w-60 h-12 rounded-lg"
+            className="w-60 h-12 rounded-lg mt-5 flex items-center justify-center border-2 border-secondary "
             buttonText="Stop Processing"
-            buttonColor="primary1"
-            hoverColor="primary0"
-            buttonTextColor="white"
+            buttonColor="white"
+            hoverColor="secondary1"
+            buttonTextColor="secondary"
+            hoverTextColor= "white"
+            buttonIcon={FaRegStopCircle}
             onClickFunction={haltProcessing}
           />
         </div>

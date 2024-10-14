@@ -9,7 +9,7 @@ import PasswordInput from '../components/text input/PasswordInput';
 import ProcessButton from '../components/buttons/ProcessButton';
 import { FaPaperclip, FaFolder } from "react-icons/fa6";
 import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
-import { RiKey2Fill } from "react-icons/ri"; // Ensure this is imported
+import { RiKey2Fill } from "react-icons/ri"; 
 
 function Encrypt() {
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ function Encrypt() {
         </button>
 
         <div className='relative top-1/2 transform -translate-y-1/2'>
-          <h1 className="mb-3 text-4xl font-bold text-secondary font-avantGarde flex items-center">
+          <h1 className="mb-3 text-4xl font-bold text-secondary cd Me flex items-center">
             <RiKey2Fill className="mr-2 text-5xl" /> {/* Add the icon here */}
             Encrypt a Video
           </h1>

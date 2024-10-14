@@ -32,7 +32,7 @@ function LandingPage() {
 
   return (
     // Ensure the outermost div has a full screen background
-    <div className="min-h-screen landing-background flex justify-center items-center">
+    <div className="min-h-screen landing-background flex justify-center items-center overflow-hidden">
       <motion.div
         className="flex flex-col justify-center items-center min-h-screen"
         initial="hidden"

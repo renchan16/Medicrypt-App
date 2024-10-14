@@ -82,7 +82,7 @@ export default function Features() {
       animate={{ x: 0, opacity: 1 }} // Move into place and fade in
       exit={{ x: '-100%', opacity: 0 }} // Exit off the screen to the left
       transition={{ duration: 0.5 }} // Duration of the animation
-      className="min-h-screen p-6 relative"
+      className="min-h-screen p-6 relative h-full w-11/12"
     >
       <button
         onClick={() => navigate('/')}
@@ -95,7 +95,7 @@ export default function Features() {
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-5xl md:text-5xl font-bold text-center text-secondary mt-16 mb-12"
+        className="text-4xl md:text-4xl font-bold text-center text-secondary mt-16 mb-12"
       >
         Explore Features
       </motion.h1>

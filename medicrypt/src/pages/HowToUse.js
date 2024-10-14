@@ -122,7 +122,7 @@ function HowToUse() {
         <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
       </button>
 
-      <div className="mt-10 text-left">
+      <div className="mt-10 text-left overflow-hidden">
         <h1 className="text-4xl font-bold text-secondary flex items-center justify-center">
           <HiOutlineLightBulb className="mr-2 text-4xl text-secondary" />
           Instructions

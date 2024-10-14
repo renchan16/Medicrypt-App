@@ -123,36 +123,36 @@ function HowToUse() {
       </button>
 
       <div className="mt-10 text-left">
-        <h1 className="text-5xl font-bold text-secondary flex items-center justify-center">
-          <HiOutlineLightBulb className="mr-2 text-5xl text-secondary" />
+        <h1 className="text-4xl font-bold text-secondary flex items-center justify-center">
+          <HiOutlineLightBulb className="mr-2 text-4xl text-secondary" />
           Instructions
         </h1>
 
         <div className="flex justify-center mt-6 mb-8">
           <button 
-            className={`px-4 py-2 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'encrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
+            className={`px-3 py-1.5 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'encrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
             onClick={() => setActiveTab('encrypt')}
           >
             Encryption
           </button>
           <button 
-            className={`px-4 py-2 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'decrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
+            className={`px-3 py-1.5 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'decrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
             onClick={() => setActiveTab('decrypt')}
           >
             Decryption
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 mx-7">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mx-4">
           {(activeTab === 'encrypt' ? encryptInstructions : decryptInstructions).map((instruction, index) => (
             <motion.div
               key={index}
-              className="bg-secondary2 rounded-lg p-6 cursor-pointer shadow-md border-2 border-secondary"
-              whileHover={{ scale: 1.05, boxShadow: '0px 0px 15px rgba(21, 131, 254, 0.5)' }}
+              className="bg-secondary2 rounded-lg p-4 cursor-pointer shadow-md border-2 border-secondary"
+              whileHover={{ scale: 1.05, boxShadow: '0px 0px 10px rgba(21, 131, 254, 0.5)' }}
               onClick={() => setActiveInstruction(activeInstruction === index ? null : index)}
             >
-              <instruction.icon className="w-8 h-8 mb-4 text-secondary" />
-              <h2 className="text-xl font-semibold mb-2 text-secondary">{instruction.title}</h2>
+              <instruction.icon className="w-6 h-6 mb-3 text-secondary" />
+              <h2 className="text-lg font-semibold mb-2 text-secondary">{instruction.title}</h2>
               <AnimatePresence>
                 {activeInstruction === index && (
                   <motion.p
@@ -170,7 +170,7 @@ function HowToUse() {
           ))}
         </div>
 
-        <div className="mt-8 text-center text-sm text-secondary">
+        <div className="mt-6 text-center text-xs text-secondary">
           <AlertTriangle className="inline mr-2 text-primary" />
           Always use secure channels for key exchange and never share your encryption keys!
         </div>

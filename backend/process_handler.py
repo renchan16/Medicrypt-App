@@ -174,7 +174,7 @@ class EncryptionProcessHandler:
             _time_filepath = os.path.join(os.path.dirname(_hash_filepath), f"{_base_filename}_encrypted_time.txt")
             _time_filepath = _get_unique_filepath(_time_filepath)
 
-            _command = f"python -u medicrypt-cli.py encrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p {self.password} --verbose --storetime \"{_time_filepath}\""
+            _command = f"python -u medicrypt-cli.py encrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p \"{self.password}\" --verbose --storetime \"{_time_filepath}\""
 
         else:  # Decrypt
             # Determine output path for decrypted file
@@ -191,7 +191,7 @@ class EncryptionProcessHandler:
             _time_filepath = _get_unique_filepath(_time_filepath)
 
             # Generate the command itself
-            _command = f"python -u medicrypt-cli.py decrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p {self.password} --verbose --storetime \"{_time_filepath}\""
+            _command = f"python -u medicrypt-cli.py decrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p \"{self.password}\" --verbose --storetime \"{_time_filepath}\""
         
         _data = { "input_file": _input_file, "output_filepath": _output_filepath, "hash_filepath": _hash_filepath, "time_filepath": _time_filepath }
         return _command, _data

@@ -149,7 +149,7 @@ function ProcessingPage() {
             processStatus={processStatus}
             processDescription={processDescription}
             inputFiles={inputFiles}
-            outputLocation={outputDirpath}
+            outputLocation={outputFilepaths.length > 1 ? outputDirpath : outputFilepaths[0]}
             nextPageButtonText={`Evaluate ${processType}ion`}
             viewFileButtonText="View File"
             navigateNextPage={navigateEvaluatePage}

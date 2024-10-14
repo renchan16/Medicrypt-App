@@ -174,7 +174,7 @@ class EncryptionProcessHandler:
             _time_filepath = os.path.join(os.path.dirname(_hash_filepath), f"{_base_filename}_encrypted_time.txt")
             _time_filepath = _get_unique_filepath(_time_filepath)
 
-            _command = f"python -u medicrypt-cli.py encrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p {self.password} --verbose --storetime \"{_time_filepath}\""
+            _command = f"python -u medicrypt-cli.py encrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p \"{self.password}\" --verbose --storetime \"{_time_filepath}\""
 
         else:  # Decrypt
             # Determine output path for decrypted file
@@ -191,7 +191,7 @@ class EncryptionProcessHandler:
             _time_filepath = _get_unique_filepath(_time_filepath)
 
             # Generate the command itself
-            _command = f"python -u medicrypt-cli.py decrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p {self.password} --verbose --storetime \"{_time_filepath}\""
+            _command = f"python -u medicrypt-cli.py decrypt -i \"{filepath}\" -o \"{_output_filepath}\" -t {self.algorithm} -k \"{_hash_filepath}\" -p \"{self.password}\" --verbose --storetime \"{_time_filepath}\""
         
         _data = { "input_file": _input_file, "output_filepath": _output_filepath, "hash_filepath": _hash_filepath, "time_filepath": _time_filepath }
         return _command, _data
@@ -391,7 +391,7 @@ class AnalysisProcessHandler:
         _processed_cap.release()
         
         # Returns true if resolutions are similar or if process_type is encrypt.
-        return _orig_width == _processed_width and _orig_height == _processed_height and process_type == "encrypt"
+        return True if process_type == "encrypt" else _orig_width == _processed_width and _orig_height == _processed_height
 
     def _get_video_info(self, processed_filepath: str):
         """Get the baseline speed for the given filepath based on closest resolution from reference table"""
@@ -444,10 +444,10 @@ class AnalysisProcessHandler:
         _output_filepath = _get_unique_filepath(_output_filepath)
 
         if process_type == "encrypt":
-            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -e \"{processed_filepath}\" -p 12345 -m encryption -w \"{_output_filepath}\" -t {self.algorithm} --etime \"{time_filepath}\" --verbose"
+            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -e \"{processed_filepath}\" -m encryption -w \"{_output_filepath}\" -t {self.algorithm} --etime \"{time_filepath}\" --verbose"
 
         else:
-            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -d \"{processed_filepath}\" -p 12345 -m psnr -w \"{_output_filepath}\" -t {self.algorithm} --dtime \"{time_filepath}\" --verbose"
+            _command = f"python -u analysis-cli.py -o \"{orig_filepath}\" -d \"{processed_filepath}\" -m psnr -w \"{_output_filepath}\" -t {self.algorithm} --dtime \"{time_filepath}\" --verbose"
 
         _baseline_speed, _resolution = self._get_video_info(processed_filepath)
         _data = { "input_file": _input_file, "resolution": _resolution, "output_filepath": _output_filepath, "baseline_speed": _baseline_speed}

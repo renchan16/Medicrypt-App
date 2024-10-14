@@ -1,7 +1,11 @@
-from key_validator import EncryptionMode
-from key_validator import validateKey
+import sys
 from pathlib import Path
-import text_file_encryption as tfe
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.utils.key_validator import EncryptionMode
+from backend.utils.key_validator import validateKey
+from pathlib import Path
+import backend.utils.text_file_encryption as tfe
 import numpy as np
 import warnings
 import hashlib

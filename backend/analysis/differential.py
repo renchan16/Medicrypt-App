@@ -1,5 +1,9 @@
-from fisher_yates import Encrypt
-from _3d_cosine import Encrypt_cosine
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.algorithms.fisher_yates import Encrypt
+from backend.algorithms._3d_cosine import Encrypt_cosine
 
 import cv2
 import numpy as np

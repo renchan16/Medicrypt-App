@@ -1,6 +1,5 @@
 from enum import Enum, auto
 
-
 class EncryptionMode(Enum):
     FISHER_YATES = auto()
     COSINE_3D = auto()

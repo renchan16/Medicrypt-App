@@ -1,10 +1,12 @@
-from filepath_parser import FilepathParser
-from fisher_yates import Encrypt
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.utils.filepath_parser import FilepathParser
+from backend.algorithms.fisher_yates import Encrypt
 from scipy.stats import entropy
 import numpy as np
 import cv2
-
-
 
 class EncryptionQuality:
 

@@ -1,10 +1,13 @@
-from fisher_yates import Encrypt
-from _3d_cosine import Encrypt_cosine
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.algorithms.fisher_yates import Encrypt
+from backend.algorithms._3d_cosine import Encrypt_cosine
 from pathlib import Path
 
-import logfilewriter
+import backend.utils.logfilewriter as logfilewriter
 import argparse
-
 
 def main():
 

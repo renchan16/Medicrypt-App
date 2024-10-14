@@ -1,13 +1,16 @@
-from _3d_cosine import Encrypt_cosine
-from correlation import Correlation
-from differential import Differential
-from fisher_yates import Encrypt
-from other import EncryptionQuality
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.algorithms._3d_cosine import Encrypt_cosine
+from backend.analysis.correlation import Correlation
+from backend.analysis.differential import Differential
+from backend.algorithms.fisher_yates import Encrypt
+from backend.analysis.other import EncryptionQuality
 import numpy as np
 import csv
 import cv2
 import argparse
-
 
 def main():
 

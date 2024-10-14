@@ -1,13 +1,16 @@
-from key_validator import EncryptionMode
-from key_validator import validateKey
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from backend.utils.key_validator import EncryptionMode
+from backend.utils.key_validator import validateKey
 from pathlib import Path
 from math import ceil
-import text_file_encryption as tfe
+import backend.utils.text_file_encryption as tfe
 import numpy as np
 import hashlib
 import time
 import cv2
-
 
 class Encrypt:
     def __init__(self):

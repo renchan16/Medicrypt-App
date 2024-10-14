@@ -15,3 +15,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: 'AvantGardeGothic';
+  src: url('./assets/fonts/ITC Avant Garde Gothic LT Bold.ttf') format('truetype');
+  font-weight: normal; /* or 'bold' if you have a bold version */
+  font-style: normal;
+}

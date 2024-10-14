@@ -5,19 +5,24 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        avantGarde: ['AvantGardeGothic', 'sans-serif'],
+      },
       colors: {
-        primary: '#0162E2',
-        primary0: '#17224d',
-        primary1: '#21316F',
-        primary2: '#21316f40',
-        primary3: '#21316f26',
-        secondary: '#60C6E4',
-        secondary1: '#CBE2F5',
-        black: '#1D1B20',
-        white: '#D4D4D4',
+        primary: '#1e63dc', //encrypt
+        primary0: '#1644b3', //text in Explore
+        primary1: '#1583fe', 
+        primary2: '#1645b4', 
+        primary3: '#1644b3', //Instructions Blue
+        secondary: '#102a6b', //text color
+        secondary1: '#103d8b',
+        secondary2: '#d7eaff',
+        black: '#1d1d1f', 
+        white: '#F0F4F8', 
+        background:'#1583fe',
       },
       fontSize: {
-        'xxs': '0.8rem',
+        'xxs': '0.60rem', 
       },
     },
   },

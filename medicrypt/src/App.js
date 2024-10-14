@@ -11,8 +11,7 @@ import EvaluateEncrypt from './pages/EvaluateEncrypt';
 import EvaluateDecrypt from './pages/EvaluateDecrypt';
 import EvaluatingPage from './pages/EvaluatingPage';
 import ResultsPage from './pages/ResultsPage';
-import backgroundImage from './assets/background.png'; 
-import { ClimbingBoxLoader } from 'react-spinners'; // Import the loader
+import { PropagateLoader } from 'react-spinners'; // Import the loader
 
 function App() {
   const [message, setMessage] = useState('');
@@ -42,19 +41,12 @@ function App() {
 
   return (
     <Router>
-      <div 
-        className="h-screen"
-        style={{
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      <div className="h-screen flex flex-col justify-center items-center">
         {/* Show spinner while loading */}
         {loading ? (
           <div className="flex flex-col justify-center items-center h-full">
-            <ClimbingBoxLoader color="#1D1B20" loading={loading} size={15} />
-            <p className="mb-6 text-xl font-bold text-black">
+            <PropagateLoader color="#1D1B20" loading={loading} size={15} />
+            <p className="mt-10 text-xl font-bold text-black">
               Loading{dots}
             </p>
           </div>

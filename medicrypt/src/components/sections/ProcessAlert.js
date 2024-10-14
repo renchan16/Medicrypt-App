@@ -2,7 +2,7 @@ import React from "react";
 
 export const ProcessAlert = ({ children, processStatus }) => {
     return (
-        <div className={`bg-primary3 border-l-4 p-4 rounded ${processStatus === "success" ? "border-green-600 text-green-900" : "border-red-900 text-red-900"}`} role="alert">
+        <div className={`bg-secondary2 border-l-4 p-4 rounded ${processStatus === "success" ? "border-green-600 text-green-900" : "border-red-900 text-red-900"}`} role="alert">
             {children}
         </div>
     );

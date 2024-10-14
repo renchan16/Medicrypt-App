@@ -10,7 +10,7 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
 }) => {
   return (
     <div className="w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-      <h1 className="mb-4 text-4xl text-primary1 font-bold">
+      <h1 className="mb-4 text-4xl text-secondary font-bold font-avantGarde">
         {processType} {processStatus === "success" ? "Complete" : "Failed"}!
       </h1>
 
@@ -27,20 +27,23 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
         {/* Success Actions */}
         <div className={`${processStatus === "success" ? 'block' : 'hidden'} flex flex-shrink-0 gap-4`}>
           <NavButton
-            className="w-full h-12"
+            className="w-full h-12 rounded-lg border-2 border-secondary"
             buttonText={nextPageButtonText}
-            buttonColor="primary1"
-            hoverColor="primary0"
-            buttonTextColor="white"
+            buttonColor="white"
+            hoverColor="secondary1"
+            buttonTextColor="secondary"
+            hoverTextColor= "white"
             buttonIcon={FiBarChart}
             onClickFunction={navigateNextPage}
           />
           {processType !== "Evaluation" && (
             <NavButton
-              className="w-full h-12"
-              buttonColor="primary2"
+              className="w-full h-12 rounded-lg border-2 border-secondary"
               buttonText={viewFileButtonText}
-              buttonTextColor="black"
+              buttonColor="white"
+              hoverColor="secondary1"
+              buttonTextColor="secondary"
+              hoverTextColor= "white"
               buttonIcon={FaRegFolder}
               filePath={outputLocation}
               />
@@ -50,11 +53,12 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
         {/* Error Action (Try Again) */}
         <div className={`${processStatus === "success" ? 'hidden' : 'block'} flex flex-shrink-0 gap-4`}>
           <NavButton
-            className="w-full h-12"
+            className="w-full h-12 rounded-lg border-2 border-secondary"
             buttonText="Try Again"
-            buttonColor="primary1"
-            hoverColor="primary0"
-            buttonTextColor="white"
+            buttonColor="white"
+            hoverColor="secondary1"
+            buttonTextColor="secondary"
+            hoverTextColor= "white"
             buttonIcon={TbReload}
             onClickFunction={navigatePrevPage}
           />
@@ -62,10 +66,12 @@ const ProcessComplete = ({ processType, processStatus, processDescription, input
 
         {/* Return Home */}
         <NavButton
-          className="w-full h-12"
+          className="w-full h-12 rounded-lg border-2 border-secondary"
           buttonText="Return Home"
-          buttonColor="primary2"
-          buttonTextColor="black"
+          buttonColor="white"
+          hoverColor="secondary1"
+          buttonTextColor="secondary"
+          hoverTextColor= "white"
           buttonIcon={LuHome}
           onClickFunction={navigateHome}
         />

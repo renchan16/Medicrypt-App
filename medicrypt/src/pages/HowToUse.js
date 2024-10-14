@@ -22,8 +22,8 @@ function HowToUse() {
       icon: FileText
     },
     { 
-      title: "Generate Encryption Key", 
-      content: "Create a strong key or use our auto-generated secure key.",
+      title: "Provide a Password", 
+      content: "Create a password that follows our rules to ensure safety.",
       icon: Shield
     },
     { 
@@ -38,7 +38,7 @@ function HowToUse() {
     },
     { 
       title: "View Analytics Summary", 
-      content: "Get a summary of the encryption process, including time taken and key strength.",
+      content: "Get a summary of the encryption process, including time taken and encryption performance.",
       icon: FileText
     },
   ];
@@ -51,12 +51,12 @@ function HowToUse() {
     },
     { 
       title: "Enter the Encrypted Video", 
-      content: "Paste the encrypted video into our secure input area.",
+      content: "Provide the path to the encrypted video file.",
       icon: FileText
     },
     { 
       title: "Provide Decryption Key", 
-      content: "Enter the key used during the encryption process.",
+      content: "Upload the .key file and enter the password used during encryption.",
       icon: Shield
     },
     { 
@@ -71,7 +71,7 @@ function HowToUse() {
     },
     { 
       title: "View Analytics Summary", 
-      content: "Get a summary of the decryption process, including time taken and key validity.",
+      content: "Get a summary of the decryption process, including time taken and decryption performance.",
       icon: FileText
     },
   ];
@@ -109,7 +109,7 @@ function HowToUse() {
 
   return (
     <motion.div
-      className="relative h-full w-11/12 p-6 overflow-x-hidden"
+      className="relative h-full w-11/12 p-6 overflow-hidden"
       variants={pageAnimation}
       initial="initial"
       animate="animate"

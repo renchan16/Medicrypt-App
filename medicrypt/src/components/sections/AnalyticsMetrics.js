@@ -10,7 +10,7 @@ const metricFullNames = {
 };
 
 const metricDescriptions = {
-    "Entropy": "Metric that measures the randomness of pixel values in a video frame",
+    "Entropy": "Metric that measures the randomness of pixel values in a video frame.",
     "UACI": "Metric that measures the resistance to differential attacks.",
     "NPCR": "Metric that measures the resistance to differential attacks.",
     "PSNR": "Metric that measures the quality of decrypted frame.",

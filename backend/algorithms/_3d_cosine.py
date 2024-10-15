@@ -219,10 +219,15 @@ class Encrypt_cosine:
                     if _i == 0:
                         _diff_flat[_B[_row, _col]] = (_ch_flat[_B[_row, _col]] +
                                                     2 ** 32 * _A_flat[_B[_row, _col]]) % _mod
-                    else:
+                    elif _col == 0:
                         _prev_row, _prev_col = divmod(_i - 1, _n)
                         _diff_flat[_B[_row, _col]] = (_ch_flat[_B[_row, _col]] +
                                                     _diff_flat[_B[_prev_row, _prev_col]] +
+                                                    2 ** 32 * _A_flat[_B[_row, _col]]) % _mod
+                    else:
+                        _prev_row, _prev_col = divmod(_i - 1, _n)
+                        _diff_flat[_B[_row, _col]] = (_ch_flat[_B[_row, _col]] +
+                                                    _diff_flat[_B[_row, _prev_col]] +
                                                     2 ** 32 * _A_flat[_B[_row, _col]]) % _mod
         else: 
             for _r in range(_m):
@@ -238,8 +243,7 @@ class Encrypt_cosine:
                     _diff_flat[_B[_r, _c]] = (_mod + _ch_flat[_B[_r, _c]] - 
                                             _ch_flat[_B[_prev_r, _prev_c]] - 
                                             2**32 * _A_flat[_B[_r, _c]]) % _mod
-
-            # Second loop for the special case where _c = 0, _r >= 1
+                    
             _c = 0
             for _r in range(1, _m):
                 _diff_flat[_B[_r, _c]] = (_mod + _ch_flat[_B[_r, _c]] - 

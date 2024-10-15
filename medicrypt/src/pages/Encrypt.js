@@ -30,7 +30,6 @@ function Encrypt() {
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
   const processInputData = async () => {
-    console.log(filepaths);
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
       outputDirpathInputRef.current.validate();

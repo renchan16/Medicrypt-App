@@ -25,8 +25,6 @@ function EvaluateEncrypt() {
   const processInputData = () => {
     csvOutputLocationRef.current.validate();
 
-    console.log(data);
-
     if (isOutputDirpathValid) {
       navigate('/encrypt/evaluating', {
         state : {

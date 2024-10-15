@@ -195,16 +195,14 @@ class Encrypt_cosine:
         return _scrambled_img
 
     def __diffuse__(self, seq_2d, channel, mode='diffuse'):
-        assert mode == 'diffuse' or mode == 'antidiffuse', "Mode must be 'diffuse' or 'antidiffuse'"
+        assert mode in ['diffuse', 'antidiffuse'], "Mode must be 'diffuse' or 'antidiffuse'"
 
         _m, _n = channel.shape
         _mod = 256  # modulo for 8-bit grayscale image
 
         _A = np.rot90(seq_2d, k=-1)  # rotate clockwise
-
-        In_A = np.argsort(_A.flatten())  # Get index sequence of A
-
-        _B = np.rot90(In_A.reshape(_n, _m), k=-1)  # rotate clockwise
+        _In_A = np.argsort(_A.flatten())  # Get index sequence of A
+        _B = np.rot90(_In_A.reshape(_n, _m), k=-1)  # rotate clockwise
         print("Generated Substitution Sequence")
 
         _diffused_img = np.zeros_like(channel)
@@ -215,36 +213,40 @@ class Encrypt_cosine:
         _diff_flat = _diffused_img.flatten().astype('float64')
 
         if mode == 'diffuse':
-            for row in range(_m):
-                for col in range(_n):
-                    if row == 0 and col == 0:
-                        _diff_flat[_B[row, col]] = (_ch_flat[_B[row, col]] +
-                                                    _ch_flat[_B[_m - 1, _n - 1]] +
-                                                    2 ** 32 * _A_flat[_B[row, col]]) % _mod
-                    elif col == 0:
-                        _diff_flat[_B[row, col]] = (_ch_flat[_B[row, col]] +
-                                                    _diff_flat[_B[row - 1, _n - 1]] +
-                                                    2 ** 32 * _A_flat[_B[row, col]]) % _mod
+            for _row in range(_m):
+                for _col in range(_n):
+                    _i = _row * _n + _col
+                    if _i == 0:
+                        _diff_flat[_B[_row, _col]] = (_ch_flat[_B[_row, _col]] +
+                                                    2 ** 32 * _A_flat[_B[_row, _col]]) % _mod
                     else:
-                        _diff_flat[_B[row, col]] = (_ch_flat[_B[row, col]] +
-                                                    _diff_flat[_B[row, col - 1]] +
-                                                    2 ** 32 * _A_flat[_B[row, col]]) % _mod
-        else:
-            # Loop through rows
-            for r in range(_m):
-                for c in range(_n):
-                    _diff_flat[_B[r, c]] = (_mod + _ch_flat[_B[r, c]] -
-                                            _ch_flat[_B[r, c - 1]] -
-                                            2 ** 32 * _A_flat[_B[r, c]]) % _mod
+                        _prev_row, _prev_col = divmod(_i - 1, _n)
+                        _diff_flat[_B[_row, _col]] = (_ch_flat[_B[_row, _col]] +
+                                                    _diff_flat[_B[_prev_row, _prev_col]] +
+                                                    2 ** 32 * _A_flat[_B[_row, _col]]) % _mod
+        else: 
+            for _r in range(_m):
+                for _c in range(_n):
+                    if _c == 0:
+                        _prev_c = _n - 1
+                        _prev_r = _r - 1 if _r > 0 else _m - 1
+                    else:
+                        _prev_c = _c - 1
+                        _prev_r = _r
 
-            # Loop through columns
-            c = 0
-            for r in range(1, _n):
-                _diff_flat[_B[r, c]] = (_mod + _ch_flat[_B[r, c]] -
-                                        _ch_flat[_B[r - 1, _n - 1]] -
-                                        2 ** 32 * _A_flat[_B[r, c]]) % _mod
+                    # Perform antidiffusion
+                    _diff_flat[_B[_r, _c]] = (_mod + _ch_flat[_B[_r, _c]] - 
+                                            _ch_flat[_B[_prev_r, _prev_c]] - 
+                                            2**32 * _A_flat[_B[_r, _c]]) % _mod
 
-        _final_diffuse = _diff_flat.reshape(_m, _n).astype('uint8')  # reshape back to 2d and cast to appropriate dtype
+            # Second loop for the special case where _c = 0, _r >= 1
+            _c = 0
+            for _r in range(1, _m):
+                _diff_flat[_B[_r, _c]] = (_mod + _ch_flat[_B[_r, _c]] - 
+                                        _ch_flat[_B[_r-1, _n-1]] - 
+                                        2**32 * _A_flat[_B[_r, _c]]) % _mod
+
+        _final_diffuse = _diff_flat.reshape(_m, _n).astype('uint8')
 
         return _final_diffuse
 

@@ -58,7 +58,7 @@ Dependencies:
 Code Author: Renz Carlo T. Caritativo, Charles Andre C. Bandala
 */
 
-const { app, BrowserWindow, dialog, ipcMain, shell } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const Papa = require('papaparse');
@@ -78,6 +78,7 @@ function createWindow() {
   });
 
   mainWindow.loadURL('http://localhost:3000');
+  Menu.setApplicationMenu(null);
 }
 
 app.whenReady().then(() => {

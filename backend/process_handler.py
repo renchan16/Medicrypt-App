@@ -259,7 +259,7 @@ class EncryptionProcessHandler:
             # Delete frameGen_folder upon halt
             if self.is_halted or self.has_error:
                 if self.algorithm == "3d-cosine":
-                    self._delete_frameGen_folder()
+                    self._delete_frameGen_folder(_filepath)
                 break
         
         # Return values if there is no error
@@ -280,10 +280,11 @@ class EncryptionProcessHandler:
         return {"message": "No active process to halt"} 
     
 
-    def _delete_frameGen_folder(self):
+    def _delete_frameGen_folder(self, path):
         """Handle the deletion of the frameGen_temp folder upon halt."""
         try:
-            _folder_path = os.path.join(self.output_dirpath, "frameGen_temp")
+            _dir_path = os.path.dirname(path)
+            _folder_path = os.path.join(_dir_path, "frameGen_temp")
             
             # Check if the frameGen_temp folder exists
             if os.path.exists(_folder_path):

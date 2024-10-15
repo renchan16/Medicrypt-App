@@ -34,7 +34,6 @@ function EvaluatingPage() {
 
     // Process video data based on process type
   useEffect(() => {
-    console.log(inputs);
     const processData = async () => {
       try {
         const response = await axios.post(`http://localhost:8000/init_analysis_handler`, inputs);

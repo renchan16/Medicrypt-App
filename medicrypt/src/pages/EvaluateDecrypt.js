@@ -29,8 +29,6 @@ function EvaluateDecrypt() {
     csvOutputLocationRef.current.validate();
     origFileInputRef.current.validate();
 
-    console.log(data);
-
     if (areOrigFilepathsValid && isOutputDirpathValid) {
       navigate('/encrypt/evaluating', {
         state : {

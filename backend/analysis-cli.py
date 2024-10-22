@@ -192,7 +192,7 @@ def main():
                     
             if args.mode  == 'differential'  or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Differential Analysis")
-                attacked_frame = diff.attack_pixel(frame, args.type)
+                attacked_frame = diff.attack_pixel(frame.copy(), args.type)
                 frame_width_e = len(frame_e[0])
                 frame_height_e = len(frame_e)
                 npcr = np.mean(diff.get_npcr(frame_e, attacked_frame, frame_width_e, frame_height_e))

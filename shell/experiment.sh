@@ -1,6 +1,6 @@
-ENC_CLI_PATH="/home/roel/Documents/code_projects/Medicrypt-App/backend/medicrypt-cli.py"
-ANALYSIS_CLI_PATH="/home/roel/Documents/code_projects/Medicrypt-App/backend/analysis-cli.py"
-VENV_PATH="/home/roel/Documents/code_projects/opencv_venv/bin/activate"
+ENC_CLI_PATH=""
+ANALYSIS_CLI_PATH=""
+VENV_PATH=""
 
 
 . "$VENV_PATH"
@@ -11,9 +11,16 @@ readarray -t dirs <<< "$raw_dir"
 
 trap cleanup INT
 
+trap error ERR
+
 function cleanup () {
     echo "User cancelled script.  Cleaning up..."
     find . -name frameGen_temp -type d -exec rm -rf {} +
+    exit
+}
+
+function error () {
+    echo "Error Detected"
     exit
 }
 

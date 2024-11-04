@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { FaChevronCircleRight } from "react-icons/fa";
-import Card from '../components/Cards';
+import Card from '../../components/Cards';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import '../pages-css/LandingPage.css';
-import logo from '../assets/MedicryptLogo.png';
-import InstructionsGif from '../assets/InstructionsAnimation.gif';
-import LearnMoreAnimation from '../assets/LearnMoreAnimation.gif';
-import DecryptAnimation from '../assets/DecryptAnimation.gif';
-import EncryptAnimation from '../assets/EncryptAnimation.gif';
-
+import '../../pages-css/LandingPage.css';
+import logo from '../../assets/MedicryptLogo.png';
+import InstructionsPNG from '../../assets/InstructionsAnimation.png';
+import LearnMoreAnimationPNG from '../../assets/LearnMoreAnimation.png';
+import DecryptAnimationPNG from '../../assets/DecryptAnimation.png';
+import EncryptAnimationPNG from '../../assets/EncryptAnimation.png';
 function LandingPage() {
   const navigate = useNavigate();
   const [inProp, setInProp] = useState(true);
@@ -61,7 +60,7 @@ function LandingPage() {
             >
               <div className="flex-grow flex justify-center items-center">
                 <div className="w-50 h-40 mt-20 mb-5 overflow-hidden z-10">
-                  <img src={InstructionsGif} alt="Instructions Animation" className="w-full h-40 object-contain" />
+                  <img src={InstructionsPNG} alt="Instructions Animation" className="w-full h-40 object-contain" />
                 </div>
               </div>
               <div className="flex-grow flex items-end">
@@ -91,7 +90,7 @@ function LandingPage() {
               </div>
               <div className="w-40 h-30">
                 <img
-                  src={LearnMoreAnimation}
+                  src={LearnMoreAnimationPNG}
                   alt="Learn More Animation"
                   className="w-full h-full object-contain"
                 />
@@ -109,7 +108,7 @@ function LandingPage() {
             >
               <div className="flex-grow flex justify-center items-center mb-8">
                 <div className="w-40 h-20 z-10">
-                  <img src={EncryptAnimation} alt="Encrypt Animation" className="w-full h-29 object-scale-down" />
+                  <img src={EncryptAnimationPNG} alt="Encrypt Animation" className="w-full h-29 object-scale-down" />
                 </div>
               </div>
               <div className="flex-grow flex items-end">
@@ -131,7 +130,7 @@ function LandingPage() {
             >
               <div className="flex-grow flex justify-center items-center mb-2">
                 <div className="w-40 h-20 z-10">
-                  <img src={DecryptAnimation} alt="Decrypt Animation" className="w-full h-30 mb-3 object-fill" />
+                  <img src={DecryptAnimationPNG} alt="Decrypt Animation" className="w-full h-30 mb-3 object-fill" />
                 </div>
               </div>
               <div className="items-end">

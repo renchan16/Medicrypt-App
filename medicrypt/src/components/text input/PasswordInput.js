@@ -3,6 +3,86 @@ import { ValidatePassword } from "../../utils/PasswordValidator";
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
+/**
+ * PasswordInput Component
+ *
+ * The `PasswordInput` component provides a user interface for entering and validating 
+ * password inputs. It features a show/hide password toggle and displays relevant 
+ * messages based on the validity of the password. This component enhances user 
+ * experience by ensuring users can input secure passwords while receiving real-time 
+ * feedback on their password strength.
+ *
+ * Props:
+ * -------
+ * @param {string} className - Additional CSS class names for custom styling of the component.
+ * @param {string} componentHeader - The header text displayed above the input field.
+ * @param {string} placeholderText - Placeholder text shown within the input field.
+ * @param {string} defaultDisplayText - Default message displayed to the user regarding the input.
+ * @param {string} processType - Specifies the context of the password input ("Encrypt" or "Decrypt").
+ * @param {Function} onValueChange - Callback function invoked when the password value changes, 
+ *                                    receiving the new value as an argument.
+ * @param {Function} onValidityChange - Callback function invoked to notify the parent 
+ *                                       component of the validity state of the input.
+ * @param {boolean} isEnabled - Flag indicating whether the input is enabled or disabled.
+ *
+ * State:
+ * -------
+ * @state {string} password - The current value of the password input.
+ * @state {boolean} isPasswordVisible - Indicates whether the password is currently visible.
+ * @state {boolean} isValidInput - Indicates if the current input is valid based on 
+ *                                 validation rules.
+ * @state {string} inputWarning - Message to display regarding the validity of the input.
+ * @state {boolean} isInputActive - Tracks whether the input is currently active.
+ * @state {boolean} isInitialLoad - Indicates if the input is in its initial load state.
+ * @state {boolean} isFocused - Tracks whether the input field is focused.
+ *
+ * Effects:
+ * ---------
+ * - The `useEffect` hook is used to notify the parent component of input validity changes 
+ *   whenever `isValidInput` changes.
+ * - The `useImperativeHandle` hook exposes a `validate` function to parent components 
+ *   for manual validation of the password.
+ *
+ * Event Handlers:
+ * ----------------
+ * - handleInputChange: Updates the state based on user input, triggers validation, 
+ *                      and notifies the parent component.
+ * - handleFocus: Updates focus state when the input is focused.
+ * - handleBlur: Validates the input when the input loses focus.
+ * - handleInputValidation: Validates the password input using the `ValidatePassword` utility function.
+ * - togglePasswordVisibility: Toggles the visibility of the password input.
+ *
+ * Usage:
+ * ------
+ * The `PasswordInput` component can be used in forms where users need to enter passwords 
+ * for encryption or decryption processes, ensuring that users can create strong passwords.
+ *
+ * Example:
+ * -------
+ * <PasswordInput 
+ *   className="my-password-input"
+ *   componentHeader="Enter Password"
+ *   placeholderText="Your password"
+ *   defaultDisplayText="Password must meet requirements."
+ *   processType="Encrypt"
+ *   onValueChange={(password) => console.log(password)}
+ *   onValidityChange={(isValid) => console.log(isValid)}
+ *   isEnabled={true}
+ * />
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - useState, useEffect, useImperativeHandle, forwardRef: React hooks for state management, 
+ *   lifecycle events, and ref handling.
+ * - ValidatePassword: Utility function for validating password strength.
+ * - react-icons: Library for icons used in the input field.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ */
+
 const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange, isEnabled = true}, ref) => {
     const [isInputActive, setInputActive] = useState(false);
     const [isInitialLoad, setInitialLoad] = useState(true);

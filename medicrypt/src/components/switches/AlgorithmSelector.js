@@ -1,5 +1,63 @@
 import React, { useState, useEffect } from "react";
 
+/**
+ * AlgorithmSelector Component
+ *
+ * The `AlgorithmSelector` component allows users to select between two algorithms 
+ * using a toggle switch. It manages the state of the selected algorithm and 
+ * communicates changes to the parent component via a callback function. This 
+ * component enhances user experience by providing a clear and interactive way 
+ * to choose between algorithm options.
+ *
+ * Props:
+ * -------
+ * @param {string} className - Additional CSS class names to apply to the component for styling.
+ * @param {string} componentHeader - The header text displayed above the toggle switch, indicating 
+ *                                   the purpose of the selection.
+ * @param {string} optionOne - The label for the first algorithm option.
+ * @param {string} optionTwo - The label for the second algorithm option.
+ * @param {Function} onValueChange - Callback function invoked when the selected algorithm changes, 
+ *                                    receiving the new value as an argument.
+ *
+ * State:
+ * -------
+ * @state {string} selectedAlgo - The currently selected algorithm, initialized to `optionOne`.
+ *
+ * Effects:
+ * ---------
+ * - The `useEffect` hook is used to trigger the `onValueChange` callback whenever `selectedAlgo` 
+ *   changes, ensuring the parent component is updated with the current selection.
+ *
+ * Event Handlers:
+ * ----------------
+ * - handleValueChange: Updates the `selectedAlgo` state based on the toggle's checked status, 
+ *                      switching between `optionOne` and `optionTwo`.
+ *
+ * Usage:
+ * ------
+ * The `AlgorithmSelector` component can be utilized in various parts of the application 
+ * where an algorithm selection is required, such as during encryption or analysis settings.
+ *
+ * Example:
+ * -------
+ * <AlgorithmSelector 
+ *   className="my-custom-class"
+ *   componentHeader="Select Encryption Algorithm"
+ *   optionOne="3D Chaotic Map"
+ *   optionTwo="Cosine Transformation"
+ *   onValueChange={(selected) => console.log(selected)}
+ * />
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - useState and useEffect: React hooks for managing state and lifecycle events.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ */
+
 export default function AlgorithmSelector({ className, componentHeader, optionOne, optionTwo, onValueChange }) {
     const [selectedAlgo, setSelectedAlgo] = useState(optionOne);
 

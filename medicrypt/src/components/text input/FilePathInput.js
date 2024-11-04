@@ -2,6 +2,99 @@ import React, { useState, useEffect, forwardRef, useImperativeHandle } from "rea
 import { ValidateFilePath } from "../../utils/FilePathValidator";
 import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
 
+/**
+ * FilePathInput Component
+ *
+ * The `FilePathInput` component provides a user interface for inputting file paths, 
+ * including support for multiple file paths. It allows users to browse for files 
+ * and handles input validation, displaying relevant messages based on the validity 
+ * of the input. This component is designed to enhance the user experience by 
+ * providing a clear and interactive method for file path selection.
+ *
+ * Props:
+ * -------
+ * @param {string} className - Additional CSS class names for custom styling of the component.
+ * @param {string} componentHeader - The header text displayed above the input field.
+ * @param {string} placeholderText - Placeholder text shown within the input field.
+ * @param {string} defaultDisplayText - Default message displayed to the user regarding the input.
+ * @param {ReactNode} browseIcon - The icon displayed in the browse button.
+ * @param {Function} browseHandler - Function that handles the file browsing action and 
+ *                                    returns the selected file path(s).
+ * @param {Function} onValueChange - Callback function invoked when the file path changes, 
+ *                                    receiving the new value as an argument.
+ * @param {Function} onValidityChange - Callback function invoked to notify the parent 
+ *                                       component of the validity state of the input.
+ * @param {Array} dependencyList - An array of dependencies used in input validation.
+ * @param {boolean} allowMultiple - Flag indicating whether multiple file paths are allowed.
+ * @param {string} allowMultipleText1 - Message displayed when multiple paths are allowed.
+ * @param {string} allowMultipleText2 - Message displayed when multiple paths are invalid.
+ * @param {boolean} isRequired - Indicates if the input is required.
+ * @param {boolean} isEnabled - Flag indicating whether the input is enabled or disabled.
+ *
+ * State:
+ * -------
+ * @state {string} path - The current value of the file path input.
+ * @state {string | string[]} processedPath - The processed value(s) of the input based on 
+ *                                             whether multiple paths are allowed.
+ * @state {boolean} isInitialLoad - Indicates if the input is in its initial load state.
+ * @state {boolean} isInputActive - Tracks whether the input is currently active.
+ * @state {boolean} isFocused - Tracks whether the input field is focused.
+ * @state {boolean} isValidInput - Indicates if the current input is valid based on 
+ *                                 validation rules.
+ * @state {string} inputMessage - Message to display regarding the validity of the input.
+ *
+ * Effects:
+ * ---------
+ * - The `useEffect` hook is used to notify the parent component of input validity changes 
+ *   whenever `isValidInput` changes.
+ * - The `useImperativeHandle` hook exposes a `validate` function to parent components 
+ *   for manual validation.
+ *
+ * Event Handlers:
+ * ----------------
+ * - handleBrowsePath: Invokes the `browseHandler` to allow users to select files, 
+ *                     processes the selected paths, and updates the component's state.
+ * - handleInputChange: Updates the state based on user input, processes the input, 
+ *                      and triggers validation.
+ * - handleFocus: Updates focus state when the input is focused.
+ * - handleBlur: Validates the input when the input loses focus.
+ * - handleInputValidation: Validates the processed file path(s) using the 
+ *                         `ValidateFilePath` utility function.
+ *
+ * Usage:
+ * ------
+ * The `FilePathInput` component can be used in forms where users need to input 
+ * file paths for processing, such as during file upload or data import operations.
+ *
+ * Example:
+ * -------
+ * <FilePathInput 
+ *   className="my-custom-class"
+ *   componentHeader="Select File(s)"
+ *   placeholderText="Enter or browse file path(s)"
+ *   defaultDisplayText="Please provide a valid file path."
+ *   browseIcon={<YourIconComponent />}
+ *   browseHandler={yourBrowseFunction}
+ *   onValueChange={(paths) => console.log(paths)}
+ *   onValidityChange={(isValid) => console.log(isValid)}
+ *   allowMultiple={true}
+ *   isRequired={true}
+ *   isEnabled={true}
+ * />
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - useState, useEffect, useImperativeHandle, forwardRef: React hooks for state management, 
+ *   lifecycle events, and ref handling.
+ * - ValidateFilePath: Utility function for validating file paths.
+ * - react-icons: Library for icons used to indicate input validity.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ */
+
 const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, dependencyList = [], allowMultiple = false, allowMultipleText1="", allowMultipleText2="", isRequired, isEnabled = true }, ref) => {
     const [path, setFilePath] = useState("");
     const [processedPath, setProcessedPath] = useState(allowMultiple ? [] : "");

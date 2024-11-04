@@ -1,13 +1,93 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';  
-import ProcessComplete from '../components/sections/ProcessComplete';
-import NavButton from '../components/buttons/NavButton';
-import '../pages-css/General.css';
+import ProcessComplete from '../../components/sections/ProcessComplete';
+import NavButton from '../../components/buttons/NavButton';
+import '../../pages-css/General.css';
 import axios from 'axios';
-import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
+import { ProcessErrorMessage } from '../../utils/ProcessErrorHandler';
 import { FaRegStopCircle } from 'react-icons/fa'; 
 
+/**
+ * EvaluatingPage Component
+ *
+ * This component handles the evaluation process of a video encryption or decryption operation. 
+ * It listens for real-time updates from the server regarding the status of the process and displays 
+ * the results once the evaluation is complete. Users can also halt the processing if needed.
+ *
+ * Functionality:
+ * --------------
+ * - Sends an initial request to the server to start the analysis process based on the inputs provided.
+ * - Uses EventSource to receive real-time updates about the ongoing evaluation process, including 
+ *   success/failure status and relevant metrics.
+ * - Displays a loading spinner and status messages during the processing phase.
+ * - Provides a button to halt the ongoing processing if the user chooses to stop the operation.
+ * - After processing, displays a summary of the evaluation results and options to navigate to 
+ *   the analytics summary or home page.
+ *
+ * State Variables:
+ * -----------------
+ * - isProcessing: State variable indicating whether the processing is ongoing.
+ * - currentProcess: State variable for holding the current status message from the processing server.
+ * - processStatus: State variable for indicating the overall status of the process (success/failure).
+ * - processDescription: State variable for detailed description of the processing outcome.
+ * - inputFiles: State variable for storing the input file names that were evaluated.
+ * - resolutions: State variable for holding the resolutions of the input files.
+ * - baselineSpeedMetrics: State variable for storing metrics related to baseline speed.
+ * - csvFilepaths: State variable for holding the file paths of generated CSV files.
+ * - dots: State variable used to create a loading ellipsis effect for the process description.
+ *
+ * Refs:
+ * ------
+ * - navigate: Hook from `react-router-dom` for programmatic navigation between pages.
+ * - location: Hook from `react-router-dom` for accessing location state passed from previous pages.
+ *
+ * Functions:
+ * ----------
+ * - processData():
+ *   - Sends a request to initiate the analysis handler and sets up an EventSource to listen for 
+ *     process updates from the server.
+ *
+ * - haltProcessing(): 
+ *   - Sends a request to halt the ongoing process and updates the component state accordingly.
+ *
+ * - navigateEvaluateSummary(): 
+ *   - Navigates to the results summary page with the relevant data collected during evaluation.
+ *
+ * - navigateHome(): 
+ *   - Navigates the user back to the home page.
+ *
+ * - navigateEvaluatePage(): 
+ *   - Navigates to the evaluation page based on the process type and passes necessary data.
+ *
+ * Global Variables:
+ * -----------------
+ * - navigate: Hook from `react-router-dom` for programmatic navigation between pages.
+ * - location: Hook from `react-router-dom` for accessing location state passed from previous pages.
+ *
+ * Props:
+ * -------
+ * None.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering and state management.
+ * - react-router-dom: For navigation and accessing the navigate and location hooks.
+ * - axios: For making HTTP requests to the backend server.
+ * - react-spinners: For displaying a loading spinner during processing.
+ * - ProcessComplete: Component for displaying the completion status and results of the evaluation.
+ * - NavButton: Custom button component for navigation actions.
+ * - ProcessErrorMessage: Utility function for handling and displaying error messages.
+ * - react-icons: For iconography (FaRegStopCircle).
+ *
+ * Example:
+ * -------
+ * <EvaluatingPage />
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ */
 
 function EvaluatingPage() {
     const navigate = useNavigate();

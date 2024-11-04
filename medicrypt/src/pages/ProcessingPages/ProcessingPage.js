@@ -1,12 +1,96 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarLoader } from 'react-spinners';  
-import ProcessComplete from '../components/sections/ProcessComplete';
-import NavButton from '../components/buttons/NavButton';
-import '../pages-css/General.css';
+import ProcessComplete from '../../components/sections/ProcessComplete';
+import NavButton from '../../components/buttons/NavButton';
+import '../../pages-css/General.css';
 import axios from 'axios';
-import { ProcessErrorMessage } from '../utils/ProcessErrorHandler';
+import { ProcessErrorMessage } from '../../utils/ProcessErrorHandler';
 import { FaRegStopCircle } from 'react-icons/fa'; 
+
+/**
+ * ProcessingPage Component
+ *
+ * This component manages the processing phase of a video encryption or decryption operation. 
+ * It initiates the process based on user inputs and listens for real-time updates from the server. 
+ * The user can also halt the processing if necessary.
+ *
+ * Functionality:
+ * --------------
+ * - Receives the process type and inputs from the previous page using `react-router-dom`.
+ * - Sends an initial request to the server to initiate the cryptographic handler for the specified process.
+ * - Utilizes EventSource to receive real-time updates about the processing status, including 
+ *   current progress and success/failure indicators.
+ * - Displays a loading spinner and status messages during processing.
+ * - Provides a button to halt the ongoing processing if the user chooses to stop the operation.
+ * - Once processing is complete, displays a summary of the results and options to navigate to 
+ *   the evaluation page or back to the process page.
+ *
+ * State Variables:
+ * -----------------
+ * - inputFiles: State variable to store the names of input files being processed.
+ * - isProcessing: State variable indicating whether the processing is ongoing.
+ * - currentProcess: State variable for holding the current status message from the processing server.
+ * - processStatus: State variable for indicating the overall status of the process (success/failure).
+ * - processDescription: State variable for detailed description of the processing outcome.
+ * - inputFilepaths: State variable for holding the file paths of input files.
+ * - algorithm: State variable for storing the name of the algorithm used in the process.
+ * - outputDirpath: State variable for holding the output directory path.
+ * - outputFilepaths: State variable for storing the paths of the output files generated.
+ * - timeFilepaths: State variable for holding the file paths of generated timing files.
+ * - dots: State variable used to create a loading ellipsis effect for the process description.
+ *
+ * Refs:
+ * ------
+ * - navigate: Hook from `react-router-dom` for programmatic navigation between pages.
+ * - location: Hook from `react-router-dom` for accessing location state passed from previous pages.
+ *
+ * Functions:
+ * ----------
+ * - processData():
+ *   - Sends a request to initialize the cryptographic handler and sets up an EventSource to listen for 
+ *     updates on the processing status from the server.
+ *
+ * - haltProcessing(): 
+ *   - Sends a request to halt the ongoing processing and updates the component state accordingly.
+ *
+ * - navigateHome(): 
+ *   - Navigates the user back to the home page.
+ *
+ * - navigateProcessPage(): 
+ *   - Navigates to the previous process page.
+ *
+ * - navigateEvaluatePage(): 
+ *   - Navigates to the evaluation page with the relevant data collected during processing.
+ *
+ * Global Variables:
+ * -----------------
+ * - navigate: Hook from `react-router-dom` for programmatic navigation between pages.
+ * - location: Hook from `react-router-dom` for accessing location state passed from previous pages.
+ *
+ * Props:
+ * -------
+ * None.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering and state management.
+ * - react-router-dom: For navigation and accessing the navigate and location hooks.
+ * - axios: For making HTTP requests to the backend server.
+ * - react-spinners: For displaying a loading spinner during processing.
+ * - ProcessComplete: Component for displaying the completion status and results of the process.
+ * - NavButton: Custom button component for navigation actions.
+ * - ProcessErrorMessage: Utility function for handling and displaying error messages.
+ * - react-icons: For iconography (FaRegStopCircle).
+ *
+ * Example:
+ * -------
+ * <ProcessingPage />
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala
+ */
 
 function ProcessingPage() {
   const navigate = useNavigate();

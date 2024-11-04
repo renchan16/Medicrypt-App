@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'; 
-import LandingPage from './pages/LandingPage';  
-import Decrypt from './pages/Decrypt';
-import Encrypt from './pages/Encrypt';
-import Explore from './pages/Explore';
-import HowToUse from './pages/HowToUse';
-import ProcessingPage from './pages/ProcessingPage';
-import EvaluateEncrypt from './pages/EvaluateEncrypt';
-import EvaluateDecrypt from './pages/EvaluateDecrypt';
-import EvaluatingPage from './pages/EvaluatingPage';
-import ResultsPage from './pages/ResultsPage';
+import LandingPage from './pages/MenuPages/LandingPage';  
+import Decrypt from './pages/CryptographyPages/Decrypt';
+import Encrypt from './pages/CryptographyPages/Encrypt';
+import Explore from './pages/MenuPages/Explore';
+import HowToUse from './pages/MenuPages/HowToUse';
+import ProcessingPage from './pages/ProcessingPages/ProcessingPage';
+import EvaluateEncrypt from './pages/AnalysisPages/EvaluateEncrypt';
+import EvaluateDecrypt from './pages/AnalysisPages/EvaluateDecrypt';
+import EvaluatingPage from './pages/ProcessingPages/EvaluatingPage';
+import ResultsPage from './pages/AnalysisPages/ResultsPage';
 import { PropagateLoader } from 'react-spinners'; // Import the loader
 
 function App() {

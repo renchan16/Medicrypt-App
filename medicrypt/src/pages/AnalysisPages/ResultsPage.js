@@ -1,17 +1,79 @@
 import React, { useState, useEffect } from 'react';
-import { MdArrowBackIosNew } from 'react-icons/md';
 import { MdNavigateNext } from "react-icons/md";
 import { MdNavigateBefore } from "react-icons/md";
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../pages-css/General.css';
-import { AnalyticsMetrics } from '../components/sections/AnalyticsMetrics';
-import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../components/sections/AnalyticsCard';
-import NavButton from '../components/buttons/NavButton';
-import AnalyticsCCValue from '../components/sections/AnalyticsCCValue';
-import AnalyticsSelect from '../components/sections/AnalyticsSelect';
+import '../../pages-css/General.css';
+import { AnalyticsMetrics } from '../../components/sections/AnalyticsMetrics';
+import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../../components/sections/AnalyticsCard';
+import NavButton from '../../components/buttons/NavButton';
+import AnalyticsCCValue from '../../components/sections/AnalyticsCCValue';
+import AnalyticsSelect from '../../components/sections/AnalyticsSelect';
 import { FaRegFolder } from "react-icons/fa";
 import { FaArrowCircleLeft } from "react-icons/fa";
 
+/**
+ * ResultsPage Component
+ *
+ * This component displays the results of the encryption or decryption analysis process. 
+ * It retrieves data from the previous page, parses CSV files containing analysis metrics, 
+ * and presents these metrics in a user-friendly format. Users can navigate between processed 
+ * files and view detailed metrics for each file.
+ *
+ * Functionality:
+ * --------------
+ * - Retrieves input data from the location state, including:
+ *   - `algorithm`: The encryption algorithm used during the encryption process.
+ *   - `processedFilepaths`: The file paths of the encrypted output files.
+ *   - `timeFilepaths`: The file paths for any timing metrics generated during encryption.
+ * - Parses CSV files to extract metrics such as the Correlation Coefficient, Entropy, UACI, 
+ *   NPCR, and Encryption Time for each processed file.
+ * - Allows users to navigate between results using next and previous buttons.
+ * - Displays detailed metrics in a user-friendly format with options to view the whole result in a CSV format.
+ *
+ * Functions:
+ * ----------
+ * - getResolutionLabel(width: number, height: number): 
+ *   - Parameters:
+ *     - `width` (number): The width of the video frame.
+ *     - `height` (number): The height of the video frame.
+ *   - Returns a string representing the resolution label (e.g., "1920x1080").
+ *
+ * - navigateToNextFile(currentIndex: number): 
+ *   - Parameters:
+ *     - `currentIndex` (number): The index of the currently displayed processed file.
+ *   - Navigates to the next processed file based on the current index.
+ *
+ * - navigateToPreviousFile(currentIndex: number): 
+ *   - Parameters:
+ *     - `currentIndex` (number): The index of the currently displayed processed file.
+ *   - Navigates to the previous processed file based on the current index.
+ *
+ * Global Variables:
+ * -----------------
+ * - processType: The type of process being analyzed (either 'Encrypt' or 'Decrypt').
+ * - data: The data object containing CSV file paths, input files, resolutions, and baseline speed metrics.
+ * - parsedCSVData: State variable holding the parsed CSV data for each file.
+ * - currentFileIndex: State variable tracking the index of the currently displayed file.
+ * - showAdditionalFields: State variable controlling the visibility of additional metric fields.
+ * 
+ * Props:
+ * -------
+ * None.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - react-router-dom: For navigation and accessing location state.
+ * - react-icons: For iconography (MdNavigateNext, MdNavigateBefore).
+ *
+ * Example:
+ * -------
+ * <ResultsPage />
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ */
 
 const getResolutionLabel = (width, height) => {
     const parsedWidth = parseInt(width, 10);

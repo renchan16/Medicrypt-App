@@ -1,5 +1,47 @@
 import React from 'react';
 
+/**
+ * AnalyticsCCValue Component
+ *
+ * The `AnalyticsCCValue` component visualizes the Correlation Coefficient as a progress bar,
+ * allowing users to quickly assess the value of the metric. It supports both ideal conditions 
+ * where a lower value is preferred (idealZero) and general metrics where higher values are better.
+ *
+ * Props:
+ * -------
+ * @param {number} value - The current value of the Correlation Coefficient to be displayed.
+ * @param {number} min - The minimum possible value for the metric, used for scaling the progress bar.
+ * @param {number} max - The maximum possible value for the metric, also used for scaling the progress bar.
+ * @param {string} className - Custom CSS class names for additional styling of the progress bar.
+ * @param {string} metricLabel - Label describing the metric being displayed alongside the value.
+ * @param {boolean} idealZero - Indicates if the ideal value is close to zero. When true, the progress bar 
+ *                              reflects how close the current value is to zero.
+ *
+ * Functions:
+ * ----------
+ * - Calculates the progress value based on the provided `value`, `min`, and `max` props. It adjusts 
+ *   the progress bar's width to represent the metric's performance.
+ * - Ensures that the progress value is clamped between 0 and 100, providing a consistent visual representation.
+ *
+ * Usage:
+ * ------
+ * The `AnalyticsCCValue` component is intended for use in analytics dashboards where the correlation 
+ * coefficient needs to be visualized. It allows users to easily interpret the value in relation to its 
+ * ideal state.
+ *
+ * Example:
+ * -------
+ * <AnalyticsCCValue value={0.85} min={-1} max={1} metricLabel="Correlation Coefficient" />
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala
+ */
+
 const AnalyticsCCValue = ({ value, min, max, className = '', metricLabel, idealZero = false }) => {
   let progressValue;
 

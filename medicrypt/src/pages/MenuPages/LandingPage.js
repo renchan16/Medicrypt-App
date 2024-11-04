@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { FaChevronCircleRight } from "react-icons/fa";
-import Card from '../components/Cards';
+import Card from '../../components/Cards';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import '../pages-css/LandingPage.css';
-import logo from '../assets/MedicryptLogo.png';
-import InstructionsGif from '../assets/InstructionsAnimation.gif';
-import LearnMoreAnimation from '../assets/LearnMoreAnimation.gif';
-import DecryptAnimation from '../assets/DecryptAnimation.gif';
-import EncryptAnimation from '../assets/EncryptAnimation.gif';
-import InstructionsPNG from '../assets/InstructionsAnimation.png';
-import LearnMoreAnimationPNG from '../assets/LearnMoreAnimation.png';
-import DecryptAnimationPNG from '../assets/DecryptAnimation.png';
-import EncryptAnimationPNG from '../assets/EncryptAnimation.png';
+import '../../pages-css/LandingPage.css';
+import logo from '../../assets/MedicryptLogo.png';
+import InstructionsPNG from '../../assets/InstructionsAnimation.png';
+import LearnMoreAnimationPNG from '../../assets/LearnMoreAnimation.png';
+import DecryptAnimationPNG from '../../assets/DecryptAnimation.png';
+import EncryptAnimationPNG from '../../assets/EncryptAnimation.png';
 function LandingPage() {
   const navigate = useNavigate();
   const [inProp, setInProp] = useState(true);

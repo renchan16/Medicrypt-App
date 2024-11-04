@@ -1,5 +1,44 @@
 import React from "react";
 
+/**
+ * ProcessButton Component
+ *
+ * This `ProcessButton` component serves as the main navigational button within pages in the CryptographyPages section and
+ * AnalysisPages section. It is designed with customizable styles, text, icons, and an enabled/disabled state, making it 
+ * suitable for navigation and other interactions across the different "forms" pages within the application.
+ *
+ * Props:
+ * -------
+ * @param {string} className - Custom CSS class names for additional styling.
+ * @param {string} buttonText - Text displayed on the button.
+ * @param {React.Component} buttonIcon - Icon component for the button, such as `Icon`. It can be displayed on either
+ *                                       the left or right of the text, based on `iconLocation`.
+ * @param {string} iconLocation - Position of the icon relative to the text. Accepts "left" (default) or "right".
+ * @param {boolean} isEnabled - Controls whether the button is enabled. Defaults to `true`. When set to `false`,
+ *                              the button is disabled and its opacity is reduced.
+ * @param {function} onClickFunction - Function to be called when the button is clicked. This enables custom
+ *                                     actions depending on the page's specific needs.
+ *
+ * Functions:
+ * ----------
+ * - Renders a button with various customizable states and styling, including hover effects, enabled/disabled states,
+ *   and icon positioning.
+ *
+ * Usage:
+ * ------
+ * The `ProcessButton` component is intended as the primary navigation button in CryptographyPages, guiding users
+ * through different pages of a cryptographic process or any sequential steps. It provides flexibility with icons,
+ * colors, and text, which can adapt to each page's theme.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala
+ */
+
 export default function ProcessButton({
     className,
     buttonText,

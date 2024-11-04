@@ -39,7 +39,7 @@ Dependencies:
 - StreamingResponse for streaming the output of processes
 - Custom handlers: `EncryptionProcessHandler`, `AnalysisProcessHandler`
 
-Code Author: [Author Name]
+Code Author: Charles Andre C. Bandala
 """
 
 from fastapi import FastAPI, HTTPException, Request

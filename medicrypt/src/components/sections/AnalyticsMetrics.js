@@ -2,6 +2,56 @@ import React, { useState } from "react"
 import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from "./AnalyticsCard";
 import { AnalyticsTooltip } from "./AnalysisTooltip";
 
+/**
+ * AnalyticsMetrics Component
+ *
+ * The `AnalyticsMetrics` component displays various cryptographic metrics in a card format, 
+ * providing both a visual representation of the metric's performance and an optional description 
+ * of each metric. Users can click on the card to toggle the display of additional information.
+ *
+ * Props:
+ * -------
+ * @param {Object} metric - An object representing the metric being displayed, which includes:
+ * @param {string} metric.name - The name of the metric (e.g., "UACI", "NPCR").
+ * @param {number} metric.min - The minimum acceptable value for the metric.
+ * @param {number} metric.max - The maximum acceptable value for the metric.
+ * @param {number} metric.ideal - The ideal value that the metric aims for.
+ * @param {number} [baselineSpeed=0] - A number representing the baseline speed for comparing 
+ *                                      encryption or decryption times. Defaults to `0`.
+ * @param {number|Array} value - The current value of the metric being displayed. The format varies 
+ *                                depending on the metric (e.g., a single number or an array for "Entropy").
+ *
+ * Functions:
+ * ----------
+ * - calculatePercentage: Computes the percentage representation of the metric based on its type 
+ *   and current value, applying specific logic for certain metrics like "UACI" and "MSE".
+ * - isGood: Evaluates if the current metric value is considered good or acceptable based on 
+ *   predefined thresholds. This impacts the visual appearance of the component.
+ *
+ * Usage:
+ * ------
+ * The `AnalyticsMetrics` component is intended for use in analytics dashboards where various 
+ * cryptographic metrics need to be displayed. It provides a clear visual indicator of each 
+ * metric's performance in relation to its ideal state.
+ *
+ * Example:
+ * -------
+ * <AnalyticsMetrics metric={{ name: 'UACI', min: 0, max: 100, ideal: 'Close to 33' }} 
+ *                   baselineSpeed={0} value={50} />
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - AnalyticsCard: Custom card component for displaying metric information.
+ * - AnalyticsCardTitle: Custom component for displaying the title of the card.
+ * - AnalyticsCardContent: Custom component for displaying the content inside the card.
+ * - AnalyticsTooltip: Custom component for providing tooltip information about metrics.
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala
+ */
+
 const metricFullNames = {
     "UACI": "(Unified Average Changing Intensity)",
     "NPCR": "(Number of Pixels Change Rate)",
@@ -19,7 +69,7 @@ const metricDescriptions = {
     "Decryption Time": "Time taken to decrypt the image."
 };
 
-export const AnalyticsMetrics = ({metric, baselineSpeed, value}) => {
+export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
     const [showDescription, setShowDescription] = useState(false);
 
     const calculatePercentage = () => {

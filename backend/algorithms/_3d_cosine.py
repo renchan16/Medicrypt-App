@@ -245,9 +245,9 @@ class Encrypt_cosine:
                                             2**32 * _A_flat[_B[_r, _c]]) % _mod
                     
             _c = 0
-            for _r in range(1, _m):
+            for _r in range(1, _n):
                 _diff_flat[_B[_r, _c]] = (_mod + _ch_flat[_B[_r, _c]] - 
-                                        _ch_flat[_B[_r-1, _n-1]] - 
+                                        _ch_flat[_B[_r - 1, _n - 1]] - 
                                         2**32 * _A_flat[_B[_r, _c]]) % _mod
 
         _final_diffuse = _diff_flat.reshape(_m, _n).astype('uint8')

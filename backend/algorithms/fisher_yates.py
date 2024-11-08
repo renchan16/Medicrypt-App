@@ -189,7 +189,7 @@ class Encrypt:
 
         return
 
-    # Frame Encryption, returns numpy[uint8, uint8, uint8, ..., uint8]
+    # Frame Encryption, returns numpy array of the frame
     def encryptFrame(self, frame, verbose=False):
         self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 
@@ -239,7 +239,7 @@ class Encrypt:
 
         return _diffuse_pixels, _hashed
 
-    # Frame Decryption, returns numpy[uint8, uint8, uint8, ..., uint8]
+    # Frame Decryption, returns numpy array of the frame
     def decryptFrame(self, frame, hash, verbose=False):
         self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 

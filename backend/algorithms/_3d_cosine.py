@@ -35,6 +35,11 @@ Functionality:
     - Added more careful error handling procedures in file manipulation parts of the algorithm in case of
     interruption mid-execution.
 
+Dependencies:
+-------------
+- Numpy for faster vector calculations
+- cv2 for video and image/frame manipulation
+
 Code Author: John Paul M. Beltran, Roel C. Castro
 """
 

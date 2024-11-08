@@ -29,6 +29,11 @@ Functionality:
     Logging of execution time per frame to display/output in the analysis.
     Contains Encryption and Decryption of the key file as well.
 
+Dependencies:
+-------------
+- Numpy for faster vector calculations
+- cv2 for video and image/frame manipulation
+
 Code Author: John Paul M. Beltran, Roel C. Castro
 """
 

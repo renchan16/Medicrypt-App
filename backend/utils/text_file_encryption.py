@@ -1,3 +1,59 @@
+"""
+The text_file_encryption.py contains the script for encrypting the text into a key file. Employs AES-GCM encryption
+that enables verification whether the password is correct. The code is based on Secure Compatible Encryption Examples
+implementation from luke-park.
+(https://github.com/luke-park/SecureCompatibleEncryptionExamples/blob/master/Python/SCEE.py)
+
+Functions:
+1. encryptFile(fpath, password):
+    - Encrypts the specified file with a user password, rewrites the whole text file with the encrypted text.
+    - also returns the encrypted text in b64 in case if needed.
+
+2. def decryptFile(fpath, password, mem_only=True):
+    - Decrypts the specified file with a user password.
+    - 'mem_only' flag allows whether the text file is rewritten or not. Setting this to true disables rewrite and
+    stores only in memory, this is the safer way.
+    - returns the decrypted text in mem_only, otherwise None.
+
+3. def encrypt(plaintext, key):
+    - Encrypts the passed on plaintext with the key, returns the ciphertext appended by the nonce.
+
+4. def decrypt(ciphertextAndNonce, key):
+    - Decrypts the passed on ciphertext with the key, returns the plaintext.
+    - Raises an error if the key provided derived from the user password is wrong.
+
+Variables:
+----------
+ALGORITHM_NONCE_SIZE:
+    - Global variable specifying the byte length of the nonce
+
+ALGORITHM_TAG_SIZE:
+    - Global variable specifying the byte length of the authentication tag
+
+ALGORITHM_KEY_SIZE:
+    - Global variable specifying the byte length of the key
+
+PBKDF2_SALT_SIZE
+    - Global variable specifying the byte length of the salt
+
+PBKDF2_ITERATIONS
+    - Global variable specifying the number of iterations of the key derivation algorithm to be done
+
+PBKDF2_LAMBDA
+    - Global variable specifying what kind of pseudorandom function to be done
+
+Dependencies:
+-------------
+- PyCryptodome
+- get_random_bytes for obtaining cryptographically secure random bytes
+- PBKDF2 for key derivation from password
+- SHA256, HMAC for HMAC-SHA256 pseudorandom function
+- AES to use AES-GCM function
+
+Code Author: John Paul M. Beltran
+"""
+
+
 from Crypto.Random import get_random_bytes
 from Crypto.Protocol.KDF import PBKDF2
 from Crypto.Hash import SHA256, HMAC

@@ -1,3 +1,44 @@
+"""
+The _2d_cosine.py contains the script for:
+3D chaotic map-cosine transformation based approach to video encryption and decryption (Dua, Makhija, Manasa, Mishra, 2022}
+This includes both the Encryption and Decryption functions of the algorithm recreated by the current authors as close as possible to the study,
+and as well as key saving that is not specified in the study.
+The script takes parameters for video source and saving filepath and key filepath (encryption and decryption).
+
+Functionality:
+--------------
+1. Allows encryption/decryption of whole video or a frame only:
+    - Whole Video Encryption/Decryption: meant to be used by front-facing/user interacted components
+     of the program to encrypt/decrypt and return a video.
+    - Frame Encryption/Decryption: Contains the algorithm for encrypting/decrypting a frame which iteratively
+     looped by the Video Encryption/Decryption function. Meant to be only interacted by
+     the script itself or analysis scripts; returns only a numpy array of a frame.
+
+2. Encryption:
+    - Can set 'frame_limit' parameter to encrypt only a specified number of frames,
+    set to -1 to disable limits, ONLY USED FOR TESTING AND DEBUGGING.
+
+3. Decryption:
+    - Can set 'mem_only' parameter to disable rewriting of the key file during decryption
+    and be saved only to memory, setting this to True allows running decryption function multiple
+    times safely in case of interruption of the script or the program mid-execution.
+
+4. Exception handling:
+    - Exceptions and assertions throughout the script to avoid silent failure and easier debugging.
+
+5. Verbose logging:
+    - Can set 'verbose' parameter to true or false to allow logging to console, also helps debugging
+    Logging of execution time per frame to display/output in the analysis.
+    Contains Encryption and Decryption of the key file as well.
+
+6. Careful File Handling:
+    - Added more careful error handling procedures in file manipulation parts of the algorithm in case of
+    interruption mid-execution.
+
+Code Author: John Paul M. Beltran, Roel C. Castro
+"""
+
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -24,6 +65,7 @@ class Encrypt_cosine:
         self.THETA = 38.23  # theta > 37.9
         self.KAPPA = 36.79  # kappa > 35.7
 
+    # Decomposes the frames into folder, raise error in folder existence conflict
     def _decomposeFrame__(self, filepath, temp_path, preserveColor=False):
         if not os.path.isdir(temp_path):
             os.makedirs(temp_path)
@@ -69,6 +111,7 @@ class Encrypt_cosine:
         else:
             raise Exception(f"Conflicting file directory for path: {temp_path} already exists")
 
+    # Creates a list of hashes from a list of binaries, returns [str, ..., str]
     def __binaryToHash__(self, binary_array):
         _hashes = []
         for binary_data in binary_array:
@@ -77,6 +120,7 @@ class Encrypt_cosine:
             _hashes.append(_sha256.hexdigest())
         return _hashes
 
+    # Generates a starting seed for the chaos map, returns float
     def __generateSeed__(self, key_length):
         _secret_key = np.random.random_sample(key_length, )
         _secret_key_binaries = np.array([struct.pack('>d', num) for num in _secret_key], dtype=object)
@@ -97,6 +141,7 @@ class Encrypt_cosine:
 
         return _seed
 
+    # Generates the chaos map sequence, returns [float, .., float]
     def __generateILMSequence__(self, length, S):
         A1 = self.N * self.OMEGA
         A2 = self.N * self.THETA
@@ -123,6 +168,7 @@ class Encrypt_cosine:
 
         return _ilm_cos
 
+    # Wrapper function for generating both seed and the sequence, returns float, [float, .., float]
     def __generateSequence__(self, hash_length, block_size):
         # Generate 3D seed
         _seed = self.__generateSeed__(hash_length)
@@ -132,6 +178,7 @@ class Encrypt_cosine:
 
         return _seed, _cos_ilm_sequence
 
+    # Permutation/Shuffling of the frame, returns the shuffled numpy array of the image
     def __permutate__(self, block_size, block_matrix, channel, In_P, In_Q, In_R, In_S, mode='permute'):
         assert mode == 'permute' or mode == 'antipermute', "Mode must be 'permute' or 'antipermute'"
 
@@ -194,6 +241,7 @@ class Encrypt_cosine:
 
         return _scrambled_img
 
+    # Diffusion of the frame, returns the diffused numpy array of the image
     def __diffuse__(self, seq_2d, channel, mode='diffuse'):
         assert mode in ['diffuse', 'antidiffuse'], "Mode must be 'diffuse' or 'antidiffuse'"
 
@@ -254,12 +302,15 @@ class Encrypt_cosine:
 
         return _final_diffuse
 
+    # Generate a random numpy array containing 0 to num_frames-1, returns [int, ..., int]
     def __generateFrameSequence__(self, num_frames):
         return np.random.permutation(num_frames).tolist()
 
+    # Encrypts the key file
     def __encryptKey__(self, hash_filepath, password):
         tfe.encryptFile(hash_filepath, password)
 
+    # Decrypts the key file, returns either ([str, ..., str],  [int, ..., int]), or (None, None)
     def __decryptKey__(self, hash_filepath, password, mem_only):
         _decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
 
@@ -274,11 +325,13 @@ class Encrypt_cosine:
         else:
             return None, None
 
+    # Validates if the key is appropriate for the algorithm
     def __validateKeyCompatibility__(self, key_sample):
         validateKey(key_sample, mode=EncryptionMode.COSINE_3D)
 
         return
 
+    # Frame Encryption, returns numpy array of the frame
     def encryptFrame(self, frame, verbose=False):
         _blue, _green, _red = cv2.split(frame)  # cv2 always read in BGR mode
         if verbose: print("\tSplitted Frame into RGB channels")
@@ -329,6 +382,7 @@ class Encrypt_cosine:
 
         return _merged_img, _perm_seed, _diff_seed
 
+    # Frame Decryption, returns numpy array of the frame
     def decryptFrame(self, frame, perm_seed, diff_seed, verbose=False):
         _height, _width, _channels = frame.shape
         _blue, _green, _red = cv2.split(frame)
@@ -387,6 +441,7 @@ class Encrypt_cosine:
 
         return _merged_img
 
+    # Encrypts the video, outputs a .avi file encoded in HuffmanYUV, returns [int, int, int, ..., int]
     def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False, frame_limit=-1):
         _fpath = Path(filepath)
         _vid_dest = Path(vid_destination)
@@ -475,6 +530,7 @@ class Encrypt_cosine:
 
         return _per_frame_runtime
 
+    # Encrypts the video, outputs a .mp4 file encoded in mp4v, returns [int, int, int, ..., int]
     def decryptVideo(self, filepath, vid_destination, key_filepath, password, verbose=False, mem_only=True):
         _fpath = Path(filepath)
         _vid_dest = Path(vid_destination)
@@ -578,15 +634,3 @@ class Encrypt_cosine:
             warnings.warn(_text_warn, Warning)
 
         return _per_frame_runtime
-
-
-if __name__ == '__main__':
-    e = Encrypt_cosine()
-    src = r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test388.jpg'
-    frame = cv2.imread(src)
-    enc, _, _ = e.encryptFrame(frame)
-
-    cv2.imshow('e', enc)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    # e.encryptVideo(r'C:\Users\Lenovo\Documents\GitHub\Medicrypt-App\tests\test.mp4')

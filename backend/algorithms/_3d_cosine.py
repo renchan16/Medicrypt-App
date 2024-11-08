@@ -1,5 +1,5 @@
 """
-The _2d_cosine.py contains the script for:
+The _3d_cosine.py contains the script for:
 3D chaotic map-cosine transformation based approach to video encryption and decryption (Dua, Makhija, Manasa, Mishra, 2022}
 This includes both the Encryption and Decryption functions of the algorithm recreated by the current authors as close as possible to the study,
 and as well as key saving that is not specified in the study.

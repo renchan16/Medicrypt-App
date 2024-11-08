@@ -1,3 +1,38 @@
+"""
+The fisher_yates.py contains the script for the proposed study algorithm for video encryption.
+This includes both the Encryption and Decryption functions of the algorithm, and as well as key saving.
+The script takes parameters for video source and saving filepath and key filepath (encryption and decryption).
+
+Functionality:
+--------------
+1. Allows encryption/decryption of whole video or a frame only:
+    - Whole Video Encryption/Decryption: meant to be used by front-facing/user interacted components
+     of the program to encrypt/decrypt and return a video.
+    - Frame Encryption/Decryption: Contains the algorithm for encrypting/decrypting a frame which iteratively
+     looped by the Video Encryption/Decryption function. Meant to be only interacted by
+     the script itself or analysis scripts; returns only a numpy array of a frame.
+
+2. Encryption:
+    - Can set 'frame_limit' parameter to encrypt only a specified number of frames,
+    set to -1 to disable limits, ONLY USED FOR TESTING AND DEBUGGING.
+
+3. Decryption:
+    - Can set 'mem_only' parameter to disable rewriting of the key file during decryption
+    and be saved only to memory, setting this to True allows running decryption function multiple
+    times safely in case of interruption of the script or the program mid-execution.
+
+4. Exception handling:
+    - Exceptions and assertions throughout the script to avoid silent failure and easier debugging.
+
+5. Verbose logging:
+    - Can set 'verbose' parameter to true or false to allow logging to console, also helps debugging
+    Logging of execution time per frame to display/output in the analysis.
+    Contains Encryption and Decryption of the key file as well.
+
+Code Author: John Paul M. Beltran, Roel C. Castro
+"""
+
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -18,21 +53,25 @@ class Encrypt:
         self.NUM_COLS = 0
         self.NUM_CHANNELS = 3
 
+    # creates a hash from an array, returns a hash str
     def __arrayToHash__(self, array):
         _hash = hashlib.sha512(array.tobytes()).hexdigest()
 
         return _hash
 
+    # Splits the hash str into for equal parts, returns [str, str, str, str]
     def __splitHash__(self, hash):
         _quarters = len(hash) // 4
 
         return [hash[i: i + _quarters] for i in range(0, len(hash), _quarters)]
 
+    # Converts the hash str (indicated that it is currently base16) into an int, returns [int, int, int, int]
     def __convertToDecimal__(self, hashes):
         _into_decimal = [int(hash, 16) for hash in hashes]
 
         return _into_decimal
 
+    # Transforms the decimal value to between 0 and 1 or 3.57 and 4 based on their index, returns [int, int, int, int]
     def __transformDecimal__(self, converted_hashes):
         _transformedHash = []
         for i, decimal in enumerate(converted_hashes):
@@ -44,6 +83,7 @@ class Encrypt:
 
         return _transformedHash
 
+    # Fisher-Yates shuffle of image rows, returns numpy array
     def __shuffleRow__(self, image, size, x0, r):
         _x = x0
         _x = r * _x * (1 - _x)
@@ -58,6 +98,7 @@ class Encrypt:
 
         return _shuffled_pixels
 
+    # Fisher-Yates shuffle of image columns, returns numpy array
     def __shuffleCol__(self, image, size, x0, r):
         _x = x0
         _x = r * _x * (1 - _x)
@@ -72,6 +113,7 @@ class Encrypt:
 
         return _shuffled_pixels
 
+    # Fisher-Yates reverse shuffling of image rows, returns numpy array
     def __unshuffleRow__(self, image, swap_indices):
         for i in range(1, self.NUM_ROWS):
             _u = swap_indices.pop(-1)
@@ -80,6 +122,7 @@ class Encrypt:
 
         return image
 
+    # Fisher-Yates reverse shuffling of image columns, returns numpy array
     def __unshuffleCol__(self, image, swap_indices):
         for i in range(1, self.NUM_COLS):
             _u = swap_indices.pop(-1)
@@ -88,6 +131,7 @@ class Encrypt:
 
         return image
 
+    # Generates swap indices for shuffle reversal, returns [int, int, int, ...., int]
     def __generateSwapIndex__(self, size, x0, r):
         _swap_index = []
         _x = x0
@@ -101,6 +145,7 @@ class Encrypt:
 
         return _swap_index
 
+    # Generates keystream vector, returns numpy[int16, int16, int16, ..., int16]
     def __generateKeystream__(self, res, x0, r):
         _x = x0
         _ks = [x0]
@@ -121,12 +166,15 @@ class Encrypt:
 
         return _kv
 
+    # XOR wrapper function, returns numpy[int16, int16, int16, ..., int16]
     def __xor__(self, a, b):
         return np.bitwise_xor(a, b)
 
+    # Encrypts the key file
     def __encryptHashes__(self, hash_filepath, password):
         tfe.encryptFile(hash_filepath, password)
 
+    # Decrypts the key file, returns either [str, str, str, ..., str] or None
     def __decryptHashes__(self, hash_filepath, password, mem_only):
         decrypted = tfe.decryptFile(hash_filepath, password, mem_only=mem_only)
 
@@ -135,11 +183,13 @@ class Encrypt:
         else:
             return None
 
+    # Validates if the key is appropriate for the algorithm
     def __validateKeyCompatibility__(self, key_sample):
         validateKey(key_sample, mode=EncryptionMode.FISHER_YATES)
 
         return
 
+    # Frame Encryption, returns numpy[uint8, uint8, uint8, ..., uint8]
     def encryptFrame(self, frame, verbose=False):
         self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 
@@ -189,6 +239,7 @@ class Encrypt:
 
         return _diffuse_pixels, _hashed
 
+    # Frame Decryption, returns numpy[uint8, uint8, uint8, ..., uint8]
     def decryptFrame(self, frame, hash, verbose=False):
         self.NUM_ROWS, self.NUM_COLS, self.NUM_CHANNELS = frame.shape
 
@@ -243,6 +294,7 @@ class Encrypt:
 
         return _row_unshuffled
 
+    # Encrypts the video, outputs a .avi file encoded in HuffmanYUV, returns [int, int, int, ..., int]
     def encryptVideo(self, filepath, vid_destination, key_destination, password, verbose=False, frame_limit=-1):
         _fpath = Path(filepath)
         _vid_dest = Path(vid_destination)
@@ -307,6 +359,7 @@ class Encrypt:
 
         return _per_frame_runtime
 
+    # Encrypts the video, outputs a .mp4 file encoded in mp4v, returns [int, int, int, ..., int]
     def decryptVideo(self, filepath, vid_destination, hash_filepath, password, verbose=False, mem_only=True):
         _fpath = Path(filepath)
         _vid_dest = Path(vid_destination)

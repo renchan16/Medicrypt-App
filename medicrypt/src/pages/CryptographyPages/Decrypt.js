@@ -1,17 +1,3 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import '../../pages-css/General.css';
-import AlgorithmSelector from '../../components/switches/AlgorithmSelector';
-import FilePathInput from '../../components/text input/FilePathInput';
-import PasswordInput from '../../components/text input/PasswordInput';
-import ProcessButton from '../../components/buttons/ProcessButton';
-import { FaPaperclip } from "react-icons/fa6";
-import { FaFolder } from 'react-icons/fa6';
-import { FaArrowCircleLeft, FaLock } from "react-icons/fa";
-import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
-import { IoDocumentLock } from "react-icons/io5";
-import { motion } from 'framer-motion'; // Import framer-motion
-
 /**
  * Decrypt Component
  *
@@ -90,7 +76,24 @@ import { motion } from 'framer-motion'; // Import framer-motion
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/15/2024
+ * Last Modified: 11/11/2024
  */
+
+import React, { useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
+import '../../pages-css/General.css';
+import AlgorithmSelector from '../../components/switches/AlgorithmSelector';
+import FilePathInput from '../../components/text input/FilePathInput';
+import PasswordInput from '../../components/text input/PasswordInput';
+import ProcessButton from '../../components/buttons/ProcessButton';
+import { FaPaperclip } from "react-icons/fa6";
+import { FaFolder } from 'react-icons/fa6';
+import { FaArrowCircleLeft, FaLock } from "react-icons/fa";
+import { FaChevronCircleLeft, FaChevronCircleRight } from "react-icons/fa";
+import { IoDocumentLock } from "react-icons/io5";
+import { motion } from 'framer-motion'; // Import framer-motion
 
 function Decrypt() {
   const navigate = useNavigate();
@@ -111,6 +114,7 @@ function Decrypt() {
   const [isHashPathValid, setHashPathValidity] = useState(true);
   const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
+  // Allows user to navigate through the next page of input fields. If last page, navigate to the decryption process itself.
   const processInputData = async () => {
     if (!showAdditionalFields) {
       fileInputRef.current.validate();
@@ -138,6 +142,7 @@ function Decrypt() {
     }
   };
 
+  // Function to show the previous fields.
   const showPreviousFields = () => {
     setShowAdditionalFields(false);
   };
@@ -172,7 +177,18 @@ function Decrypt() {
         <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
           <button
             onClick={() => navigate('/')}
-            className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+            className={`
+              absolute 
+              top-8 
+              left-4 
+              flex 
+              items-center 
+              text-black 
+              hover:text-[#0f0f0f] 
+              transition-colors 
+              duration-300 
+              text-3xl
+            `}
           >
             <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
           </button>
@@ -191,7 +207,17 @@ function Decrypt() {
               onValueChange={setAlgorithm}
             />
             
-            <div className={`flex h-2/6 mb-8 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
+            <div 
+              className={`
+                flex 
+                h-2/6 
+                mb-8 
+                transition-transform 
+                duration-500 
+                ease-in-out 
+                transform 
+                ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}
+              `}>
               <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
                 <div className='space-y-4'>
                   <FilePathInput 

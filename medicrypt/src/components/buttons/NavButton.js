@@ -39,6 +39,9 @@ import React from "react";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 9/24/2024
+ * Last Modified: 11/11/2024
  */
 
 export default function NavButton({ 
@@ -52,6 +55,7 @@ export default function NavButton({
     onClickFunction, 
     filePath 
 }) {
+    /* Handle user toggle of the button. Traverse through the filepath if it exists as a prop or call function if not. */
     const handleClick = async () => {
         if (filePath) {
             try {
@@ -70,7 +74,20 @@ export default function NavButton({
     return (
         <div className={`${className}`}>
             <button
-                className={`w-full h-full rounded-md bg-${buttonColor} font-medium text-${buttonTextColor} text-lg flex items-center justify-center transition-colors hover:bg-${hoverColor} hover:text-${hoverTextColor}`}
+                className={`
+                    w-full 
+                    h-full 
+                    rounded-md 
+                    bg-${buttonColor} 
+                    font-medium text-${buttonTextColor} 
+                    text-lg 
+                    flex 
+                    items-center 
+                    justify-center 
+                    transition-colors 
+                    hover:bg-${hoverColor} 
+                    hover:text-${hoverTextColor}
+                `}
                 onClick={handleClick}
                 >
                 {Icon && <Icon className="mr-2" size={22} />}

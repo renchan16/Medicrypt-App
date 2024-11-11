@@ -1,8 +1,3 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import { ValidatePassword } from "../../utils/PasswordValidator";
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
-import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
-
 /**
  * PasswordInput Component
  *
@@ -81,9 +76,27 @@ import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/15/2024
+ * Last Modified: 11/11/2024
  */
 
-const PasswordInput = forwardRef(({className, componentHeader, placeholderText, defaultDisplayText, processType, onValueChange, onValidityChange, isEnabled = true}, ref) => {
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { ValidatePassword } from "../../utils/PasswordValidator";
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Import icons for show/hide password
+import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
+
+const PasswordInput = forwardRef(({
+    className, 
+    componentHeader, 
+    placeholderText, 
+    defaultDisplayText, 
+    processType, 
+    onValueChange, 
+    onValidityChange, 
+    isEnabled = true
+}, ref) => {
+
     const [isInputActive, setInputActive] = useState(false);
     const [isInitialLoad, setInitialLoad] = useState(true);
     const [isFocused, setFocus] = useState(false);
@@ -175,25 +188,77 @@ const PasswordInput = forwardRef(({className, componentHeader, placeholderText, 
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
-                    className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} focus:border-primary1 focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`}
+                    className={`
+                        w-full 
+                        px-3 
+                        pt-7 
+                        pb-3 
+                        rounded-xl 
+                        bg-transparent 
+                        text-sm 
+                        text-black 
+                        font-normal 
+                        placeholder:font-normal 
+                        border-2 
+                        ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} 
+                        focus:border-primary1 
+                        focus:outline-none 
+                        ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} 
+                        transition-all 
+                        duration-300
+                    `}
                     disabled = {!isEnabled}
                 />
                 <label 
                     htmlFor="password-input"
-                    className={`absolute left-3 font-medium transition-all duration-200 ${isInputActive || password ? 'text-xs top-4 leading-tight' : 'text-base top-1/2 -translate-y-1/2'} ${isFocused ? 'text-primary1' : 'text-primary2'}  pointer-events-none`}
+                    className={`
+                        absolute 
+                        left-3 
+                        font-medium 
+                        transition-all 
+                        duration-200 
+                        ${isInputActive || password ? 
+                            'text-xs top-4 leading-tight' : 
+                            'text-base top-1/2 -translate-y-1/2'
+                        } 
+                        ${isFocused ? 'text-primary1' : 'text-primary2'}  
+                        pointer-events-none
+                    `}
                 >
                     {componentHeader}
                 </label>
                 <button
                     type="button"
-                    className="absolute w-6 h-6 right-4 text-xl text-primary2 hover:text-primary1 focus:outline-none transition-colors duration-300"
+                    className={`
+                        absolute 
+                        w-6 
+                        h-6 
+                        right-4 
+                        text-xl 
+                        text-primary2 
+                        hover:text-primary1 
+                        focus:outline-none 
+                        transition-colors 
+                        duration-300
+                    `}
                     onClick={togglePasswordVisibility}
                     tabindex="-1"
                 >
                     {isPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                 </button>
             </div>
-            <p className={`mt-1 flex items-center gap-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>
+            <p 
+                className={
+                    `mt-1 
+                    flex 
+                    items-center 
+                    gap-1 
+                    ${isValidInput || isInitialLoad ? 
+                        "font-base text-gray-600" : 
+                        "font-semibold text-red-900"
+                    } 
+                    text-sm`
+                }>
                 {isValidInput || isInitialLoad ? (
                     <CiCircleInfo size={16} />
                 ) : (

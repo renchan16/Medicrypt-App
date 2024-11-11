@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 /**
  * AnalyticsTooltip Component
  *
@@ -39,7 +37,12 @@ import React, { useState } from 'react';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 10/6/2024
+ * Last Modified: 11/11/2024
  */
+
+import React, { useState } from 'react';
 
 export const AnalyticsTooltip = ({ 
   metric, 
@@ -56,7 +59,24 @@ export const AnalyticsTooltip = ({
         {children}
       </div>
       {isVisible && (
-        <div className="absolute z-10 px-3 py-2 w-full text-sm font-medium text-white text-center bg-gray-900 rounded-lg shadow-sm tooltip dark:bg-gray-700 top-full left-0">
+        <div 
+          className={`
+            absolute 
+            z-10 
+            px-3 
+            py-2 
+            w-full 
+            text-sm 
+            font-medium 
+            text-white 
+            text-center 
+            bg-gray-900 
+            rounded-lg 
+            shadow-sm 
+            tooltip 
+            dark:bg-gray-700 
+            top-full left-0
+          `}>
           {metric}
         </div>
       )}

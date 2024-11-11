@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * ProcessAlert Component
  *
@@ -43,11 +41,27 @@ import React from "react";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 10/3/2024
+ * Last Modified: 11/11/2024
  */
+
+import React from "react";
 
 export const ProcessAlert = ({ children, processStatus }) => {
     return (
-        <div className={`bg-secondary2 border-l-4 p-4 rounded ${processStatus === "success" ? "border-green-600 text-green-900" : "border-red-900 text-red-900"}`} role="alert">
+        <div 
+            className={`
+                bg-secondary2 
+                border-l-4 
+                p-4 
+                rounded 
+                ${processStatus === "success" ? 
+                    "border-green-600 text-green-900" : 
+                    "border-red-900 text-red-900"
+                }
+            `} 
+            role="alert">
             {children}
         </div>
     );

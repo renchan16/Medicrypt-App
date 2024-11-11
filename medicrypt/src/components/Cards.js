@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * Card Component
  *
@@ -43,7 +41,12 @@ import React from 'react';
  * Code Author:
  * ------------
  * - Renz Carlo T. Caritativo
+ * 
+ * Date Created:
+ * Last Modified:
  */
+
+import React from 'react';
 
 const Card = ({ width = 'w-full', height = 'h-full', children }) => {
   return (

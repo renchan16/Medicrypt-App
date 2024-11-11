@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * AnalyticsCCValue Component
  *
@@ -40,7 +38,12 @@ import React from 'react';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 10/6/2024
+ * Last Modified: 11/11/2024
  */
+
+import React from 'react';
 
 const AnalyticsCCValue = ({ value, min, max, className = '', metricLabel, idealZero = false }) => {
   let progressValue;

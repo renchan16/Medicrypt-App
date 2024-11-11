@@ -1,16 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { MdNavigateNext } from "react-icons/md";
-import { MdNavigateBefore } from "react-icons/md";
-import { useNavigate, useLocation } from 'react-router-dom';
-import '../../pages-css/General.css';
-import { AnalyticsMetrics } from '../../components/sections/AnalyticsMetrics';
-import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../../components/sections/AnalyticsCard';
-import NavButton from '../../components/buttons/NavButton';
-import AnalyticsCCValue from '../../components/sections/AnalyticsCCValue';
-import AnalyticsSelect from '../../components/sections/AnalyticsSelect';
-import { FaRegFolder } from "react-icons/fa";
-import { FaArrowCircleLeft } from "react-icons/fa";
-
 /**
  * ResultsPage Component
  *
@@ -73,8 +60,25 @@ import { FaArrowCircleLeft } from "react-icons/fa";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 10/6/2024
+ * Last Modified: 11/11/2024
  */
 
+import React, { useState, useEffect } from 'react';
+import { MdNavigateNext } from "react-icons/md";
+import { MdNavigateBefore } from "react-icons/md";
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../../pages-css/General.css';
+import { AnalyticsMetrics } from '../../components/sections/AnalyticsMetrics';
+import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from '../../components/sections/AnalyticsCard';
+import NavButton from '../../components/buttons/NavButton';
+import AnalyticsCCValue from '../../components/sections/AnalyticsCCValue';
+import AnalyticsSelect from '../../components/sections/AnalyticsSelect';
+import { FaRegFolder } from "react-icons/fa";
+import { FaArrowCircleLeft } from "react-icons/fa";
+
+// Get the string for the resolution to be displayed at the UI.
 const getResolutionLabel = (width, height) => {
     const parsedWidth = parseInt(width, 10);
     const parsedHeight = parseInt(height, 10);
@@ -112,10 +116,12 @@ function ResultsPage() {
     const [currentFileIndex, setCurrentFileIndex] = useState(0);
     const [showAdditionalFields, setShowAdditionalFields] = useState(false);
 
+    // Get data from previous location.
     let csvFilepaths = data['csvFilepaths'];
     let processedFiles = data['inputFiles'];
     let resolutions = data['resolutions'];
 
+    // Parse data upon load.
     useEffect(() => {
         const parseCSV = async (filePath) => {
             try {
@@ -132,14 +138,17 @@ function ResultsPage() {
         });
     }, [csvFilepaths]);
 
-    const getBaselineSpeed = (meanSpeed) => {
-        return `< ${meanSpeed.toFixed(2)} seconds`;
+    // Get the speed for the display fixed to 2 decimal places
+    const getBaselineSpeed = (speed) => {
+        return `< ${speed.toFixed(2)} seconds`;
     }
 
+    // Function that toggles the additional fields
     const showOtherFields = () => {
         setShowAdditionalFields(!showAdditionalFields);
     }
 
+    // Handles navigation to another file that was processed
     const handleFileChange = (event) => {
         setCurrentFileIndex(Number(event.target.value));
     };
@@ -151,18 +160,75 @@ function ResultsPage() {
     let meanSpeed = Math.min(...baselineSpeedMetrics);
     let baselineSpeedDesc =  getBaselineSpeed(meanSpeed);
 
+    // Data containing the necessary values to be displayed at the screen.
     const encryptionMetrics = [
-        { name: 'Correlation Coefficient', subMetrics: ['CC_h_e', 'CC_v_e', 'CC_d_e'], baseline: 0, ideal: 'Close to 0', max: 1 },
-        { name: 'Entropy', subMetrics: ['Entropy(Combined)_e', 'Entropy(R)_e', 'Entropy(G)_e', 'Entropy(B)_e'], baseline: 8, ideal: '8', max: 8, isEntropy: true },
-        { name: 'UACI', subMetrics: ['UACI'], baseline: 0.33, ideal: 'Close to 33%', min: 31, max: 35, isSingleValue: true },
-        { name: 'NPCR', subMetrics: ['NPCR'], baseline: 0.99, ideal: '> 99%', max: 99, isSingleValue: true },
-        { name: 'Encryption Time', subMetrics: ['ETime'], baseline: baselineSpeedMetrics, ideal: baselineSpeedDesc, max: meanSpeed, isSingleValue: true }
+        { 
+            name: 'Correlation Coefficient', 
+            subMetrics: ['CC_h_e', 'CC_v_e', 'CC_d_e'], 
+            baseline: 0, 
+            ideal: 'Close to 0', 
+            max: 1 
+        },
+        { 
+            name: 'Entropy', 
+            subMetrics: ['Entropy(Combined)_e', 'Entropy(R)_e', 'Entropy(G)_e', 'Entropy(B)_e'], 
+            baseline: 8, 
+            ideal: '8', 
+            max: 8, 
+            isEntropy: true 
+        },
+        { 
+            name: 'UACI', 
+            subMetrics: ['UACI'], 
+            baseline: 0.33, 
+            ideal: 'Close to 33%', 
+            min: 31, 
+            max: 35, 
+            isSingleValue: true 
+        },
+        { 
+            name: 'NPCR', 
+            subMetrics: ['NPCR'], 
+            baseline: 0.99, 
+            ideal: '> 99%', 
+            max: 99, 
+            isSingleValue: true 
+        },
+        { 
+            name: 'Encryption Time', 
+            subMetrics: ['ETime'], 
+            baseline: baselineSpeedMetrics, 
+            ideal: baselineSpeedDesc, 
+            max: meanSpeed, 
+            isSingleValue: true 
+        }
     ];
       
     const decryptionMetrics = [
-        { name: 'MSE', subMetrics: ['MSE'], baseline: 0, ideal: 'Close to 0', max: 0, isSingleValue: true },
-        { name: 'PSNR', subMetrics: ['PSNR'], baseline: 30, ideal: '> 30 dB', max: 30, isSingleValue: true },
-        { name: 'Decryption Time', subMetrics: ['DTime'], baseline: baselineSpeedMetrics, ideal: baselineSpeedDesc, max: meanSpeed, isSingleValue: true }
+        { 
+            name: 'MSE', 
+            subMetrics: ['MSE'], 
+            baseline: 0, 
+            ideal: 'Close to 0', 
+            max: 0, 
+            isSingleValue: true 
+        },
+        { 
+            name: 'PSNR', 
+            subMetrics: ['PSNR'], 
+            baseline: 30, 
+            ideal: '> 30 dB', 
+            max: 30, 
+            isSingleValue: true 
+        },
+        { 
+            name: 'Decryption Time', 
+            subMetrics: ['DTime'], 
+            baseline: baselineSpeedMetrics, 
+            ideal: baselineSpeedDesc, 
+            max: meanSpeed, 
+            isSingleValue: true 
+        }
     ];
 
     const metrics = processType === 'Encrypt' ? encryptionMetrics : decryptionMetrics;
@@ -175,13 +241,28 @@ function ResultsPage() {
             <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
                 <button
                     onClick={() => navigate('/')} 
-                    className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+                    className={
+                        `absolute 
+                        top-8 
+                        left-4 
+                        flex 
+                        items-center 
+                        text-black 
+                        hover:text-[#0f0f0f] 
+                        transition-colors 
+                        duration-300 
+                        text-3xl`
+                    }
                 >
                     <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
                 </button>
 
                 <div className='relative top-1/2 transform -translate-y-1/2'>
-                    <h1 className="text-4xl text-secondary font-avantGarde  mt-5 font-bold mb-4">{processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results</h1>
+                    <h1 
+                        className="text-4xl text-secondary font-avantGarde  mt-5 font-bold mb-4"
+                    >
+                        {processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results
+                    </h1>
                     <h2 className="text-lg text-secondary font-semibold ">Current File:</h2>
                     <AnalyticsSelect 
                         value={currentFileIndex}
@@ -194,9 +275,19 @@ function ResultsPage() {
                             </option>
                         ))}
                     </AnalyticsSelect>
-                    <p className="mb-4 text-secondary flex">Resolution: {resolutions[currentFileIndex][0]}x{resolutions[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}</p>
+                    <p className="mb-4 text-secondary flex">
+                        Resolution: {resolutions[currentFileIndex][0]}x{resolutions[currentFileIndex][1]}{resolutionLabel ? " (" + resolutionLabel + ")" : ""}
+                    </p>
                     <div className='h-1/4 '></div>
-                    <div className={`flex mb-4 transition-transform duration-500 ease-in-out transform ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}`}>
+                    <div className={`
+                        flex 
+                        mb-4 
+                        transition-transform 
+                        duration-500 
+                        ease-in-out 
+                        transform 
+                        ${showAdditionalFields ? '-translate-x-full' : 'translate-x-0'}
+                    `}>
                         <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pr-8' : 'pr-0'}`}>
                             {lastValue && (
                                 <div className={metrics_div}>
@@ -205,9 +296,14 @@ function ResultsPage() {
                                             key={index}
                                             metric={metric}
                                             baselineSpeed={meanSpeed}
-                                            value={metric.name === "Entropy" 
-                                                ? [parseFloat(lastValue[metric.subMetrics[0]]), parseFloat(lastValue[metric.subMetrics[1]]), parseFloat(lastValue[metric.subMetrics[2]]), parseFloat(lastValue[metric.subMetrics[3]])]
-                                                : parseFloat(lastValue[metric.subMetrics[0]])}
+                                            value={metric.name === "Entropy" ? 
+                                                [
+                                                    parseFloat(lastValue[metric.subMetrics[0]]), 
+                                                    parseFloat(lastValue[metric.subMetrics[1]]), 
+                                                    parseFloat(lastValue[metric.subMetrics[2]]), 
+                                                    parseFloat(lastValue[metric.subMetrics[3]])
+                                                ] :
+                                                parseFloat(lastValue[metric.subMetrics[0]])}
                                         />
                                     ))}
                                 </div>

@@ -56,6 +56,8 @@ Dependencies:
 - `Papa`: Library for parsing CSV files.
 
 Code Author: Renz Carlo T. Caritativo, Charles Andre C. Bandala
+Date Created: 9/10/2024
+Last Modified: 11/11/2024
 */
 
 const { app, BrowserWindow, dialog, ipcMain, shell, Menu } = require('electron');

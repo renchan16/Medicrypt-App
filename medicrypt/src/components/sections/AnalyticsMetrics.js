@@ -1,7 +1,3 @@
-import React, { useState } from "react"
-import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from "./AnalyticsCard";
-import { AnalyticsTooltip } from "./AnalysisTooltip";
-
 /**
  * AnalyticsMetrics Component
  *
@@ -50,7 +46,14 @@ import { AnalyticsTooltip } from "./AnalysisTooltip";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 10/6/2024
+ * Last Modified: 11/11/2024
  */
+
+import React, { useState } from "react"
+import { AnalyticsCard, AnalyticsCardTitle, AnalyticsCardContent } from "./AnalyticsCard";
+import { AnalyticsTooltip } from "./AnalysisTooltip";
 
 const metricFullNames = {
     "UACI": "(Unified Average Changing Intensity)",
@@ -72,6 +75,7 @@ const metricDescriptions = {
 export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
     const [showDescription, setShowDescription] = useState(false);
 
+    // Calculate Percentage of each metric
     const calculatePercentage = () => {
         switch (metric.name) {
             case "Entropy":
@@ -95,6 +99,7 @@ export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
 
     const percentage = calculatePercentage();
 
+    // Identify whether values are ideal (For UI Purposes only)
     const isGood = (() => {
         switch (metric.name) {
             case 'Entropy':
@@ -142,7 +147,15 @@ export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
                 </AnalyticsCardContent>
             </div>}
             <div 
-                className={`absolute bottom-0 left-0 h-1 transition-all duration-500 ${isGood ? 'bg-green-500' : 'bg-red-500'}`} 
+                className={`
+                    absolute 
+                    bottom-0 
+                    left-0 
+                    h-1 
+                    transition-all 
+                    duration-500 
+                    ${isGood ? 'bg-green-500' : 'bg-red-500'}
+                `} 
                 style={{ width: `${percentage}%` }}
             ></div>
         </AnalyticsCard>

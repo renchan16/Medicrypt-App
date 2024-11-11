@@ -1,11 +1,3 @@
-import React from 'react';
-import { FiBarChart } from "react-icons/fi";
-import { LuHome } from "react-icons/lu";
-import { FaRegFolder } from "react-icons/fa";
-import { TbReload } from "react-icons/tb";
-import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from './ProcessAlert';
-import NavButton from '../buttons/NavButton';
-
 /**
  * ProcessComplete Component
  *
@@ -66,7 +58,18 @@ import NavButton from '../buttons/NavButton';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala
+ * 
+ * Date Created: 10/3/2024
+ * Last Modified: 11/11/2024
  */
+
+import React from 'react';
+import { FiBarChart } from "react-icons/fi";
+import { LuHome } from "react-icons/lu";
+import { FaRegFolder } from "react-icons/fa";
+import { TbReload } from "react-icons/tb";
+import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from './ProcessAlert';
+import NavButton from '../buttons/NavButton';
 
 const ProcessComplete = ({ 
   processType, 

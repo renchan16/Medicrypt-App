@@ -1,13 +1,3 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { BarLoader } from 'react-spinners';  
-import ProcessComplete from '../../components/sections/ProcessComplete';
-import NavButton from '../../components/buttons/NavButton';
-import '../../pages-css/General.css';
-import axios from 'axios';
-import { ProcessErrorMessage } from '../../utils/ProcessErrorHandler';
-import { FaRegStopCircle } from 'react-icons/fa'; 
-
 /**
  * EvaluatingPage Component
  *
@@ -87,7 +77,20 @@ import { FaRegStopCircle } from 'react-icons/fa';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created:
+ * Last Modified:
  */
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { BarLoader } from 'react-spinners';  
+import ProcessComplete from '../../components/sections/ProcessComplete';
+import NavButton from '../../components/buttons/NavButton';
+import '../../pages-css/General.css';
+import axios from 'axios';
+import { ProcessErrorMessage } from '../../utils/ProcessErrorHandler';
+import { FaRegStopCircle } from 'react-icons/fa'; 
 
 function EvaluatingPage() {
     const navigate = useNavigate();
@@ -123,8 +126,12 @@ function EvaluatingPage() {
         console.error(`${processType}ion error:`, error);
       }
 
+      // Event source for realtime display of current state of evaluation
       const eventSource = new EventSource(`http://localhost:8000/${processType.toLowerCase()}/evaluating`);
 
+      /* Sets data['stdout'] as the display message in the UI, if status is success or failure, display
+         completion or error message with appropriate descriptions
+      */
       eventSource.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log('Event data:', data);
@@ -158,6 +165,7 @@ function EvaluatingPage() {
     processData();
   }, [processType, inputs, navigate]);
 
+  // Function that allows user to halt the evaluation process
   const haltProcessing = async () => {
     try {
       const response = await axios.post('http://localhost:8000/halt_processing');
@@ -171,6 +179,12 @@ function EvaluatingPage() {
     }
   };
 
+  // Navigates Back to Landing Page
+  const navigateHome = () => {
+    navigate('/');
+  };
+
+  // Navigates to the Results Page
   const navigateEvaluateSummary = () => {
     navigate('/results', {
       state : {
@@ -180,10 +194,7 @@ function EvaluatingPage() {
     })
   }
 
-  const navigateHome = () => {
-    navigate('/');
-  };
-
+  // Navigates Back to Evaluation Page upon Error
   const navigateEvaluatePage = () => {
     if (processType === "Encrypt") {
       let algorithm= inputs['algorithm'];

@@ -1,12 +1,3 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for navigation
-import '../../pages-css/General.css';
-import FilePathInput from '../../components/text input/FilePathInput';
-import ProcessButton from '../../components/buttons/ProcessButton';
-import { FaFolder } from 'react-icons/fa6';
-import { FaArrowCircleLeft } from "react-icons/fa";
-import { motion } from 'framer-motion';
-
 /**
  * EvaluateEncrypt Component
  *
@@ -48,13 +39,26 @@ import { motion } from 'framer-motion';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 10/2/2024
+ * Last Modified: 11/11/2024
  */
+
+import React, { useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../../pages-css/General.css';
+import FilePathInput from '../../components/text input/FilePathInput';
+import ProcessButton from '../../components/buttons/ProcessButton';
+import { FaFolder } from 'react-icons/fa6';
+import { FaArrowCircleLeft } from "react-icons/fa";
+import { motion } from 'framer-motion';
 
 function EvaluateEncrypt() {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = location.state || {};
   
+  // Get data from previous location.
   let algorithm= data['algorithm'];
   let origFilepaths = data['inputFilepaths']
   let processedFilepaths = data['outputFilepaths']
@@ -65,6 +69,7 @@ function EvaluateEncrypt() {
 
   const csvOutputLocationRef = useRef(null);
   
+  // Process the data provided by the user. Validate the necessary fields and navigate through the next page if cond'ns are met.
   const processInputData = () => {
     csvOutputLocationRef.current.validate();
 
@@ -78,6 +83,7 @@ function EvaluateEncrypt() {
     }
   }
 
+  // Animation variable
   const pageVariants = {
     initial: {
       opacity: 0,
@@ -108,7 +114,18 @@ function EvaluateEncrypt() {
           <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
             <button
               onClick={() => navigate('/')}
-              className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+              className={`
+                absolute 
+                top-8 
+                left-4 
+                flex 
+                items-center 
+                text-black 
+                hover:text-[#0f0f0f] 
+                transition-colors 
+                duration-300 
+                text-3xl
+              `}
             >
               <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
             </button>

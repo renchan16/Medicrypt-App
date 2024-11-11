@@ -1,7 +1,3 @@
-import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import { ValidateFilePath } from "../../utils/FilePathValidator";
-import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
-
 /**
  * FilePathInput Component
  *
@@ -93,9 +89,32 @@ import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/15/2024
+ * Last Modified: 11/11/2024
  */
 
-const FilePathInput = forwardRef(({ className, componentHeader, placeholderText, defaultDisplayText, browseIcon, browseHandler, onValueChange, onValidityChange, dependencyList = [], allowMultiple = false, allowMultipleText1="", allowMultipleText2="", isRequired, isEnabled = true }, ref) => {
+import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import { ValidateFilePath } from "../../utils/FilePathValidator";
+import { CiCircleInfo, CiCircleAlert } from "react-icons/ci";
+
+const FilePathInput = forwardRef(({ 
+    className, 
+    componentHeader, 
+    placeholderText, 
+    defaultDisplayText, 
+    browseIcon, 
+    browseHandler, 
+    onValueChange, 
+    onValidityChange, 
+    dependencyList = [], 
+    allowMultiple = false, 
+    allowMultipleText1="", 
+    allowMultipleText2="", 
+    isRequired, 
+    isEnabled = true 
+}, ref) => {
+
     const [path, setFilePath] = useState("");
     const [processedPath, setProcessedPath] = useState(allowMultiple ? [] : "");
     const [isInitialLoad, setInitialLoad] = useState(true);
@@ -104,16 +123,19 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
     const [isValidInput, setInputValidity] = useState(isRequired ? false : true); 
     const [inputMessage, setInputMessage] = useState(defaultDisplayText);
 
+    // For changing the validity of the inputted value
     useEffect(() => {
         onValidityChange(isValidInput);
     }, [isValidInput, onValidityChange]);
 
+    // For validating in external components.
     useImperativeHandle(ref, () => ({
         validate() {
             handleInputValidation(processedPath);
         }
     }));
 
+    // Handle the opening of the file dialog.
     const handleBrowsePath = async () => {
         const uploadedPath = await browseHandler();
         if (uploadedPath) {
@@ -126,6 +148,7 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
         }
     };
 
+    // Handle input change for the field in UI. 
     const handleInputChange = (e) => {
         setInitialLoad(false);
         const inputValue = e.target.value;
@@ -143,11 +166,13 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
         handleInputValidation(processed);
     };
 
+    // Handle the focusing of the input field 
     const handleFocus = () => {
         setInputActive(true);
         setFocus(true);
     }
 
+    // Handle the unfocusing of the input field
     const handleBlur = () => {
         setInitialLoad(false);
         setInputActive(path !== "");
@@ -155,8 +180,17 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
         handleInputValidation(processedPath);
     }
     
+    // Handles the validation of the input. 
     const handleInputValidation = async (filePath) => {
-        const isValid = await ValidateFilePath(filePath, defaultDisplayText, allowMultiple, allowMultipleText1, allowMultipleText2, dependencyList, isRequired);
+        const isValid = await ValidateFilePath(
+            filePath, 
+            defaultDisplayText, 
+            allowMultiple, 
+            allowMultipleText1, 
+            allowMultipleText2, 
+            dependencyList, 
+            isRequired
+        );
         setInitialLoad(false);
         setInputValidity(isValid['inputValidity']);
         setInputMessage(isValid['inputMessage']);
@@ -170,7 +204,24 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                     id="file-path-input"
                     placeholder={placeholderText}
                     value={path} 
-                    className={`w-full px-3 pt-7 pb-3 rounded-xl bg-transparent text-sm text-black font-normal placeholder:font-normal border-2 ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} focus:border-primary1  focus:outline-none ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} transition-all duration-300`} 
+                    className={`
+                        w-full 
+                        px-3 
+                        pt-7 
+                        pb-3 
+                        rounded-xl 
+                        bg-transparent 
+                        text-sm 
+                        text-black 
+                        font-normal 
+                        placeholder:font-normal 
+                        border-2 
+                        ${isValidInput || isInitialLoad ? "border-primary2" : "border-red-900"} 
+                        focus:border-primary1  
+                        focus:outline-none 
+                        ${isFocused ? 'placeholder:text-primary2' : 'placeholder:text-transparent'} 
+                        transition-all duration-300
+                    `} 
                     onChange={handleInputChange}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
@@ -178,15 +229,49 @@ const FilePathInput = forwardRef(({ className, componentHeader, placeholderText,
                 />
                 <label 
                     htmlFor="file-path-input"
-                    className={`absolute left-3 font-medium transition-all duration-200 ${isInputActive || path ? 'text-xs top-4 leading-tight' : 'text-base top-1/2 -translate-y-1/2'} ${isFocused ? 'text-primary1' : 'text-primary2'} pointer-events-none`}
+                    className={`
+                        absolute 
+                        left-3 
+                        font-medium 
+                        transition-all 
+                        duration-200 
+                        ${isInputActive || path ? 
+                            'text-xs top-4 leading-tight' : 
+                            'text-base top-1/2 -translate-y-1/2'
+                        } 
+                        ${isFocused ? 'text-primary1' : 'text-primary2'} 
+                        pointer-events-none
+                    `}
                 >
                     {componentHeader}
                 </label>
-                <button className="absolute w-6 h-6 right-4 text-primary2 hover:text-primary1 transition-colors duration-300" onClick={handleBrowsePath} tabindex="-1">
+                <button 
+                    className={`
+                        absolute 
+                        w-6 
+                        h-6 
+                        right-4 
+                        text-primary2 
+                        hover:text-primary1 
+                        transition-colors duration-300
+                    `}
+                    onClick={handleBrowsePath} 
+                    tabindex="-1">
                     {browseIcon}
                 </button>
             </div>
-            <p className={`mt-1 flex items-center gap-1 ${isValidInput || isInitialLoad ? "font-base text-gray-600" : "font-semibold text-red-900"} text-sm`}>
+            <p 
+                className={`
+                    mt-1 
+                    flex 
+                    items-center 
+                    gap-1 
+                    ${isValidInput || isInitialLoad ? 
+                        "font-base text-gray-600" : 
+                        "font-semibold text-red-900"
+                    } 
+                    text-sm
+                `}>
                 {isValidInput || isInitialLoad ? (
                     <CiCircleInfo size={16} />
                 ) : (

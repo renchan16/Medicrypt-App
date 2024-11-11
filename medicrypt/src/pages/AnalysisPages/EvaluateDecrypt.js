@@ -1,13 +1,3 @@
-import React, { useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom'; // Import useNavigate for navigation
-import '../../pages-css/General.css';
-import FilePathInput from '../../components/text input/FilePathInput';
-import ProcessButton from '../../components/buttons/ProcessButton';
-import { FaPaperclip } from "react-icons/fa6";
-import { FaFolder } from 'react-icons/fa6';
-import { FaArrowCircleLeft } from "react-icons/fa";
-import { motion } from 'framer-motion';
-
 /**
  * EvaluateDecrypt Component
  *
@@ -50,13 +40,27 @@ import { motion } from 'framer-motion';
  * Code Author:
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
+ * 
+ * Date Created: 10/2/2024
+ * Last Modified: 11/11/2024
  */
+
+import React, { useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import '../../pages-css/General.css';
+import FilePathInput from '../../components/text input/FilePathInput';
+import ProcessButton from '../../components/buttons/ProcessButton';
+import { FaPaperclip } from "react-icons/fa6";
+import { FaFolder } from 'react-icons/fa6';
+import { FaArrowCircleLeft } from "react-icons/fa";
+import { motion } from 'framer-motion';
 
 function EvaluateDecrypt() {
   const navigate = useNavigate();
   const location = useLocation();
   const { data } = location.state || {};
 
+  // Get necessary data from prev location.
   let algorithm= data['algorithm'];
   let processedFilepaths = data['outputFilepaths'];
   let timeFilepaths = data['timeFilepaths'];
@@ -69,6 +73,7 @@ function EvaluateDecrypt() {
   const [outputDirpath, setOutputDirpath] = useState("");
   const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
   
+  // Process the data provided by the user. Validate the necessary fields and navigate through the next page if cond'ns are met.
   const processInputData = () => {
     csvOutputLocationRef.current.validate();
     origFileInputRef.current.validate();
@@ -83,6 +88,7 @@ function EvaluateDecrypt() {
     }
   }
 
+  // Animation variable
   const pageVariants = {
     initial: {
       opacity: 0,

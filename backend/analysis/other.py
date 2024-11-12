@@ -29,6 +29,8 @@ Dependencies:
 - OpenCV
 - Built-in modules: "sys"
 
+Date Completed: 09/24/2024
+
 """
 
 import sys

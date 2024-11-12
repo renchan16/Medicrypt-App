@@ -13,6 +13,8 @@ Dependencies:
 - Encryption algorithms: "3dcosine", "Fisher-Yates"
 - Built-in modules: "argparse", "sys"
 - External modules: "logfilewriter"
+
+Date Completed: 09/26/2024
 """
 
 import sys

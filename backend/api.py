@@ -47,7 +47,8 @@ Last Modified: 11/11/2024
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from process_handler import EncryptionProcessHandler, AnalysisProcessHandler
+from encryption_handler import EncryptionProcessHandler
+from analysis_handler import AnalysisProcessHandler
 
 app = FastAPI()
 

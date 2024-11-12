@@ -3,22 +3,22 @@
 @tailwind utilities;
 
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+        sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+        monospace;
 }
 
 @font-face {
-  font-family: 'AvantGardeGothic';
-  src: url('./assets/fonts/ITC Avant Garde Gothic LT Bold.ttf') format('truetype');
-  font-weight: normal; /* or 'bold' if you have a bold version */
-  font-style: normal;
+    font-family: 'AvantGardeGothic';
+    src: url('./assets/fonts/ITC Avant Garde Gothic LT Bold.ttf') format('truetype');
+    font-weight: normal; /* or 'bold' if you have a bold version */
+    font-style: normal;
 }

@@ -54,110 +54,110 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { motion } from 'framer-motion';
 
 function EvaluateEncrypt() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { data } = location.state || {};
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { data } = location.state || {};
   
-  // Get data from previous location.
-  let algorithm= data['algorithm'];
-  let origFilepaths = data['inputFilepaths']
-  let processedFilepaths = data['outputFilepaths']
-  let timeFilepaths = data['timeFilepaths']
+    // Get data from previous location.
+    let algorithm = data['algorithm'];
+    let origFilepaths = data['inputFilepaths'];
+    let processedFilepaths = data['outputFilepaths'];
+    let timeFilepaths = data['timeFilepaths'];
 
-  const [outputDirpath, setOutputDirpath] = useState("");
-  const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
+    const [outputDirpath, setOutputDirpath] = useState("");
+    const [isOutputDirpathValid, setOutputDirpathValidity] = useState(true);
 
-  const csvOutputLocationRef = useRef(null);
+    const csvOutputLocationRef = useRef(null);
   
-  // Process the data provided by the user. Validate the necessary fields and navigate through the next page if cond'ns are met.
-  const processInputData = () => {
-    csvOutputLocationRef.current.validate();
+    // Process the data provided by the user. Validate the necessary fields and navigate through the next page if conditions are met.
+    const processInputData = () => {
+        csvOutputLocationRef.current.validate();
 
-    if (isOutputDirpathValid) {
-      navigate('/encrypt/evaluating', {
-        state : {
-          processType: 'Encrypt',
-          inputs : { algorithm, origFilepaths, processedFilepaths , timeFilepaths, outputDirpath }
+        if (isOutputDirpathValid) {
+            navigate('/encrypt/evaluating', {
+                state: {
+                    processType: 'Encrypt',
+                    inputs: { algorithm, origFilepaths, processedFilepaths, timeFilepaths, outputDirpath }
+                }
+            });
         }
-      });
     }
-  }
 
-  // Animation variable
-  const pageVariants = {
-    initial: {
-      opacity: 0,
-      x: '-100vw',
-    },
-    in: {
-      opacity: 1,
-      x: 0,
-      transition: { type: 'spring', stiffness: 50 }
-    },
-    out: {
-      opacity: 0,
-      x: '100vw',
-      transition: { ease: 'easeInOut', duration: 0.3 }
-    }
-  };
+    // Animation variable
+    const pageVariants = {
+        initial: {
+            opacity: 0,
+            x: '-100vw',
+        },
+        in: {
+            opacity: 1,
+            x: 0,
+            transition: { type: 'spring', stiffness: 50 }
+        },
+        out: {
+            opacity: 0,
+            x: '100vw',
+            transition: { ease: 'easeInOut', duration: 0.3 }
+        }
+    };
 
-  return (
-    <div className="h-full w-full flex justify-center items-center overflow-hidden">
-      <motion.div
-          className='flex items-center justify-center h-full w-full select-none'
-          initial="initial"
-          animate="in"
-          exit="out"
-          variants={pageVariants}
-        >
-        <div className='flex items-center justify-center h-full w-full select-none'>
-          <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-            <button
-              onClick={() => navigate('/')}
-              className={`
-                absolute 
-                top-8 
-                left-4 
-                flex 
-                items-center 
-                text-black 
-                hover:text-[#0f0f0f] 
-                transition-colors 
-                duration-300 
-                text-3xl
-              `}
+    return (
+        <div className="h-full w-full flex justify-center items-center overflow-hidden">
+            <motion.div
+                className="flex items-center justify-center h-full w-full select-none"
+                initial="initial"
+                animate="in"
+                exit="out"
+                variants={pageVariants}
             >
-              <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
-            </button>
-            
-            <div className='relative top-1/2 transform -translate-y-1/2'>
-              <h1 className="mb-4 text-4xl font-bold text-secondary font-avantGarde ">Evaluate Encryption</h1>
-              <p className='mb-4 text-sm italic text-secondary text-justify'>This page serves as a tool to help measure the performance metrics of the encryption process including the Correlation Coefficient, Entropy, UACI, NPCR, and Encryption Time.</p>
-              <div className='space-y-4'>
-                <FilePathInput
-                  ref={csvOutputLocationRef}
-                  componentHeader="CSV File Destination*"
-                  placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
-                  defaultDisplayText="Enter a valid directory."
-                  browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}
-                  browseHandler={window.electron.openFolder}
-                  onValueChange={setOutputDirpath}
-                  onValidityChange={setOutputDirpathValidity}
-                  isRequired={true}
-                  />
-                <ProcessButton
-                  className={`relative right-0 w-full h-14`}
-                  buttonText="Evaluate"
-                  isEnabled={true}
-                  onClickFunction={processInputData}
-                  />
-              </div>
-            </div>
-          </div>
+                <div className="flex items-center justify-center h-full w-full select-none">
+                    <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
+                        <button
+                            onClick={() => navigate('/')}
+                            className={`
+                                absolute 
+                                top-8 
+                                left-4 
+                                flex 
+                                items-center 
+                                text-black 
+                                hover:text-[#0f0f0f] 
+                                transition-colors 
+                                duration-300 
+                                text-3xl
+                            `}
+                        >
+                            <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+                        </button>
+                        
+                        <div className="relative top-1/2 transform -translate-y-1/2">
+                            <h1 className="mb-4 text-4xl font-bold text-secondary font-avantGarde">Evaluate Encryption</h1>
+                            <p className="mb-4 text-sm italic text-secondary text-justify">This page serves as a tool to help measure the performance metrics of the encryption process including the Correlation Coefficient, Entropy, UACI, NPCR, and Encryption Time.</p>
+                            <div className="space-y-4">
+                                <FilePathInput
+                                    ref={csvOutputLocationRef}
+                                    componentHeader="CSV File Destination*"
+                                    placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
+                                    defaultDisplayText="Enter a valid directory."
+                                    browseIcon={<FaFolder className="w-3/4 h-3/4 transform"/>}
+                                    browseHandler={window.electron.openFolder}
+                                    onValueChange={setOutputDirpath}
+                                    onValidityChange={setOutputDirpathValidity}
+                                    isRequired={true}
+                                />
+                                <ProcessButton
+                                    className="relative right-0 w-full h-14"
+                                    buttonText="Evaluate"
+                                    isEnabled={true}
+                                    onClickFunction={processInputData}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
         </div>
-      </motion.div>
-    </div>
-  );
+    );
 }
 
 export default EvaluateEncrypt;

@@ -1,3 +1,20 @@
+"""
+The pure and raw CLI program. It acts as an intermediary between the pure raw algorithm and the user or GUI program to specify 
+the users intended task. It contains the necessary command flags using python's built-in command argument parser to handle
+the the user input (whether by GUI or CLI).
+
+Variables:
+----------
+
+No global variable used in this script
+
+Dependencies:
+-------------
+- Encryption algorithms: "3dcosine", "Fisher-Yates"
+- Built-in modules: "argparse", "sys"
+- External modules: "logfilewriter"
+"""
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))

@@ -1,15 +1,54 @@
-from Crypto.Protocol.KDF import PBKDF2
+"""
+Handles the analysis for the correlation of pixels inside the frame.
+
+Functions:
+----------
+
+Public Functions:
+
+1. get_corellation_vid (self, sample : int, frame_count) 
+    - Analyzes the correlation of each frame per pixel. Returns a list containing the correlation of pixel values per frame
+
+2. get_corr_diag(self, frame, sample: int):
+    - Calculates the correlation of each pixel with its diagonal neighbor inside the frame. Returns the correlation (R) value
+
+3. get_corr_horizontal(self, frame, sample : int):
+    - Calculates the correlation of each pixel with its horizontal neighbor inside the frame. Returns the correlation (R) value
+
+4. get_corr_vertical(self, frame, sample : int):
+    - Calculates the correlation of each pixel with its vertical neighbor inside the frame. Returns the correlation (R) value
+
+Private Functions:
+
+1. E(self, x: list):
+    - Used in calculating the R value
+
+2. D(self, x: list):
+    - Used in calculating the R value
+
+3. covariance(self, x: list, y: list):
+    - Used in calculating the R value
+
+4. R(self, x: list, y: list):
+    - returns the R or the correlation coefficient value.
+
+Variables:
+----------
+
+No global variables are used for this script
+
+Dependencies:
+-------------
+
+- OpenCV
+- Built-in modules: "math"
+
+"""
 
 import cv2
 import math
 
 class Correlation:
-    video_path = None
-    cap = None
-
-    #def __init__(self, filepath: str):
-    #    self.video_path = FilepathParser(filepath)
-    #    self.cap = cv2.VideoCapture(self.video_path.get_posix_path(), cv2.CAP_FFMPEG)
 
     def E(self, x: list):
         temp = 1 / len(x)

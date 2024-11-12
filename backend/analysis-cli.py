@@ -1,3 +1,26 @@
+"""
+The pure and raw CLI program for analytics. It is the bridge between the analytical tools for the algorithms
+and the user inputted data.
+
+Variables:
+----------
+
+1. Parser
+    - A global object used to parse the the command arguments either by the user or the GUI itself.
+
+Dependencies:
+-------------
+
+- Encryption algorithms: "3dcosine", "Fisher-Yates"
+- External modules: "backend.analysis"
+- Built-in modules: "csv", "argparse"
+- NumPy
+- OpenCV
+
+
+"""
+
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -182,9 +205,9 @@ def main():
                     row_field["CC_h_e"] = np.mean(cc_h_e)
                     row_field["CC_v_e"] = np.mean(cc_v_e)
 
-                    total_field["CC_d_e"] += np.mean(cc_d)
-                    total_field["CC_h_e"] += np.mean(cc_h)                      
-                    total_field["CC_v_e"] += np.mean(cc_v)
+                    total_field["CC_d_e"] += np.mean(cc_d_e)
+                    total_field["CC_h_e"] += np.mean(cc_h_e)                      
+                    total_field["CC_v_e"] += np.mean(cc_v_e)
 
                     mean_field["CC_d_e"] += [np.mean(cc_d_e)]
                     mean_field["CC_h_e"] += [np.mean(cc_h_e)]
@@ -247,7 +270,7 @@ def main():
                 total_field['PSNR'] += psnr
 
                 mean_field['MSE'] += [mse]
-                mean_field['PSNR'] +=[psnr]
+                mean_field['PSNR'] += [psnr]
 
             if args.etime != None:
                 with open(args.etime, 'r') as t:

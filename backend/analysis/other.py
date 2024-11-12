@@ -1,9 +1,40 @@
+"""
+Handles the entropy and the decryption quality for analysis
+
+Functions:
+----------
+
+Public Functions:
+
+1. get_psnr(self, o_frame, e_frame):
+    - Returns the PSNR between the original and decrypted frame.
+
+2. get_mse(self, frame1, frame2):
+    - returns the Mean squared error (MSE) between the original and decrypted frame.
+
+3. get_entropy(self, frame):
+    - returns the entropy value of a frame
+
+
+Variables:
+----------
+
+No global variables are used for this script
+
+Dependencies:
+-------------
+
+- Scipy
+- Numpy
+- OpenCV
+- Built-in modules: "sys"
+
+"""
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from backend.utils.filepath_parser import FilepathParser
-from backend.algorithms.fisher_yates import Encrypt
 from scipy.stats import entropy
 import numpy as np
 import cv2
@@ -27,24 +58,3 @@ class EncryptionQuality:
         frame_entropy = entropy(prob_dist, base=2)
 
         return frame_entropy
-    
-    def get_encryption_quality(self, video_path):
-
-        fpath = FilepathParser(video_path)
-
-        cap = cv2.VideoCapture(fpath.get_posix_path(), cv2.CAP_FFMPEG)
-
-        frame_width = int(cap.get(3))
-        frame_height = int(cap.get(4))
-
-        encrypt = Encrypt()
-        while True:
-            grabbed, frame = cap.read()
-
-            if not grabbed:
-                print("Error opening video stream or file")
-                return
-            
-            e_frame, hash =  encrypt.encryptFrame(frame.copy())
-            d_frame = encrypt.decryptFrame(e_frame, hash)
-            return self.get_psnr(frame, d_frame), self.get_mse(frame, d_frame), self.entropy_calc(frame)

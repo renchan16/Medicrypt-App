@@ -1,3 +1,39 @@
+"""
+Handles the differential attack analysis for the encryption quality.
+
+Functions:
+----------
+
+Public Functions:
+
+1. get_npcr(self, frame_1, frame_2, width, height):
+    - returns the number of pixel change rate (NPCR) between two frames.
+
+2. get_uaci(self, frame1, frame2, width, height):
+    - returns the unified average changing intensity (UACI) between two frames.
+
+
+Private Functions:
+
+1. attack_pixel(self, frame, type : str):
+    - modifies a single pixel in the frame and encrypts it given the encryption type. returns the attacked frame
+
+2. get_difference(self, pixel_i, pixel_j):
+    - returns 0 if the pixel is the same. 1 if the pixel is different.
+
+Variables:
+----------
+
+No global variables are used for this script
+
+Dependencies:
+-------------
+
+- OpenCV
+- Built-in modules: "math"
+
+"""
+
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))

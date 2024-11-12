@@ -35,6 +35,8 @@ Dependencies:
 - cv2 for video and image/frame manipulation
 
 Code Author: John Paul M. Beltran, Roel C. Castro
+Date Created: 09/09/2024
+Last Modified: 11/12/2024
 """
 
 

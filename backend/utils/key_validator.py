@@ -22,6 +22,8 @@ Functions:
     - Raises an error if incompatible
 
 Code Author: John Paul M. Beltran
+Date Created: 10/12/2024
+Last Modified: 11/12/2024
 """
 
 

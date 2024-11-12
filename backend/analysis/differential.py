@@ -12,14 +12,9 @@ Public Functions:
 2. get_uaci(self, frame1, frame2, width, height):
     - returns the unified average changing intensity (UACI) between two frames.
 
-
-Private Functions:
-
-1. attack_pixel(self, frame, type : str):
+3. attack_pixel(self, frame, type : str):
     - modifies a single pixel in the frame and encrypts it given the encryption type. returns the attacked frame
 
-2. get_difference(self, pixel_i, pixel_j):
-    - returns 0 if the pixel is the same. 1 if the pixel is different.
 
 Variables:
 ----------
@@ -32,7 +27,9 @@ Dependencies:
 - OpenCV
 - Built-in modules: "math"
 
-Date Completed: 09/23/2024 11:35 pm
+Code Author: Roel Castro
+Date Created: 9/21/2024
+Date Modified: 10/14/2024
 
 """
 
@@ -48,23 +45,10 @@ import numpy as np
 
 class Differential:
 
-    def get_difference(self, pixel_i, pixel_j):
-
-        if pixel_i == pixel_j:
-            return 0
-        else:
-            return 1
-
     def get_npcr(self, frame_1, frame_2, width, height):
 
         npcr_list = []
         for c in range(3):
-            # temp2 = 0
-            # temp1 = 1 / ((width-1) * (height-1))
-            # for i in range(width - 1):
-            #     for j in range(height - 1):
-            #         temp2 += self.get_difference(frame_1[j][i][c].item(), frame_2[j][i][c].item()) * 100
-            # npcr_list.append(temp1 * temp2)
             diff = np.sum(frame_1 != frame_2)
             total_pixels = frame_1.size
             npcr_list.append((diff/ total_pixels) * 100)
@@ -105,21 +89,4 @@ class Differential:
             else:
                 raise ValueError("Invalid encryption type")
             return e_frame
-
-    def get_differential(self, video, type : str):
-        cap = cv2.VideoCapture(video)
-
-        grabbed1, frame1 = cap.read()
-        encryption_node = Encrypt()
-
-
-        e_frame1, hash1 = encryption_node.encryptFrame(frame1)
-        e_frame2 = self.attack_pixel(frame1)
-
-        frame_width = len(e_frame1[0])
-        frame_height = len(e_frame1)
-        return {
-            "npcr":  self.get_npcr(frame1, e_frame1, frame_width, frame_height),
-            "uaci":  self.get_uaci(e_frame1, e_frame2, frame_width, frame_height)
-        }
         

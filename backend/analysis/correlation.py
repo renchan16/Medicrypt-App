@@ -20,16 +20,16 @@ Public Functions:
 
 Private Functions:
 
-1. E(self, x: list):
+1. _E(self, x: list):
     - Used in calculating the R value
 
-2. D(self, x: list):
+2. _D(self, x: list):
     - Used in calculating the R value
 
-3. covariance(self, x: list, y: list):
+3. _covariance(self, x: list, y: list):
     - Used in calculating the R value
 
-4. R(self, x: list, y: list):
+4. _R(self, x: list, y: list):
     - returns the R or the correlation coefficient value.
 
 Variables:
@@ -43,7 +43,9 @@ Dependencies:
 - OpenCV
 - Built-in modules: "math"
 
-Date Completed: 09/22/2024
+Code Author: Roel Castro
+Date Created: 09/15/2022
+Date Modified: 09/15/2022
 
 """
 
@@ -52,7 +54,7 @@ import math
 
 class Correlation:
 
-    def E(self, x: list):
+    def _E(self, x: list):
         temp = 1 / len(x)
         temp2 = 0
 
@@ -61,8 +63,8 @@ class Correlation:
 
         return temp * temp2
 
-    def D(self, x: list):
-        e = self.E(x)
+    def _D(self, x: list):
+        e = self._E(x)
         temp = 1 / len(x)
         temp2 = 0
 
@@ -71,10 +73,10 @@ class Correlation:
 
         return temp * temp2
 
-    def covariance(self, x: list, y: list):
+    def _covariance(self, x: list, y: list):
         temp = 1 / len(x)
-        e_x = self.E(x)
-        e_y = self.E(y)
+        e_x = self._E(x)
+        e_y = self._E(y)
 
         temp2 = 0
 
@@ -85,9 +87,9 @@ class Correlation:
 
         return temp * temp2
 
-    def R(self, x: list, y: list):
-        temp1 = self.covariance(x, y)
-        temp2 = math.sqrt(self.D(x) * self.D(y))
+    def _R(self, x: list, y: list):
+        temp1 = self._covariance(x, y)
+        temp2 = math.sqrt(self._D(x) * self._D(y))
         return  temp1 / temp2
     
 
@@ -146,7 +148,7 @@ class Correlation:
                     y2 += 1
                     n -= 1
 
-            corr.append(self.R(pixel_x, pixel_y))
+            corr.append(self._R(pixel_x, pixel_y))
         return corr
 
 
@@ -198,7 +200,7 @@ class Correlation:
                     pixel_y.append(frame[j][i+1][c].item() + 0.1)
                     n -= 1
             
-            corr.append(self.R(pixel_x, pixel_y))
+            corr.append(self._R(pixel_x, pixel_y))
 
         return corr
     
@@ -225,7 +227,7 @@ class Correlation:
                     pixel_y.append(frame[j+1][i][c].item() + 0.1)
                     n -= 1
             
-            corr.append(self.R(pixel_x, pixel_y))
+            corr.append(self._R(pixel_x, pixel_y))
 
         return corr
 

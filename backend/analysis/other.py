@@ -29,7 +29,9 @@ Dependencies:
 - OpenCV
 - Built-in modules: "sys"
 
-Date Completed: 09/24/2024
+Code Author: Roel Castro
+Date Created: 9/24/2024
+Date Modified: 10/15/2024
 
 """
 

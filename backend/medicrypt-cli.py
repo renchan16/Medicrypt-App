@@ -14,7 +14,9 @@ Dependencies:
 - Built-in modules: "argparse", "sys"
 - External modules: "logfilewriter"
 
-Date Completed: 09/26/2024
+Code Author: Roel Castro
+Date Created: 9/11/2024
+Date Modified: 10/15/2024
 """
 
 import sys
@@ -75,9 +77,6 @@ def main():
     if (args.storetime != None):
         
         logfilewriter.logwrite(video, args.storetime)
-    
-
-    
 
 if __name__ == "__main__":
     main()

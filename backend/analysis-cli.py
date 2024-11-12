@@ -5,8 +5,7 @@ and the user inputted data.
 Variables:
 ----------
 
-1. Parser
-    - A global object used to parse the the command arguments either by the user or the GUI itself.
+no global variables is used in this script
 
 Dependencies:
 -------------
@@ -17,7 +16,9 @@ Dependencies:
 - NumPy
 - OpenCV
 
-Date Completed: 10/04/2024
+Code Author: Roel Castro
+Date Created: 9/30/2024
+Date Modified: 10/22/2024
 """
 
 
@@ -231,7 +232,8 @@ def main():
             if args.mode == 'entropy' or args.mode  == 'all' or args.mode == 'encryption':
                 if args.verbose : print(f"[Frame {i}] Analyzing Entropy")
                 B_o, G_o, R_o = cv2.split(frame.copy())
-                row_field['Entropy(B)'],  row_field['Entropy(G)'], row_field['Entropy(R)'], row_field['Entropy(Combined)'] = enc_quality.get_entropy(B_o), enc_quality.get_entropy(G_o), enc_quality.get_entropy(R_o), enc_quality.get_entropy(frame)
+                row_field['Entropy(B)'],  row_field['Entropy(G)'], row_field['Entropy(R)'], row_field['Entropy(Combined)'] = \
+                      enc_quality.get_entropy(B_o), enc_quality.get_entropy(G_o), enc_quality.get_entropy(R_o), enc_quality.get_entropy(frame)
 
                 total_field['Entropy(B)'] += enc_quality.get_entropy(B_o)
                 total_field['Entropy(G)'] += enc_quality.get_entropy(G_o)
@@ -241,11 +243,12 @@ def main():
                 mean_field['Entropy(B)'] += [enc_quality.get_entropy(B_o)]
                 mean_field['Entropy(G)'] += [enc_quality.get_entropy(G_o)]
                 mean_field['Entropy(R)'] += [enc_quality.get_entropy(R_o)]
-                mean_field['Entropy(Combined)'] += [enc_quality.get_entropy(frame)]
+                mean_field['Entropy(Combined)'] += [enc_quality.get_entropy(frame)] 
                 
                 if args.encrypted != None:
                     B_e, G_e, R_e = cv2.split(frame_e.copy())
-                    row_field['Entropy(B)_e'],  row_field['Entropy(G)_e'], row_field['Entropy(R)_e'], row_field["Entropy(Combined)_e"] = enc_quality.get_entropy(B_e), enc_quality.get_entropy(G_e), enc_quality.get_entropy(R_e), enc_quality.get_entropy(frame_e)
+                    row_field['Entropy(B)_e'],  row_field['Entropy(G)_e'], row_field['Entropy(R)_e'], row_field["Entropy(Combined)_e"] = \
+                        enc_quality.get_entropy(B_e), enc_quality.get_entropy(G_e), enc_quality.get_entropy(R_e), enc_quality.get_entropy(frame_e)
 
                     total_field['Entropy(B)_e'] += enc_quality.get_entropy(B_e)
                     total_field['Entropy(G)_e'] += enc_quality.get_entropy(G_e)

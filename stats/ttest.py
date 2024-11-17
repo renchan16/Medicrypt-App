@@ -12,7 +12,7 @@ for i in next(os.walk('.'))[1]: #resolution
     
     with open(f"./T_TEST_{i}.csv", 'w', newline='') as ttest_csv:
             
-            fieldnames = ['metrics', 'df', 'mean-diff' 't-value', 'p-value']
+            fieldnames = ['metrics', 'df', 'mean-diff', 'std', 't-value', 'p-value']
             writer = csv.writer(ttest_csv)
             writer.writerow(fieldnames)
 
@@ -62,5 +62,6 @@ for i in next(os.walk('.'))[1]: #resolution
             for key in x1_data.keys():
                 t_value = sc.ttest_rel(x1_data[key], x2_data[key])
                 mean_diff = np.mean(x1_data[key]) - np.mean(x2_data[key])
-                writer.writerow([key, t_value.df, mean_diff, t_value.statistic, t_value.pvalue])
+                std = np.std(x1_data[key])
+                writer.writerow([key, t_value.df, mean_diff, std, t_value.statistic, t_value.pvalue])
                 

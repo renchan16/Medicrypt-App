@@ -1,4 +1,5 @@
 from ctypes import c_char_p
+from math import sqrt
 from operator import le
 import numpy as np
 import scipy.stats as sc
@@ -61,7 +62,7 @@ for i in next(os.walk('.'))[1]: #resolution
 
             for key in x1_data.keys():
                 t_value = sc.ttest_rel(x1_data[key], x2_data[key])
-                mean_diff = np.mean(x1_data[key]) - np.mean(x2_data[key])
-                std = np.std(x1_data[key])
+                mean_diff = np.mean(np.subtract(x1_data[key], x2_data[key]))
+                std = np.std(np.subtract(x1_data[key], x2_data[key]))
                 writer.writerow([key, t_value.df, mean_diff, std, t_value.statistic, t_value.pvalue])
                 

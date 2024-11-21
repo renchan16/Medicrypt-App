@@ -1,3 +1,32 @@
+/**
+ * Landing Page Styles
+ *
+ * This CSS defines the layout and transition effects for the landing page, including background color, grid layout, and hover animations.
+ *
+ * Properties:
+ * -----------
+ * - .landing-background: Sets the background color to #1583fe and spans the full viewport width (100vw).
+ * - .sibling-fade: Defines a 3-column, 2-row grid with hover effects for opacity and scaling of child elements.
+ * - Fade Transitions: Controls entry and exit animations with opacity and translation effects.
+ *
+ * Affected Elements:
+ * ------------------
+ * - Background of the landing page.
+ * - Child elements within the sibling-fade container.
+ * - Elements with fade-in/fade-out transitions.
+ *
+ * Dependencies:
+ * -------------
+ * - This rule is used for styling elements on the landing page with grid layouts and transition effects.
+ *
+ * Code Author:
+ * ------------
+ * - Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/12/2024
+ * Last Modified: 11/13/2024
+ */
+
 /* LandingPage.css */
 .landing-background {
     background-color: #1583fe; /* Replace with your desired color */

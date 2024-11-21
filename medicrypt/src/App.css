@@ -1,3 +1,20 @@
+/**
+ * App Component Styles
+ *
+ * Styles for the main `App` component, including layout, logo animation, and header.
+ * 
+ * - .App: Centers content.
+ * - .App-logo: Defines logo size and disables pointer events.
+ * - @media (prefers-reduced-motion): Controls animation based on user motion preference.
+ * - .App-header: Styles the header with dark background, flex layout, and responsive font size.
+ * - .App-link: Styles links with React blue color.
+ * - @keyframes App-logo-spin: Defines logo rotation animation.
+ *
+ * Code Author: Renz Carlo T. Caritativo
+ * Date Created: 9/9/2024
+ * Last Modified: 11/11/2024
+ */
+
 .App {
     text-align: center;
 }

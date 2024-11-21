@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * ProcessButton Component
  *
@@ -30,6 +28,17 @@ import React from "react";
  * through different pages of a cryptographic process or any sequential steps. It provides flexibility with icons,
  * colors, and text, which can adapt to each page's theme.
  *
+ * Example:
+ * -------
+ * <ProcessButton
+ *   className="my-custom-class"
+ *   buttonText="Start Process"
+ *   buttonIcon={FaPlay}
+ *   iconLocation="left"
+ *   isEnabled={true}
+ *   onClickFunction={() => console.log('Process started')}
+ * />
+ * 
  * Dependencies:
  * -------------
  * - React: Core library for component rendering.
@@ -41,6 +50,8 @@ import React from "react";
  * Date Created: 9/11/2024
  * Last Modified: 11/11/2024
  */
+
+import React from "react";
 
 export default function ProcessButton({
     className,

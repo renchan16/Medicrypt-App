@@ -1,3 +1,29 @@
+/**
+ * Input Text and Password Styles
+ *
+ * This CSS rule targets text and password input fields and sets the text color to a specific shade of blue.
+ *
+ * Properties:
+ * -----------
+ * - color: '#21316F' - Sets the text color of input fields of type text and password to a dark blue shade.
+ *
+ * Affected Elements:
+ * -------------------
+ * - Text input fields (type="text")
+ * - Password input fields (type="password")
+ *
+ * Dependencies:
+ * -------------
+ * - This rule is applied globally to any input field with type "text" or "password".
+ *
+ * Code Author:
+ * ------------
+ * - Charles Andre C. Bandala
+ * 
+ * Date Created: 9/12/2024
+ * Last Modified: 11/11/2024
+ */
+
 input[type=text], input[type=password]{
     color: '#21316F';
 }

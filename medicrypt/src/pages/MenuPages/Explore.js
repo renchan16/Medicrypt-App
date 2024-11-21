@@ -1,3 +1,64 @@
+/**
+ * Features Component
+ *
+ * This component displays a list of features related to video encryption and decryption, 
+ * including advanced algorithms and associated metrics. Users can click on individual 
+ * feature cards to toggle between the feature's details, which include a description and 
+ * a list of related metrics. The component uses animations for smooth transitions between 
+ * the feature cards and their details.
+ *
+ * Functionality:
+ * --------------
+ * - Renders a list of feature cards with icons, titles, descriptions, and associated metrics.
+ * - Each feature card is clickable and highlights when selected. 
+ * - Displays detailed metrics for the selected feature with smooth animations.
+ * - Navigates back to the previous page using a back button.
+ *
+ * Functions:
+ * ----------
+ * - FeatureCard: 
+ *   - Parameters:
+ *     - `icon` (component): Icon for the feature (e.g., FaLock, FaUnlock).
+ *     - `title` (string): Title of the feature.
+ *     - `description` (string): Short description of the feature.
+ *     - `metrics` (array): List of metrics associated with the feature.
+ *     - `isActive` (boolean): Flag to indicate if the feature is active (selected).
+ *     - `onClick` (function): Function to handle the feature selection.
+ *   - Displays a feature card with an icon, title, description, and related metrics.
+ *
+ * - MetricsDisplay:
+ *   - Parameters:
+ *     - `metrics` (array): List of metrics to display.
+ *   - Displays a list of metrics for the active feature.
+ *
+ * Global Variables:
+ * -----------------
+ * - activeFeature: The index of the currently selected feature (or null if no feature is selected).
+ * - features: Array of feature objects containing icons, titles, descriptions, and metrics.
+ * 
+ * Props:
+ * -------
+ * None.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering.
+ * - framer-motion: For animations and transitions.
+ * - react-router-dom: For navigation and routing.
+ * - react-icons: For iconography (FaArrowCircleLeft, FaLock, FaUnlock, FaChartBar).
+ *
+ * Example:
+ * -------
+ * <Features />
+ *
+ * Code Author:
+ * ------------
+ * - Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/12/2024
+ * Last Modified: 11/11/2024
+ */
+
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowCircleLeft, FaLock, FaUnlock, FaChartBar, FaCog } from 'react-icons/fa';
@@ -5,8 +66,15 @@ import { useNavigate } from 'react-router-dom';
 
 const FeatureCard = ({ icon: Icon, title, description, metrics, isActive, onClick }) => (
     <motion.div
-        className={`bg-secondary2 rounded-lg shadow-lg overflow-hidden cursor-pointer transition-all duration-300 ${
-            isActive ? 'ring-4 ring-secondary' : ''
+        className={`
+            bg-secondary2 
+            rounded-lg 
+            shadow-lg 
+            overflow-hidden 
+            cursor-pointer 
+            transition-all 
+            duration-300 
+            ${ isActive ? 'ring-4 ring-secondary' : ''
         }`}
         whileHover={{ scale: 1.05 }}
         onClick={onClick}
@@ -86,9 +154,28 @@ export default function Features() {
         >
             <button
                 onClick={() => navigate('/')}
-                className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+                className={`
+                    absolute 
+                    top-8 
+                    left-4 
+                    flex 
+                    items-center 
+                    text-black 
+                    hover:text-[#0f0f0f] 
+                    transition-colors 
+                    duration-300 
+                    text-3xl
+                `}
             >
-                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+                <FaArrowCircleLeft 
+                    className={`
+                        mr-2 
+                        text-secondary 
+                        transition-transform 
+                        duration-300 
+                        transform 
+                        hover:-translate-x-2
+                    `} />
             </button>
 
             <motion.h1

@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * NavButton Component
  *
@@ -31,6 +29,20 @@ import React from "react";
  * This component is designed for navigation within a React app with Electron integration.
  * It supports customizable colors, icons, and text. The component can be used in results pages or any other navigational context.
  *
+ * Example:
+ * -------
+ * <NavButton
+ *   className="my-custom-class"
+ *   buttonText="Open Folder"
+ *   buttonColor="blue"
+ *   hoverColor="green"
+ *   buttonTextColor="white"
+ *   hoverTextColor="black"
+ *   buttonIcon={FaFolderOpen}
+ *   onClickFunction={() => console.log('Navigating to folder')}
+ *   filePath="/path/to/folder"
+ * />
+ * 
  * Dependencies:
  * -------------
  * - React: Core React library for creating components.
@@ -43,6 +55,8 @@ import React from "react";
  * Date Created: 9/24/2024
  * Last Modified: 11/11/2024
  */
+
+import React from "react";
 
 export default function NavButton({ 
     className, 

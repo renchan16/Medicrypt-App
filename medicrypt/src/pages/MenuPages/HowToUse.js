@@ -1,3 +1,60 @@
+/**
+ * HowToUse Component
+ *
+ * This component provides step-by-step instructions for users to understand how to use 
+ * the encryption and decryption features of the application. It displays two sets of instructions: 
+ * one for encryption and one for decryption. Users can toggle between these tabs and interact 
+ * with individual steps to reveal more detailed information. The component uses smooth animations 
+ * to guide the user through the instructions, and includes a reminder about secure key exchange practices.
+ *
+ * Functionality:
+ * --------------
+ * - Displays two tabs: "Encryption" and "Decryption", allowing users to toggle between the two instruction sets.
+ * - Each instruction is clickable and expands to show detailed content.
+ * - Instructions include relevant icons, titles, and descriptions for each step.
+ * - Implements a timed animation that cycles through instructions every 3 seconds for demo purposes.
+ * - Includes a back button to navigate to the previous page.
+ * - Provides a reminder about the importance of secure key exchange at the bottom of the page.
+ *
+ * Functions:
+ * ----------
+ * - HowToUse:
+ *   - Manages the state for active tabs and active instructions.
+ *   - Handles the dynamic rendering of instruction sets based on the active tab.
+ *   - Displays detailed instruction content with animations when a step is clicked.
+ *   - Automatically cycles through instruction steps using `useEffect` with a 3-second interval.
+ *   - Navigates back to the previous page when the back button is clicked.
+ *
+ * Global Variables:
+ * -----------------
+ * - activeTab: The currently active tab, either 'encrypt' or 'decrypt'.
+ * - activeInstruction: The index of the currently expanded instruction, or null if none is selected.
+ * - encryptInstructions: An array containing the steps for encryption instructions.
+ * - decryptInstructions: An array containing the steps for decryption instructions.
+ *
+ * Props:
+ * -------
+ * None.
+ *
+ * Dependencies:
+ * -------------
+ * - React: Core library for component rendering and state management.
+ * - react-router-dom: For handling navigation and routing.
+ * - framer-motion: For animations and transitions between instruction steps.
+ * - react-icons: For iconography (FaArrowCircleLeft, HiOutlineLightBulb, Lock, Unlock, Key, Shield, FileText, AlertTriangle).
+ *
+ * Example:
+ * -------
+ * <HowToUse />
+ *
+ * Code Author:
+ * ------------
+ * - Renz Carlo T. Caritativo
+ * 
+ * Date Created: 9/12/2024
+ * Last Modified: 11/11/2024
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -117,9 +174,27 @@ function HowToUse() {
         >
             <button
                 onClick={() => navigate('/')}
-                className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
+                className={`
+                    absolute 
+                    top-8 
+                    left-4 
+                    flex 
+                    items-center 
+                    text-black 
+                    hover:text-[#0f0f0f] 
+                    transition-colors 
+                    duration-300 
+                    text-3xl
+                `}
             >
-                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+                <FaArrowCircleLeft 
+                    className={`
+                        mr-2 
+                        text-secondary 
+                        transition-transform 
+                        duration-300 
+                        transform hover:-translate-x-2
+                    `}/>
             </button>
 
             <div className="mt-10 text-left overflow-hidden">
@@ -130,13 +205,35 @@ function HowToUse() {
 
                 <div className="flex justify-center mt-6 mb-8">
                     <button 
-                        className={`px-3 py-1.5 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'encrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
+                        className={`
+                            px-3 
+                            py-1.5 
+                            mx-2 
+                            rounded-full 
+                            font-bold 
+                            transition-colors 
+                            duration-300 
+                            ${activeTab === 'encrypt' ? 
+                                'bg-secondary text-white' : 
+                                'bg-white text-secondary border border-secondary'}
+                        `}
                         onClick={() => setActiveTab('encrypt')}
                     >
                         Encryption
                     </button>
                     <button 
-                        className={`px-3 py-1.5 mx-2 rounded-full font-bold transition-colors duration-300 ${activeTab === 'decrypt' ? 'bg-secondary text-white' : 'bg-white text-secondary border border-secondary'}`}
+                        className={`
+                            px-3 
+                            py-1.5 
+                            mx-2 
+                            rounded-full 
+                            font-bold 
+                            transition-colors 
+                            duration-300 
+                            ${activeTab === 'decrypt' ?
+                                'bg-secondary text-white' :
+                                'bg-white text-secondary border border-secondary'}
+                        `}
                         onClick={() => setActiveTab('decrypt')}
                     >
                         Decryption

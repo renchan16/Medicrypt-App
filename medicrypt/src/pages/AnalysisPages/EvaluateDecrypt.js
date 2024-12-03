@@ -130,7 +130,7 @@ function EvaluateDecrypt() {
                             <div className='space-y-4'>
                                 <FilePathInput 
                                     ref={origFileInputRef}
-                                    componentHeader="Original Video File*"
+                                    componentHeader="Original Video File"
                                     placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
                                     defaultDisplayText="Enter a valid video file path." 
                                     browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
@@ -145,7 +145,7 @@ function EvaluateDecrypt() {
                                 />
                                 <FilePathInput
                                     ref={csvOutputLocationRef}
-                                    componentHeader="CSV File Destination*"
+                                    componentHeader="CSV File Destination"
                                     placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
                                     defaultDisplayText="Enter a valid directory."
                                     browseIcon={<FaFolder className="w-3/4 h-3/4 transform "/>}

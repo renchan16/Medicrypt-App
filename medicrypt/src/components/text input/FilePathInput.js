@@ -231,6 +231,7 @@ const FilePathInput = forwardRef(({
                     htmlFor="file-path-input"
                     className={`
                         absolute 
+                        flex 
                         left-3 
                         font-medium 
                         transition-all 
@@ -244,6 +245,9 @@ const FilePathInput = forwardRef(({
                     `}
                 >
                     {componentHeader}
+                    {isRequired && (
+                        <div className="text-red-900 font-bold">*</div>
+                    )}
                 </label>
                 <button 
                     className={`

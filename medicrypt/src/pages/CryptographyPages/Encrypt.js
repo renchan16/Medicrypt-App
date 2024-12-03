@@ -206,7 +206,7 @@ function Encrypt() {
                                 <div className='space-y-4'>
                                     <FilePathInput
                                         ref={fileInputRef}
-                                        componentHeader="Video File*"
+                                        componentHeader="Video File"
                                         placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
                                         defaultDisplayText="Enter a valid video file path."
                                         browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45" />}
@@ -235,7 +235,7 @@ function Encrypt() {
                                 <div className='space-y-4'>
                                     <PasswordInput
                                         ref={passwordInputRef}
-                                        componentHeader="Hash Key Password*"
+                                        componentHeader="Hash Key Password"
                                         placeholderText="e.g. ILoveM3d!Crypt143"
                                         defaultDisplayText="Enter a password with at least 8 characters, an Uppercase Letter, a Lowercase Letter, a Digit, and a Special Character."
                                         processType="Encrypt"

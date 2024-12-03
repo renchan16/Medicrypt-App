@@ -136,7 +136,7 @@ function EvaluateEncrypt() {
                             <div className="space-y-4">
                                 <FilePathInput
                                     ref={csvOutputLocationRef}
-                                    componentHeader="CSV File Destination*"
+                                    componentHeader="CSV File Destination"
                                     placeholderText="C:\Users\YourUsername\MetricPerVideoForlder\..."
                                     defaultDisplayText="Enter a valid directory."
                                     browseIcon={<FaFolder className="w-3/4 h-3/4 transform"/>}

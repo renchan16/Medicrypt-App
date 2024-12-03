@@ -212,7 +212,8 @@ const PasswordInput = forwardRef(({
                 <label 
                     htmlFor="password-input"
                     className={`
-                        absolute 
+                        absolute
+                        flex 
                         left-3 
                         font-medium 
                         transition-all 
@@ -226,6 +227,7 @@ const PasswordInput = forwardRef(({
                     `}
                 >
                     {componentHeader}
+                    <div className="text-red-900 font-bold">*</div>
                 </label>
                 <button
                     type="button"

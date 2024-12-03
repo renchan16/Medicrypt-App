@@ -222,7 +222,7 @@ function Decrypt() {
                                 <div className='space-y-4'>
                                     <FilePathInput 
                                         ref={fileInputRef}
-                                        componentHeader="Video File*"
+                                        componentHeader="Video File"
                                         placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
                                         defaultDisplayText="Enter a valid .avi video file path."
                                         browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
@@ -251,7 +251,7 @@ function Decrypt() {
                                 <div className='space-y-4'>
                                     <PasswordInput
                                         ref={passwordInputRef}
-                                        componentHeader="Hash Key Password*"
+                                        componentHeader="Hash Key Password"
                                         defaultDisplayText="Ensure the password matches the one you provided earlier for encryption."
                                         placeholderText="e.g. ILoveM3d!Crypt143"
                                         processType="Decrypt"
@@ -261,7 +261,7 @@ function Decrypt() {
                                     />
                                     <FilePathInput
                                         ref={hashInputRef}
-                                        componentHeader="Hash Key File *"
+                                        componentHeader="Hash Key File"
                                         placeholderText="C:\Users\YourUsername\Documents\HashKey.key..."
                                         defaultDisplayText="Enter a valid .key file path."
                                         browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}

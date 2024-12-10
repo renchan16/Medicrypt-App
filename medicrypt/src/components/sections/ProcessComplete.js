@@ -101,6 +101,19 @@ const ProcessComplete = ({
         <div className="flex flex-col gap-4">
             {/* Success Actions */}
             <div className={`${processStatus === "success" ? 'block' : 'hidden'} flex flex-shrink-0 gap-4`}>
+                {processType !== "Evaluation" && (
+                    <NavButton
+                        className="w-full h-12 rounded-lg border-2 border-secondary"
+                        buttonText={viewFileButtonText}
+                        buttonColor="white"
+                        hoverColor="secondary1"
+                        buttonTextColor="secondary"
+                        hoverTextColor= "white"
+                        buttonIcon={FaRegFolder}
+                        filePath={outputLocation}
+                    />
+                )}
+                
                 <NavButton
                     className="w-full h-12 rounded-lg border-2 border-secondary"
                     buttonText={nextPageButtonText}
@@ -111,18 +124,6 @@ const ProcessComplete = ({
                     buttonIcon={FiBarChart}
                     onClickFunction={navigateNextPage}
                 />
-                {processType !== "Evaluation" && (
-                    <NavButton
-                    className="w-full h-12 rounded-lg border-2 border-secondary"
-                    buttonText={viewFileButtonText}
-                    buttonColor="white"
-                    hoverColor="secondary1"
-                    buttonTextColor="secondary"
-                    hoverTextColor= "white"
-                    buttonIcon={FaRegFolder}
-                    filePath={outputLocation}
-                    />
-                )}
             </div>
 
             {/* Error Action (Try Again) */}

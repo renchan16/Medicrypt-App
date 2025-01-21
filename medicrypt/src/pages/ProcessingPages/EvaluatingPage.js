@@ -78,8 +78,8 @@
  * ------------
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
  * 
- * Date Created:
- * Last Modified:
+ * Date Created: 9/25/2024
+ * Last Modified: 1/22/2025
  */
 
 import React, { useState, useEffect } from 'react';
@@ -222,7 +222,7 @@ function EvaluatingPage() {
                 {/* Processing Loader */}
                 <div className={`${isProcessing ? 'block' : 'hidden'} w-full h-full flex flex-col items-center justify-center`}>
                     {/* Centered Processing Content */}
-                    <h1 className='text-4xl font-bold text-secondary -mb-10'>Analyzing {processType}ion{dots}</h1>
+                    <h1 className='text-4xl font-bold text-secondary -mb-10 font-avantGarde'>Analyzing {processType}ion{dots}</h1>
                     <div className="w-full h-60 flex flex-col items-center justify-center -mb-20">
                         <BarLoader color="#102a6b" loading={true} width={300} />
                         <p className="text-secondary mt-4">{currentProcess}</p>

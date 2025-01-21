@@ -69,6 +69,7 @@ import { LuHome } from "react-icons/lu";
 import { FaRegFolder } from "react-icons/fa";
 import { TbReload } from "react-icons/tb";
 import { ProcessAlert, ProcessAlertTitle, ProcessAlertDescription } from './ProcessAlert';
+import { FiCheckCircle, FiXCircle } from "react-icons/fi";
 import NavButton from '../buttons/NavButton';
 
 const ProcessComplete = ({ 
@@ -85,7 +86,14 @@ const ProcessComplete = ({
 }) => {
   return (
     <div className="w-11/12 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-        <h1 className="mb-4 text-4xl text-secondary font-bold font-avantGarde">
+        <h1 className="mb-4 text-4xl text-secondary font-bold font-avantGarde flex items-center">
+            {
+                processStatus === "success" ? (
+                    <FiCheckCircle className="mr-2 text-5xl text-primary" />
+                ) : (
+                    <FiXCircle className="mr-2 text-5xl text-red-900" />
+                )
+            }
             {processType} {processStatus === "success" ? "Complete" : "Failed"}!
         </h1>
 

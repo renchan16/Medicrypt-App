@@ -52,13 +52,17 @@ export const ProcessAlert = ({ children, processStatus }) => {
     return (
         <div 
             className={`
-                bg-secondary2 
-                border-l-4 
-                p-4 
-                rounded 
+                 
+                border-l-8
+                border-b-8  
+                pt-4
+                pl-6
+                pr-4
+                pb-4
+                rounded-2xl 
                 ${processStatus === "success" ? 
-                    "border-green-600 text-green-900" : 
-                    "border-red-900 text-red-900"
+                    "border-primary1 text-primary0 bg-secondary2" : 
+                    "border-red-800 text-red-900 bg-red-100"
                 }
             `} 
             role="alert">
@@ -67,5 +71,5 @@ export const ProcessAlert = ({ children, processStatus }) => {
     );
 };
 
-export const ProcessAlertTitle = ({ children }) => <h3 className="font-bold">{children}</h3>;
+export const ProcessAlertTitle = ({ children }) => <h3 className="font-bold font-avantGarde">{children}</h3>;
 export const ProcessAlertDescription = ({ children }) => <p>{children}</p>;

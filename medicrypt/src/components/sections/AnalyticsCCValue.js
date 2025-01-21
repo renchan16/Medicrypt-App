@@ -63,14 +63,14 @@ const AnalyticsCCValue = ({ value, min, max, className = '', metricLabel, idealZ
     progressValue = Math.min(Math.max(progressValue, 0), 100);
 
     return (
-        <div>
+        <div className='text-secondary'>
             <div className="flex justify-between text-sm">
                 <span>{metricLabel} {value}</span>
                 <span>Ideal: close to 0</span>
             </div>
             <div className={`w-full bg-gray-200 rounded-full h-2.5 ${className}`}>
                 <div 
-                    className="bg-blue-600 h-2.5 rounded-full transition-all duration-300 ease-in-out"
+                    className="bg-primary1 h-2.5 rounded-full transition-all duration-300 ease-in-out"
                     style={{ width: `${progressValue}%` }}
                 ></div>
             </div>

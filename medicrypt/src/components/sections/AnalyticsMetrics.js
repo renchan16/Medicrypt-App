@@ -126,20 +126,20 @@ export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
             onClick={() => setShowDescription(!showDescription)}>
             <AnalyticsTooltip metric={metricFullNames[metric.name] || metric.name}>
                 <AnalyticsCardTitle
-                    className="font-semibold mb-0">
+                    className="font-semibold mb-0 font-avantGarde text-primary0">
                     {metric.name}
                 </AnalyticsCardTitle>
             </AnalyticsTooltip>
             {showDescription === true ? 
             <div>
                 <AnalyticsCardContent>
-                    <div className="text-sm mt-4 text-justify">{metricDescriptions[metric.name]}</div>
+                    <div className="text-sm mt-4 text-justify text-secondary">{metricDescriptions[metric.name]}</div>
                 </AnalyticsCardContent>
             </div> : 
             <div>
                 <AnalyticsCardContent>
-                    <div className="text-4xl font-bold mt-6 mb-2">
-                        {metric.name === "Entropy" ? value[0].toFixed(4) : value.toFixed(4)}
+                    <div className="text-4xl font-bold mt-6 mb-2 font-avantGarde text-[#202120]">
+                        {metric.name === "Entropy" ? value[0].toFixed(3) : value.toFixed(3)}
                         {metric.name === "NPCR" || metric.name === "UACI" ? "%" : ""}
                         {metric.name === "Encryption Time" || metric.name === "Decryption Time" ? "s" : ""}    
                     </div>
@@ -151,12 +151,27 @@ export const AnalyticsMetrics = ({metric, baselineSpeed = 0, value}) => {
                     absolute 
                     bottom-0 
                     left-0 
-                    h-1 
+                    h-3 
                     transition-all 
-                    duration-500 
+                    duration-500
+                    rounded-full 
                     ${isGood ? 'bg-green-500' : 'bg-red-500'}
                 `} 
                 style={{ width: `${percentage}%` }}
+            ></div>
+            <div 
+                className={`
+                    absolute 
+                    bottom-0 
+                    left-0 
+                    h-3 
+                    transition-all 
+                    duration-500
+                    rounded-full 
+                    bg-gray-300
+                    w-full
+                    -z-10
+                `} 
             ></div>
         </AnalyticsCard>
     );

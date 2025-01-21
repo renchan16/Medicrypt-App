@@ -41,7 +41,7 @@
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
  * 
  * Date Created: 10/2/2024
- * Last Modified: 11/11/2024
+ * Last Modified: 1/22/2025
  */
 
 import React, { useState, useRef } from 'react';
@@ -52,6 +52,7 @@ import ProcessButton from '../../components/buttons/ProcessButton';
 import { FaFolder } from 'react-icons/fa6';
 import { FaArrowCircleLeft } from "react-icons/fa";
 import { RiPencilRuler2Line } from "react-icons/ri";
+import { FiPieChart } from "react-icons/fi";
 import { motion } from 'framer-motion';
 
 function EvaluateEncrypt() {
@@ -120,7 +121,10 @@ function EvaluateEncrypt() {
                 <div className="flex items-center justify-center h-full w-full select-none">
                     <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
                         <div className="relative top-1/2 transform -translate-y-1/2">
-                            <h1 className="mb-4 text-4xl font-bold text-secondary font-avantGarde">Evaluate Encryption</h1>
+                            <h1 className="mb-3 text-4xl font-bold text-secondary font-avantGarde flex items-center">
+                                <FiPieChart className="mr-2 text-5xl" />
+                                Evaluate Encryption
+                            </h1>
                             <p className="mb-4 text-sm italic text-secondary text-justify">This page serves as a tool to help measure the performance metrics of the encryption process including the Correlation Coefficient, Entropy, UACI, NPCR, and Encryption Time.</p>
                             <div className="space-y-4">
                                 <FilePathInput

@@ -62,7 +62,7 @@
  * - Charles Andre C. Bandala, Renz Carlo T. Caritativo
  * 
  * Date Created: 10/6/2024
- * Last Modified: 11/11/2024
+ * Last Modified: 1/22/2025
  */
 
 import React, { useState, useEffect } from 'react';
@@ -77,6 +77,7 @@ import AnalyticsCCValue from '../../components/sections/AnalyticsCCValue';
 import AnalyticsSelect from '../../components/sections/AnalyticsSelect';
 import { FaRegFolder } from "react-icons/fa";
 import { FaArrowCircleLeft } from "react-icons/fa";
+import { TbAnalyze } from "react-icons/tb";
 
 // Get the string for the resolution to be displayed at the UI.
 const getResolutionLabel = (width, height) => {
@@ -238,32 +239,21 @@ function ResultsPage() {
 
     return (
         <div className='flex items-center justify-center h-full w-full select-none'>
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
+            >
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+            </button>
             <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-                <button
-                    onClick={() => navigate('/')} 
-                    className={
-                        `absolute 
-                        top-8 
-                        left-4 
-                        flex 
-                        items-center 
-                        text-black 
-                        hover:text-[#0f0f0f] 
-                        transition-colors 
-                        duration-300 
-                        text-3xl`
-                    }
-                >
-                    <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
-                </button>
-
                 <div className='relative top-1/2 transform -translate-y-1/2'>
                     <h1 
-                        className="text-4xl text-secondary font-avantGarde  mt-5 font-bold mb-4"
+                        className="text-4xl text-secondary font-avantGarde mt-5 font-bold mb-4 flex items-center"
                     >
+                        <TbAnalyze className="mr-2 text-5xl text-primary" />
                         {processType === 'Encrypt' ? 'Encryption' : 'Decryption'} Analysis Results
                     </h1>
-                    <h2 className="text-lg text-secondary font-semibold ">Current File:</h2>
+                    <h2 className="text-md text-secondary font-semibold">Current File:</h2>
                     <AnalyticsSelect 
                         value={currentFileIndex}
                         onChange={handleFileChange}
@@ -311,7 +301,9 @@ function ResultsPage() {
                         </div>
                         {processType === "Encrypt" && lastValue && (
                             <div className={`flex-shrink-0 w-full ${showAdditionalFields ? 'pl-0' : 'pl-8'}`}>
-                                <AnalyticsCard>
+                                <AnalyticsCard
+                                    className='pointer-events-none'
+                                >
                                     <AnalyticsCardTitle>Correlation Coefficient</AnalyticsCardTitle>
                                     <AnalyticsCardContent>
                                         <div className='mb-2'>

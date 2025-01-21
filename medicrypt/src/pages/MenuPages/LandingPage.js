@@ -112,7 +112,7 @@ function LandingPage() {
                 variants={scaleVariants}
             >
                 <div className="flex items-center mb-3">
-                    <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
+                    <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2 select-none" />
                     <h1 
                         className={`
                             text-7xl 
@@ -122,6 +122,7 @@ function LandingPage() {
                             leading-tight 
                             pb-1 
                             font-avantGarde
+                            select-none
                         `}>medicrypt</h1>
                 </div>
 
@@ -149,6 +150,7 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/encrypt')}
@@ -158,7 +160,7 @@ function LandingPage() {
                                     <img 
                                         src={EncryptAnimationPNG} 
                                         alt="Encrypt Animation" 
-                                        className="w-full h-29 object-scale-down" 
+                                        className="w-full h-29 object-scale-down select-none" 
                                     />
                                 </div>
                             </div>
@@ -171,6 +173,7 @@ function LandingPage() {
                                         transition-colors 
                                         duration-300 
                                         hover:text-gray-200
+                                        select-none
                                     `}>Encrypt</p>
                             </div>
                             <div className="inline-block">
@@ -185,6 +188,7 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1 
+                                        select-none
                                     `}>SECURE YOUR VIDEOS</button>
                             </div>
                             <FaChevronCircleRight 
@@ -220,6 +224,7 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/decrypt')}
@@ -229,7 +234,7 @@ function LandingPage() {
                                     <img 
                                         src={DecryptAnimationPNG} 
                                         alt="Decrypt Animation" 
-                                        className="w-full h-30 mb-3 object-fill" 
+                                        className="w-full h-30 mb-3 object-fill select-none" 
                                     />
                                 </div>
                             </div>
@@ -242,6 +247,7 @@ function LandingPage() {
                                         transition-colors 
                                         duration-300 
                                         hover:text-gray-200
+                                        select-none
                                     `}>Decrypt</p>
                             </div>
                             <div className="inline-block">
@@ -256,6 +262,7 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1
+                                        select-none
                                     `}>ACCESS YOUR VIDEOS</button>
                             </div>
                             <FaChevronCircleRight 
@@ -291,6 +298,7 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/howtouse')}
@@ -300,7 +308,7 @@ function LandingPage() {
                                     <img 
                                         src={InstructionsPNG} 
                                         alt="Instructions Animation" 
-                                        className="w-full h-40 object-contain" />
+                                        className="w-full h-40 object-contain select-none" />
                                 </div>
                             </div>
                             <div className="flex-grow flex items-end">
@@ -312,6 +320,7 @@ function LandingPage() {
                                         transition-colors 
                                         duration-300 
                                         hover:text-gray-200
+                                        select-none
                                     `}>Instructions</p>
                             </div>
                             <div className="inline-block">
@@ -326,6 +335,7 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1
+                                        select-none
                                     `}>HOW TO USE THE APP</button>
                             </div>
                             <FaChevronCircleRight 
@@ -362,12 +372,13 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/explore')}
                         >
                             <div className="flex flex-col justify-center items-start">
-                                <p className="text-primary0 font-bold text-2xl transition-colors duration-300">
+                                <p className="text-primary0 font-bold text-2xl transition-colors duration-300 select-none">
                                     Explore Features
                                 </p>
                                 <button 
@@ -381,13 +392,14 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1
+                                        select-none
                                     `}>LEARN MORE</button>
                             </div>
                             <div className="w-40 h-30">
                                 <img
                                     src={LearnMoreAnimationPNG}
                                     alt="Learn More Animation"
-                                    className="w-full h-full object-contain"
+                                    className="w-full h-full object-contain select-none"
                                 />
                             </div>
                             <FaChevronCircleRight 

@@ -146,7 +146,7 @@ function Encrypt() {
     const pageVariants = {
         initial: {
             opacity: 0,
-            x: '-100vw',
+            x: '-60vw',
         },
         in: {
             opacity: 1,
@@ -162,6 +162,12 @@ function Encrypt() {
 
     return (
         <div className="h-full w-full flex justify-center items-center overflow-hidden">
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
+            >
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+            </button>
             <motion.div
                 className='flex items-center justify-center h-full w-full select-none'
                 initial="initial"
@@ -170,13 +176,6 @@ function Encrypt() {
                 variants={pageVariants}
             >
                 <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-                    <button
-                        onClick={() => navigate('/')}
-                        className="absolute top-8 left-4 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl"
-                    >
-                        <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
-                    </button>
-
                     <div className='relative top-1/2 transform -translate-y-1/2'>
                         <h1 className="mb-3 text-4xl font-bold text-secondary font-avantGarde flex items-center">
                             <RiKey2Fill className="mr-2 text-5xl" /> 

@@ -66,7 +66,7 @@ export const ProcessErrorMessage = (response) => {
     }
     else if (lastStderrLine && lastStderrLine.includes("INVALID KEY")) {
         const errorMessageIndex = lastStderrLine.indexOf("INVALID KEY");
-        const errorMessage = lastStderrLine.slice(errorMessageIndex); // Extract substring from "INVALID KEY"
+        const errorMessage = lastStderrLine.slice(errorMessageIndex) + "."; // Extract substring from "INVALID KEY"
         return errorMessage;
     }
     else {

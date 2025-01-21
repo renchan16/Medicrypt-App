@@ -1,278 +1,219 @@
 /**
  * HowToUse Component
  *
- * This component provides step-by-step instructions for users to understand how to use 
- * the encryption and decryption features of the application. It displays two sets of instructions: 
- * one for encryption and one for decryption. Users can toggle between these tabs and interact 
- * with individual steps to reveal more detailed information. The component uses smooth animations 
- * to guide the user through the instructions, and includes a reminder about secure key exchange practices.
+ * This component provides users with instructions for utilizing encryption and decryption features
+ * in the application. It displays two processes: "Encryption" and "Decryption," each with
+ * step-by-step instructions and relevant details. Users can interact with these instructions
+ * through a clean and responsive UI.
  *
- * Functionality:
- * --------------
- * - Displays two tabs: "Encryption" and "Decryption", allowing users to toggle between the two instruction sets.
- * - Each instruction is clickable and expands to show detailed content.
- * - Instructions include relevant icons, titles, and descriptions for each step.
- * - Implements a timed animation that cycles through instructions every 3 seconds for demo purposes.
- * - Includes a back button to navigate to the previous page.
- * - Provides a reminder about the importance of secure key exchange at the bottom of the page.
- *
- * Functions:
- * ----------
- * - HowToUse:
- *   - Manages the state for active tabs and active instructions.
- *   - Handles the dynamic rendering of instruction sets based on the active tab.
- *   - Displays detailed instruction content with animations when a step is clicked.
- *   - Automatically cycles through instruction steps using `useEffect` with a 3-second interval.
- *   - Navigates back to the previous page when the back button is clicked.
- *
- * Global Variables:
- * -----------------
- * - activeTab: The currently active tab, either 'encrypt' or 'decrypt'.
- * - activeInstruction: The index of the currently expanded instruction, or null if none is selected.
- * - encryptInstructions: An array containing the steps for encryption instructions.
- * - decryptInstructions: An array containing the steps for decryption instructions.
+ * Features:
+ * ---------
+ * - Displays tabs for "Encryption" and "Decryption" processes.
+ * - Each process contains clickable steps with icons, titles, and descriptions.
+ * - Uses a visually appealing design with Tailwind CSS for styling.
+ * - A back button is included for navigation to the previous page.
+ * - Animations are implemented with Framer Motion for a smooth user experience.
+ * - Includes a "Security Notice" to remind users of secure key exchange practices.
  *
  * Props:
- * -------
+ * ------
  * None.
  *
  * Dependencies:
  * -------------
- * - React: Core library for component rendering and state management.
- * - react-router-dom: For handling navigation and routing.
- * - framer-motion: For animations and transitions between instruction steps.
- * - react-icons: For iconography (FaArrowCircleLeft, HiOutlineLightBulb, Lock, Unlock, Key, Shield, FileText, AlertTriangle).
+ * - React: For rendering the component and managing state.
+ * - react-router-dom: To enable navigation functionality.
+ * - framer-motion: For animations and transitions.
+ * - react-icons & lucide-react: For providing icons for the instructions and UI elements.
  *
- * Example:
- * -------
+ * Example Usage:
+ * --------------
  * <HowToUse />
  *
- * Code Author:
- * ------------
+ * Authors:
+ * --------
  * - Renz Carlo T. Caritativo
+ * - Charles Andre C. Bandala
  * 
  * Date Created: 9/12/2024
- * Last Modified: 11/11/2024
+ * Last Modified: 1/21/2025
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FaArrowCircleLeft } from "react-icons/fa";
-import { HiOutlineLightBulb } from "react-icons/hi";
-import { Lock, Unlock, Key, Shield, FileText, AlertTriangle } from 'lucide-react';
+import { TbShieldQuestion } from "react-icons/tb";
+import { GrSecure, GrInsecure  } from "react-icons/gr";
+import { Video, FolderOutput, Key, Lock, ChevronRight, Info } from 'lucide-react';
 
-function HowToUse() {
+const HowToUse = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState('encrypt');
-    const [activeInstruction, setActiveInstruction] = useState(null);
 
-    const encryptInstructions = [
-        { 
-            title: "Select Encryption Method", 
-            content: "Choose between Fisher-Yates Logistic Map Algorithm and ILM - Cosine Map Algorithm.",
-            icon: Key
-        },
-        { 
-            title: "Input Your Video", 
-            content: "Enter the video you want to encrypt in our secure input field.",
-            icon: FileText
-        },
-        { 
-            title: "Provide a Password", 
-            content: "Create a password that follows our rules to ensure safety.",
-            icon: Shield
-        },
-        { 
-            title: "Encrypt", 
-            content: "Click 'Encrypt' to transform your message into ciphertext.",
-            icon: Lock
-        },
-        { 
-            title: "Evaluate Encryption", 
-            content: "Assess the encryption effectiveness and performance metrics of your encrypted video.",
-            icon: Shield
-        },
-        { 
-            title: "View Analytics Summary", 
-            content: "Get a summary of the encryption process, including time taken and encryption performance.",
-            icon: FileText
-        },
-    ];
-
-    const decryptInstructions = [
-        { 
-            title: "Choose Decryption Method", 
-            content: "Select the same method used for encryption (FY-Logistics or ILM-Cosine).",
-            icon: Key
-        },
-        { 
-            title: "Enter the Encrypted Video", 
-            content: "Provide the path to the encrypted video file.",
-            icon: FileText
-        },
-        { 
-            title: "Provide Decryption Key", 
-            content: "Upload the .key file and enter the password used during encryption.",
-            icon: Shield
-        },
-        { 
-            title: "Decrypt", 
-            content: "Click 'Decrypt' to reveal the original video.",
-            icon: Unlock
-        },
-        { 
-            title: "Evaluate Decryption", 
-            content: "Assess the decryption effectiveness and any potential data loss.",
-            icon: Shield
-        },
-        { 
-            title: "View Analytics Summary", 
-            content: "Get a summary of the decryption process, including time taken and decryption performance.",
-            icon: FileText
-        },
-    ];
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveInstruction((prev) => (prev === null ? 0 : (prev + 1) % 4));
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
-
-    const glitchAnimation = {
-        hidden: { opacity: 0, y: -20 },
-        visible: { 
-            opacity: 1, 
-            y: 0,
-            transition: { 
-                type: "spring",
-                damping: 12,
-                stiffness: 200,
-            }
-        },
-        exit: { 
-            opacity: 0,
-            y: 20,
-            transition: { duration: 0.2 }
-        }
+    const InstructionCard = ({ processType, processTitle, processSteps }) => {
+        const isEncryption = processType === "encrypt";
+        const baseColor = isEncryption ? 'border-primary' : 'border-black';
+        return (
+            <div
+                className = {`border-4 ${baseColor} rounded-2xl p-5`}
+            >
+                <div className = {
+                    `inline-flex 
+                    items-center 
+                    space-x-2 
+                    px-4 
+                    py-2 
+                    rounded-lg 
+                    ${isEncryption ? 'bg-blue-50 text-primary' : 'bg-gray-100 text-black'} mb-4`}
+                >
+                    {isEncryption ? <GrSecure className="w-4 h-4" /> : <GrInsecure className="w-4 h-4" />}
+                    <span className="font-light font-avantGarde text-md">{processTitle}</span>
+                </div>
+                <div className={`space-y-6`}>
+                    {
+                        processSteps.map((processStep, index) => (
+                            <div key={index} className="relative">
+                                 <div className="flex items-start space-x-4">
+                                    <div className={`w-8 h-8 rounded-full ${isEncryption ? 'bg-blue-50' : 'bg-gray-100'} flex items-center justify-center flex-shrink-0`}>
+                                        <processStep.icon className={`w-4 h-4 ${isEncryption ? 'text-primary' : 'text-black'}`} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="flex items-center">
+                                            <h3 className={`font-semibold ${isEncryption ? 'text-primary3' : 'text-gray-900'}`}>
+                                                {processStep.title}
+                                            </h3>
+                                            <ChevronRight className={`w-4 h-4 mx-2 ${isEncryption ? 'text-blue-300' : 'text-gray-300'}`} />
+                                            <span className="text-sm text-gray-500">{processStep.detail}</span>
+                                        </div>
+                                        <p className="mt-1 text-sm text-gray-600">{processStep.description}</p>
+                                    </div>
+                                 </div>
+                                {index < processSteps.length - 1 && (
+                                    <div className={`absolute left-4 top-8 w-0.5 h-6 ${isEncryption ? 'bg-blue-100' : 'bg-gray-200'}`} />
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </div>
+        );  
     };
 
     const pageAnimation = {
-        initial: { x: '-100%' }, // Start from the left
-        animate: { x: 0, transition: { type: 'spring', stiffness: 300 } }, // Move to the center
-        exit: { x: '100%', transition: { ease: 'easeInOut' } }, // Exit to the right
+        initial: {
+            opacity: 0,
+            y: '40vh',
+        },
+        in: {
+            opacity: 1,
+            y: 0,
+            transition: { type: 'spring', stiffness: 40 }
+        },
+        out: {
+            opacity: 0,
+            y: '-100vh',
+            transition: { ease: 'easeInOut', duration: 0.3 }
+        }
     };
 
+    const encryptSteps = [
+        {
+          icon: Lock,
+          title: "Method",
+          detail: "Choose Algorithm",
+          description: "Select your preferred encryption algorithm"
+        },
+        {
+          icon: Video,
+          title: "Source",
+          detail: "Select Input",
+          description: "Choose the video file you want to encrypt"
+        },
+        {
+          icon: FolderOutput,
+          title: "Destination",
+          detail: "Set Location",
+          description: "Select where to save the encrypted video file"
+        },
+        {
+          icon: Key,
+          title: "Security",
+          detail: "Set Password",
+          description: "Create a strong password to secure your video"
+        }
+      ];
+    
+      const decryptSteps = [
+        {
+          icon: Lock,
+          title: "Method",
+          detail: "Match Algorithm",
+          description: "Select the same method used during encryption"
+        },
+        {
+          icon: Video,
+          title: "Source",
+          detail: "Select File",
+          description: "Choose the encrypted video file to decrypt"
+        },
+        {
+          icon: FolderOutput,
+          title: "Destination",
+          detail: "Set Location",
+          description: "Choose where to save the decrypted video"
+        },
+        {
+          icon: Key,
+          title: "Authentication",
+          detail: "Key & Password",
+          description: "Provide both the decryption key file and password"
+        }
+    ];
+
     return (
-        <motion.div
-            className="relative h-full w-11/12 p-6 overflow-hidden"
-            variants={pageAnimation}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-        >
+        <div className="h-full w-full flex justify-center items-center overflow-hidden">
             <button
                 onClick={() => navigate('/')}
-                className={`
-                    absolute 
-                    top-8 
-                    left-4 
-                    flex 
-                    items-center 
-                    text-black 
-                    hover:text-[#0f0f0f] 
-                    transition-colors 
-                    duration-300 
-                    text-3xl
-                `}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
             >
-                <FaArrowCircleLeft 
-                    className={`
-                        mr-2 
-                        text-secondary 
-                        transition-transform 
-                        duration-300 
-                        transform hover:-translate-x-2
-                    `}/>
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
             </button>
-
-            <div className="mt-10 text-left overflow-hidden">
-                <h1 className="text-4xl font-bold text-secondary flex items-center justify-center">
-                    <HiOutlineLightBulb className="mr-2 text-4xl text-secondary" />
-                    Instructions
-                </h1>
-
-                <div className="flex justify-center mt-6 mb-8">
-                    <button 
-                        className={`
-                            px-3 
-                            py-1.5 
-                            mx-2 
-                            rounded-full 
-                            font-bold 
-                            transition-colors 
-                            duration-300 
-                            ${activeTab === 'encrypt' ? 
-                                'bg-secondary text-white' : 
-                                'bg-white text-secondary border border-secondary'}
-                        `}
-                        onClick={() => setActiveTab('encrypt')}
-                    >
-                        Encryption
-                    </button>
-                    <button 
-                        className={`
-                            px-3 
-                            py-1.5 
-                            mx-2 
-                            rounded-full 
-                            font-bold 
-                            transition-colors 
-                            duration-300 
-                            ${activeTab === 'decrypt' ?
-                                'bg-secondary text-white' :
-                                'bg-white text-secondary border border-secondary'}
-                        `}
-                        onClick={() => setActiveTab('decrypt')}
-                    >
-                        Decryption
-                    </button>
+            <motion.div
+                className="flex items-center justify-center h-full w-full select-none"
+                variants={pageAnimation}
+                initial="initial"
+                animate="in"
+                exit="out"
+            >
+                <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
+                    <div className='relative top-1/2 transform -translate-y-1/2'>
+                        <h1 className="mb-4 text-4xl font-bold text-secondary font-avantGarde flex items-center">
+                            <TbShieldQuestion className="mr-2 text-5xl text-secondary" />
+                            Instructions
+                        </h1>
+                        <div className={"max-w-full mx-auto grid grid-cols-2 gap-8"}>
+                            <InstructionCard processType={'encrypt'} processTitle={'Encryption Process'} processSteps={encryptSteps}/>
+                            <InstructionCard processType={'decrypt'} processTitle={'Decryption Process'} processSteps={decryptSteps}/>
+                        </div>
+                        <div className="max-w-full mx-auto mt-8">
+                            <div className="bg-yellow-50 border border-yellow-100 rounded-xl p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                                        <Info className="w-5 h-5 text-yellow-600" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium font-avantGarde text-yellow-800">Security Notice</h4>
+                                        <p className="text-sm text-yellow-700">
+                                            Always use secure channels for key exchange and never share your encryption keys!
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6 mx-4">
-                    {(activeTab === 'encrypt' ? encryptInstructions : decryptInstructions).map((instruction, index) => (
-                        <motion.div
-                            key={index}
-                            className="bg-secondary2 rounded-lg p-4 cursor-pointer shadow-md border-2 border-secondary"
-                            whileHover={{ scale: 1.05, boxShadow: '0px 0px 10px rgba(21, 131, 254, 0.5)' }}
-                            onClick={() => setActiveInstruction(activeInstruction === index ? null : index)}
-                        >
-                            <instruction.icon className="w-6 h-6 mb-3 text-secondary" />
-                            <h2 className="text-lg font-semibold mb-2 text-secondary">{instruction.title}</h2>
-                            <AnimatePresence>
-                                {activeInstruction === index && (
-                                    <motion.p
-                                        initial="hidden"
-                                        animate="visible"
-                                        exit="exit"
-                                        variants={glitchAnimation}
-                                        className="text-sm text-secondary"
-                                    >
-                                        {instruction.content}
-                                    </motion.p>
-                                )}
-                            </AnimatePresence>
-                        </motion.div>
-                    ))}
-                </div>
-
-                <div className="mt-6 text-center text-xs text-secondary">
-                    <AlertTriangle className="inline mr-2 text-primary" />
-                    Always use secure channels for key exchange and never share your encryption keys!
-                </div>
-            </div>
-        </motion.div>
+            </motion.div>
+        </div>
     );
 }
 

@@ -82,6 +82,7 @@ export default function ProcessButton({
                     hover:text-white 
                     hover:border-transparent 
                     ${isEnabled ? "opacity-100" : "opacity-0"}
+                    font-avantGarde
                 `}
                 onClick={onClickFunction}
                 disabled={!isEnabled}

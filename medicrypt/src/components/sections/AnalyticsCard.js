@@ -84,7 +84,7 @@ export const AnalyticsCard = ({ className = "", children, onClick }) => {
 };
 
 export const AnalyticsCardTitle = ({ className = "", children }) => (
-    <div className={`${className === "" ? "font-semibold mb-4" : className}`}>{children}</div>
+    <div className={`${className === "" ? "font-semibold font-avantGarde mb-4" : className}`}>{children}</div>
 );
 
 export const AnalyticsCardContent = ({ className = "", children }) => (

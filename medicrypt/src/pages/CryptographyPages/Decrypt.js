@@ -188,7 +188,7 @@ function Decrypt() {
                         </h1>
 
                         <AlgorithmSelector
-                            className='mt-4 mb-4'
+                            className='mt-4 mb-5'
                             componentHeader="Choose an Algorithm for Decryption"
                             optionOne="FY-Logistic"
                             optionTwo="3D-Cosine"

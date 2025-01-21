@@ -51,6 +51,7 @@ import FilePathInput from '../../components/text input/FilePathInput';
 import ProcessButton from '../../components/buttons/ProcessButton';
 import { FaFolder } from 'react-icons/fa6';
 import { FaArrowCircleLeft } from "react-icons/fa";
+import { RiPencilRuler2Line } from "react-icons/ri";
 import { motion } from 'framer-motion';
 
 function EvaluateEncrypt() {
@@ -103,6 +104,12 @@ function EvaluateEncrypt() {
 
     return (
         <div className="h-full w-full flex justify-center items-center overflow-hidden">
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
+            >
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+            </button>
             <motion.div
                 className="flex items-center justify-center h-full w-full select-none"
                 initial="initial"
@@ -112,24 +119,6 @@ function EvaluateEncrypt() {
             >
                 <div className="flex items-center justify-center h-full w-full select-none">
                     <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-                        <button
-                            onClick={() => navigate('/')}
-                            className={`
-                                absolute 
-                                top-8 
-                                left-4 
-                                flex 
-                                items-center 
-                                text-black 
-                                hover:text-[#0f0f0f] 
-                                transition-colors 
-                                duration-300 
-                                text-3xl
-                            `}
-                        >
-                            <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
-                        </button>
-                        
                         <div className="relative top-1/2 transform -translate-y-1/2">
                             <h1 className="mb-4 text-4xl font-bold text-secondary font-avantGarde">Evaluate Encryption</h1>
                             <p className="mb-4 text-sm italic text-secondary text-justify">This page serves as a tool to help measure the performance metrics of the encryption process including the Correlation Coefficient, Entropy, UACI, NPCR, and Encryption Time.</p>
@@ -145,12 +134,16 @@ function EvaluateEncrypt() {
                                     onValidityChange={setOutputDirpathValidity}
                                     isRequired={true}
                                 />
-                                <ProcessButton
-                                    className="relative right-0 w-full h-14"
-                                    buttonText="Evaluate"
-                                    isEnabled={true}
-                                    onClickFunction={processInputData}
-                                />
+                                <div className='flex flex-row-reverse justify-between'>
+                                    <ProcessButton
+                                        className="relative right-0 w-40 h-14"
+                                        buttonText="Evaluate"
+                                        buttonIcon={RiPencilRuler2Line}
+                                        iconLocation="left"
+                                        isEnabled={true}
+                                        onClickFunction={processInputData}
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>

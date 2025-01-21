@@ -83,7 +83,7 @@ export default function AlgorithmSelector({
 
     return (
         <div className={`${className}`}>
-            <h1 className="text-sm text-secondary font-semibold">{componentHeader}</h1>
+            <h1 className="text-sm text-primary2 font-semibold">{componentHeader}</h1>
             <label 
                 className={`
                     relative 
@@ -94,11 +94,13 @@ export default function AlgorithmSelector({
                     mt-1 
                     overflow-hidden 
                     rounded-lg 
-                    border 
+                    border-2
+                    border-transparent
+                    ring-2
                     cursor-pointer 
                     ${selectedAlgo === optionOne ? 
-                        'border-secondary bg-transparent' : 
-                        'bg-transparent border-secondary'}
+                        'ring-primary2 bg-transparent' : 
+                        'bg-transparent ring-primary2'}
                     `}>
                 <input
                     type="checkbox"
@@ -112,7 +114,8 @@ export default function AlgorithmSelector({
                         w-1/2 
                         h-full 
                         rounded-lg 
-                        bg-secondary 
+                        bg-primary2
+                        border-transparent
                         transition-all 
                         duration-300 
                         transform 
@@ -120,7 +123,7 @@ export default function AlgorithmSelector({
                         `}>
                 </span>
                 <div 
-                    className="relative flex justify-between items-center w-full">
+                    className="relative flex justify-between items-center w-full font-avantGarde">
                     <p 
                         className={`
                             w-1/2 
@@ -129,7 +132,7 @@ export default function AlgorithmSelector({
                             text-sm 
                             ${selectedAlgo === optionOne ? 
                                 'text-white' : 
-                                'text-secondary'
+                                'text-primary2'
                             } 
                             select-none 
                             transition-colors 
@@ -143,7 +146,7 @@ export default function AlgorithmSelector({
                             text-center 
                             font-bold 
                             text-sm 
-                            ${selectedAlgo === optionTwo ? 'text-white' : 'text-secondary'} 
+                            ${selectedAlgo === optionTwo ? 'text-white' : 'text-primary2'} 
                             select-none 
                             transition-colors 
                             duration-300

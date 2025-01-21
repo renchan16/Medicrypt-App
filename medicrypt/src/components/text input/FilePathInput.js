@@ -231,6 +231,7 @@ const FilePathInput = forwardRef(({
                     htmlFor="file-path-input"
                     className={`
                         absolute 
+                        flex 
                         left-3 
                         font-medium 
                         transition-all 
@@ -239,11 +240,14 @@ const FilePathInput = forwardRef(({
                             'text-xs top-4 leading-tight' : 
                             'text-base top-1/2 -translate-y-1/2'
                         } 
-                        ${isFocused ? 'text-primary1' : 'text-primary2'} 
+                        ${isFocused ? 'text-primary1' : !isValidInput && !isInitialLoad  ? 'text-red-900' : 'text-primary2'}
                         pointer-events-none
                     `}
                 >
                     {componentHeader}
+                    {isRequired && (
+                        <div className="text-red-900 font-bold">*</div>
+                    )}
                 </label>
                 <button 
                     className={`
@@ -251,7 +255,7 @@ const FilePathInput = forwardRef(({
                         w-6 
                         h-6 
                         right-4 
-                        text-primary2 
+                        ${!isValidInput && !isInitialLoad && !isFocused  ? 'text-red-900' : 'text-primary2'}
                         hover:text-primary1 
                         transition-colors duration-300
                     `}

@@ -67,14 +67,18 @@ export const AnalyticsCard = ({ className = "", children, onClick }) => {
     return (
         <div
             className={`
-                ${className} 
-                bg-secondary2 
+                ${className}
+                border-4 
                 relative 
                 overflow-hidden 
                 p-6 
-                shadow-[0_0_4px_1px_rgba(0,0,0,0.10)] 
-                rounded-xl 
+                rounded-3xl
+                shadow-[0_0_4px_4px_rgba(0,0,0,0.04)] 
                 ${onClick ? "cursor-pointer" : "cursor-auto"}
+                transform
+                hover:scale-105
+                transition-transform 
+                ease-in-out
             `}
             onClick={onClick}
         >
@@ -84,7 +88,7 @@ export const AnalyticsCard = ({ className = "", children, onClick }) => {
 };
 
 export const AnalyticsCardTitle = ({ className = "", children }) => (
-    <div className={`${className === "" ? "font-semibold mb-4" : className}`}>{children}</div>
+    <div className={`${className === "" ? "font-semibold font-avantGarde mb-4 text-primary0" : className}`}>{children}</div>
 );
 
 export const AnalyticsCardContent = ({ className = "", children }) => (

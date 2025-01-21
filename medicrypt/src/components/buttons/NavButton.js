@@ -101,6 +101,7 @@ export default function NavButton({
                     transition-colors 
                     hover:bg-${hoverColor} 
                     hover:text-${hoverTextColor}
+                    font-avantGarde
                 `}
                 onClick={handleClick}
                 >

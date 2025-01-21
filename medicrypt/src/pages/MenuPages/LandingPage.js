@@ -51,20 +51,21 @@
  * - Renz Carlo T. Caritativo
  * 
  * Date Created: 9/10/2024
- * Last Modified: 11/12/2024
+ * Last Modified: 12/28/2024
  */
 
 import React, { useState } from 'react';
 import { FaChevronCircleRight } from "react-icons/fa";
 import Card from '../../components/Cards';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { backInOut, motion } from 'framer-motion';
 import '../../pages-css/LandingPage.css';
 import logo from '../../assets/MedicryptLogo.png';
-import InstructionsPNG from '../../assets/InstructionsAnimation.png';
-import LearnMoreAnimationPNG from '../../assets/LearnMoreAnimation.png';
-import DecryptAnimationPNG from '../../assets/DecryptAnimation.png';
-import EncryptAnimationPNG from '../../assets/EncryptAnimation.png';
+import InstructionsPNG from '../../assets/InstructionsAnimation.gif';
+import LearnMoreAnimationPNG from '../../assets/LearnMoreAnimation.gif';
+import DecryptAnimationPNG from '../../assets/DecryptAnimation.gif';
+import EncryptAnimationPNG from '../../assets/EncryptAnimation.gif';
+import { backOut } from 'framer-motion/dom';
 
 function LandingPage() {
     const navigate = useNavigate();
@@ -76,14 +77,21 @@ function LandingPage() {
     };
 
     // Pan animation variants for motion
-    const panVariants = {
-        hidden: { x: '-100vw', opacity: 0 },
+    const scaleVariants = {
+        hidden: { transform: 'scale(0.2)', opacity: 0 },
         visible: {
-            x: 0,
+            transform: 'scale(1)',
             opacity: 1,
-            transition: { type: 'spring', duration: 2, bounce: 0.5 },
+            transition: { 
+                duration: 1,
+                ease: backOut
+            }
         },
-        exit: { x: '80vw', opacity: 0, transition: { duration: 0.5 } },
+        exit: { 
+            transform: 'scale(0.2)', 
+            opacity: 0, 
+            transition: { duration: 0.2 } 
+        }
     };
 
     return (
@@ -101,10 +109,10 @@ function LandingPage() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                variants={panVariants}
+                variants={scaleVariants}
             >
                 <div className="flex items-center mb-3">
-                    <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2" />
+                    <img src={logo} alt="Medicrypt Logo" className="w-20 mt-2 select-none" />
                     <h1 
                         className={`
                             text-7xl 
@@ -114,6 +122,7 @@ function LandingPage() {
                             leading-tight 
                             pb-1 
                             font-avantGarde
+                            select-none
                         `}>medicrypt</h1>
                 </div>
 
@@ -122,8 +131,155 @@ function LandingPage() {
                     initial="hidden"
                     animate="visible"
                     exit="exit"
-                    variants={panVariants}
+                    variants={scaleVariants}
                 >
+                    {/* Encrypt Card */}
+                    <Card width="col-span-1 row-span-2" height="h-[190px]">
+                        <motion.div
+                            className={`
+                                bg-primary 
+                                h-full 
+                                flex 
+                                flex-col 
+                                justify-between 
+                                p-3 
+                                rounded-[18px] 
+                                relative transition-all 
+                                duration-300 
+                                hover:bg-secondary1 
+                                hover:shadow-lg 
+                                hover:scale-105 
+                                z-10
+                                cursor-pointer
+                            `}
+                            whileHover={{ scale: 1.05 }}
+                            onClick={() => handleNavigate('/encrypt')}
+                        >
+                            <div className="flex-grow flex justify-center items-center mb-8">
+                                <div className="w-40 h-20 z-10">
+                                    <img 
+                                        src={EncryptAnimationPNG} 
+                                        alt="Encrypt Animation" 
+                                        className="w-full h-29 object-scale-down select-none" 
+                                    />
+                                </div>
+                            </div>
+                            <div className="items-end">
+                                <p 
+                                    className={`
+                                        text-white 
+                                        font-bold 
+                                        text-2xl 
+                                        transition-colors 
+                                        duration-300 
+                                        hover:text-gray-200
+                                        select-none
+                                    `}>Encrypt</p>
+                            </div>
+                            <div className="inline-block">
+                                <button 
+                                    className={`
+                                        bg-white 
+                                        text-primary1 
+                                        text-xxs 
+                                        rounded-[10px] 
+                                        w-15 
+                                        px-2 
+                                        py-0.5 
+                                        font-bold 
+                                        mt-1 
+                                        select-none
+                                    `}>SECURE YOUR VIDEOS</button>
+                            </div>
+                            <FaChevronCircleRight 
+                                className={`
+                                    text-white 
+                                    text-3xl 
+                                    font-semibold 
+                                    absolute 
+                                    bottom-4 
+                                    right-4 
+                                    transition-transform 
+                                    duration-300 
+                                    transform hover:translate-x-2
+                                `} />
+                        </motion.div>
+                    </Card>
+
+                    {/* Decrypt Card */}
+                    <Card width="col-span-1 row-span-2" height="h-[190px]">
+                        <motion.div
+                            className={`
+                                bg-black 
+                                h-full 
+                                flex 
+                                flex-col 
+                                justify-between 
+                                p-3 
+                                rounded-[18px] 
+                                relative 
+                                transition-all 
+                                duration-300 
+                                hover:bg-[#0f0f0f] 
+                                hover:shadow-lg 
+                                hover:scale-105 
+                                z-10
+                                cursor-pointer
+                            `}
+                            whileHover={{ scale: 1.05 }}
+                            onClick={() => handleNavigate('/decrypt')}
+                        >
+                            <div className="flex-grow flex justify-center items-center mb-2">
+                                <div className="w-40 h-20 z-10">
+                                    <img 
+                                        src={DecryptAnimationPNG} 
+                                        alt="Decrypt Animation" 
+                                        className="w-full h-30 mb-3 object-fill select-none" 
+                                    />
+                                </div>
+                            </div>
+                            <div className="items-end">
+                                <p 
+                                    className={`
+                                        text-white 
+                                        font-bold 
+                                        text-2xl 
+                                        transition-colors 
+                                        duration-300 
+                                        hover:text-gray-200
+                                        select-none
+                                    `}>Decrypt</p>
+                            </div>
+                            <div className="inline-block">
+                                <button 
+                                    className={`
+                                        bg-white 
+                                        text-black 
+                                        text-xxs 
+                                        rounded-[10px] 
+                                        w-15 
+                                        px-2 
+                                        py-0.5 
+                                        font-bold 
+                                        mt-1
+                                        select-none
+                                    `}>ACCESS YOUR VIDEOS</button>
+                            </div>
+                            <FaChevronCircleRight 
+                                className={`
+                                    text-white 
+                                    text-3xl 
+                                    font-semibold 
+                                    absolute 
+                                    bottom-4 
+                                    right-4 
+                                    transition-transform 
+                                    duration-300 
+                                    transform 
+                                    hover:translate-x-2
+                                `} />
+                        </motion.div>
+                    </Card>
                     {/* Instructions Card */}
                     <Card width="col-span-1 row-span-5" height="h-[350px]">
                         <motion.div
@@ -142,6 +298,7 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/howtouse')}
@@ -151,7 +308,7 @@ function LandingPage() {
                                     <img 
                                         src={InstructionsPNG} 
                                         alt="Instructions Animation" 
-                                        className="w-full h-40 object-contain" />
+                                        className="w-full h-40 object-contain select-none" />
                                 </div>
                             </div>
                             <div className="flex-grow flex items-end">
@@ -163,6 +320,7 @@ function LandingPage() {
                                         transition-colors 
                                         duration-300 
                                         hover:text-gray-200
+                                        select-none
                                     `}>Instructions</p>
                             </div>
                             <div className="inline-block">
@@ -177,6 +335,7 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1
+                                        select-none
                                     `}>HOW TO USE THE APP</button>
                             </div>
                             <FaChevronCircleRight 
@@ -213,12 +372,13 @@ function LandingPage() {
                                 hover:shadow-lg 
                                 hover:scale-105 
                                 z-10
+                                cursor-pointer
                             `}
                             whileHover={{ scale: 1.05 }}
                             onClick={() => handleNavigate('/explore')}
                         >
                             <div className="flex flex-col justify-center items-start">
-                                <p className="text-primary0 font-bold text-2xl transition-colors duration-300">
+                                <p className="text-primary0 font-bold text-2xl transition-colors duration-300 select-none">
                                     Explore Features
                                 </p>
                                 <button 
@@ -232,160 +392,19 @@ function LandingPage() {
                                         py-0.5 
                                         font-bold 
                                         mt-1
+                                        select-none
                                     `}>LEARN MORE</button>
                             </div>
                             <div className="w-40 h-30">
                                 <img
                                     src={LearnMoreAnimationPNG}
                                     alt="Learn More Animation"
-                                    className="w-full h-full object-contain"
+                                    className="w-full h-full object-contain select-none"
                                 />
                             </div>
                             <FaChevronCircleRight 
                                 className={`
                                     text-primary0 
-                                    text-3xl 
-                                    font-semibold 
-                                    absolute 
-                                    bottom-4 
-                                    right-4 
-                                    transition-transform 
-                                    duration-300 
-                                    transform 
-                                    hover:translate-x-2
-                                `} />
-                        </motion.div>
-                    </Card>
-
-                    {/* Encrypt Card */}
-                    <Card width="col-span-1 row-span-2" height="h-[190px]">
-                        <motion.div
-                            className={`
-                                bg-primary 
-                                h-full 
-                                flex 
-                                flex-col 
-                                justify-between 
-                                p-3 
-                                rounded-[18px] 
-                                relative transition-all 
-                                duration-300 
-                                hover:bg-secondary1 
-                                hover:shadow-lg 
-                                hover:scale-105 
-                                z-10
-                            `}
-                            whileHover={{ scale: 1.05 }}
-                            onClick={() => handleNavigate('/encrypt')}
-                        >
-                            <div className="flex-grow flex justify-center items-center mb-8">
-                                <div className="w-40 h-20 z-10">
-                                    <img 
-                                        src={EncryptAnimationPNG} 
-                                        alt="Encrypt Animation" 
-                                        className="w-full h-29 object-scale-down" 
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex-grow flex items-end">
-                                <p 
-                                    className={`
-                                        text-white 
-                                        font-bold 
-                                        text-2xl 
-                                        transition-colors 
-                                        duration-300 
-                                        hover:text-gray-200
-                                    `}>Encrypt</p>
-                            </div>
-                            <div className="inline-block">
-                                <button 
-                                    className={`
-                                        bg-white 
-                                        text-primary1 
-                                        text-xxs 
-                                        rounded-[10px] 
-                                        w-15 
-                                        px-2 
-                                        py-0.5 
-                                        font-bold 
-                                        mt-1 
-                                    `}>SECURE YOUR VIDEOS</button>
-                            </div>
-                            <FaChevronCircleRight 
-                                className={`
-                                    text-white 
-                                    text-3xl 
-                                    font-semibold 
-                                    absolute 
-                                    bottom-4 
-                                    right-4 
-                                    transition-transform 
-                                    duration-300 
-                                    transform hover:translate-x-2
-                                `} />
-                        </motion.div>
-                    </Card>
-
-                    {/* Decrypt Card */}
-                    <Card width="col-span-1 row-span-2" height="h-[190px]">
-                        <motion.div
-                            className={`
-                                bg-black 
-                                h-full 
-                                flex 
-                                flex-col 
-                                justify-between 
-                                p-3 
-                                rounded-[18px] 
-                                relative 
-                                transition-all 
-                                duration-300 
-                                hover:bg-[#0f0f0f] 
-                                hover:shadow-lg 
-                                hover:scale-105 
-                                z-10
-                            `}
-                            whileHover={{ scale: 1.05 }}
-                            onClick={() => handleNavigate('/decrypt')}
-                        >
-                            <div className="flex-grow flex justify-center items-center mb-2">
-                                <div className="w-40 h-20 z-10">
-                                    <img 
-                                        src={DecryptAnimationPNG} 
-                                        alt="Decrypt Animation" 
-                                        className="w-full h-30 mb-3 object-fill" 
-                                    />
-                                </div>
-                            </div>
-                            <div className="items-end">
-                                <p 
-                                    className={`
-                                        text-white 
-                                        font-bold 
-                                        text-2xl 
-                                        transition-colors 
-                                        duration-300 
-                                        hover:text-gray-200
-                                    `}>Decrypt</p>
-                            </div>
-                            <div className="inline-block">
-                                <button 
-                                    className={`
-                                        bg-white 
-                                        text-black 
-                                        text-xxs 
-                                        rounded-[10px] 
-                                        w-15 
-                                        px-2 
-                                        py-0.5 
-                                        font-bold 
-                                        mt-1
-                                    `}>ACCESS YOUR VIDEOS</button>
-                            </div>
-                            <FaChevronCircleRight 
-                                className={`
-                                    text-white 
                                     text-3xl 
                                     font-semibold 
                                     absolute 

@@ -212,7 +212,8 @@ const PasswordInput = forwardRef(({
                 <label 
                     htmlFor="password-input"
                     className={`
-                        absolute 
+                        absolute
+                        flex 
                         left-3 
                         font-medium 
                         transition-all 
@@ -221,11 +222,12 @@ const PasswordInput = forwardRef(({
                             'text-xs top-4 leading-tight' : 
                             'text-base top-1/2 -translate-y-1/2'
                         } 
-                        ${isFocused ? 'text-primary1' : 'text-primary2'}  
+                        ${isFocused ? 'text-primary1' : !isValidInput && !isInitialLoad  ? 'text-red-900' : 'text-primary2'}  
                         pointer-events-none
                     `}
                 >
                     {componentHeader}
+                    <div className="text-red-900 font-bold">*</div>
                 </label>
                 <button
                     type="button"
@@ -235,7 +237,7 @@ const PasswordInput = forwardRef(({
                         h-6 
                         right-4 
                         text-xl 
-                        text-primary2 
+                        ${!isValidInput && !isInitialLoad && !isFocused  ? 'text-red-900' : 'text-primary2'}
                         hover:text-primary1 
                         focus:outline-none 
                         transition-colors 

@@ -58,7 +58,7 @@ const AnalyticsSelect = ({ value, onChange, className, children }) => {
                 px-4 
                 py-2 
                 pr-8 
-                rounded 
+                rounded-md 
                 shadow 
                 leading-tight 
                 focus:outline-none 

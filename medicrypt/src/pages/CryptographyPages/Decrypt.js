@@ -151,7 +151,7 @@ function Decrypt() {
     const pageVariants = {
         initial: {
             opacity: 0,
-            x: '-100vw',
+            x: '-60vw',
         },
         in: {
             opacity: 1,
@@ -167,6 +167,12 @@ function Decrypt() {
 
     return (
         <div className="h-full w-full flex justify-center items-center overflow-hidden">
+            <button
+                onClick={() => navigate('/')}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
+            >
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
+            </button>
             <motion.div
                 className='flex items-center justify-center h-full w-full select-none'
                 initial="initial"
@@ -175,24 +181,6 @@ function Decrypt() {
                 variants={pageVariants}
             >
                 <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
-                    <button
-                        onClick={() => navigate('/')}
-                        className={`
-                            absolute 
-                            top-8 
-                            left-4 
-                            flex 
-                            items-center 
-                            text-black 
-                            hover:text-[#0f0f0f] 
-                            transition-colors 
-                            duration-300 
-                            text-3xl
-                        `}
-                    >
-                        <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
-                    </button>
-
                     <div className='relative top-1/2 transform -translate-y-1/2'>
                         <h1 className="mb-3 text-4xl font-bold text-secondary font-avantGarde flex items-center">
                             <IoDocumentLock className="mr-2 text-5xl" />
@@ -200,7 +188,7 @@ function Decrypt() {
                         </h1>
 
                         <AlgorithmSelector
-                            className='mt-4 mb-4'
+                            className='mt-4 mb-5'
                             componentHeader="Choose an Algorithm for Decryption"
                             optionOne="FY-Logistic"
                             optionTwo="3D-Cosine"
@@ -222,7 +210,7 @@ function Decrypt() {
                                 <div className='space-y-4'>
                                     <FilePathInput 
                                         ref={fileInputRef}
-                                        componentHeader="Video File*"
+                                        componentHeader="Video File"
                                         placeholderText="C:\Users\YourUsername\Documents\video.mp4..."
                                         defaultDisplayText="Enter a valid .avi video file path."
                                         browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}
@@ -251,7 +239,7 @@ function Decrypt() {
                                 <div className='space-y-4'>
                                     <PasswordInput
                                         ref={passwordInputRef}
-                                        componentHeader="Hash Key Password*"
+                                        componentHeader="Hash Key Password"
                                         defaultDisplayText="Ensure the password matches the one you provided earlier for encryption."
                                         placeholderText="e.g. ILoveM3d!Crypt143"
                                         processType="Decrypt"
@@ -261,7 +249,7 @@ function Decrypt() {
                                     />
                                     <FilePathInput
                                         ref={hashInputRef}
-                                        componentHeader="Hash Key File *"
+                                        componentHeader="Hash Key File"
                                         placeholderText="C:\Users\YourUsername\Documents\HashKey.key..."
                                         defaultDisplayText="Enter a valid .key file path."
                                         browseIcon={<FaPaperclip className="w-3/4 h-3/4 transform -rotate-45"/>}

@@ -1,18 +1,22 @@
 /**
  * Features Component
  *
- * This component displays a list of features related to video encryption and decryption, 
- * including advanced algorithms and associated metrics. Users can click on individual 
- * feature cards to toggle between the feature's details, which include a description and 
- * a list of related metrics. The component uses animations for smooth transitions between 
- * the feature cards and their details.
+ * This component showcases a list of features related to video encryption and decryption.
+ * It highlights the use of chaos-based encryption techniques and provides users 
+ * with the ability to explore the associated metrics for each feature in detail.
+ * Smooth animations and an intuitive UI enhance the user experience.
  *
  * Functionality:
  * --------------
- * - Renders a list of feature cards with icons, titles, descriptions, and associated metrics.
- * - Each feature card is clickable and highlights when selected. 
- * - Displays detailed metrics for the selected feature with smooth animations.
- * - Navigates back to the previous page using a back button.
+ * - Renders a list of clickable feature cards, each displaying:
+ *   - An icon, title, short description, and associated performance metrics.
+ * - Displays detailed metrics for the selected feature using animations.
+ * - Includes a back button to navigate to the previous page.
+ *
+ * Additional Details:
+ * -------------------
+ * - Highlights the use of chaos-based encryption for robust and secure video content protection.
+ * - Utilizes animations for feature transitions and metric displays.
  *
  * Functions:
  * ----------
@@ -23,21 +27,21 @@
  *     - `description` (string): Short description of the feature.
  *     - `metrics` (array): List of metrics associated with the feature.
  *     - `isActive` (boolean): Flag to indicate if the feature is active (selected).
- *     - `onClick` (function): Function to handle the feature selection.
- *   - Displays a feature card with an icon, title, description, and related metrics.
+ *     - `onClick` (function): Function to handle feature selection.
+ *   - Renders a feature card with an icon, title, description, and optional metrics.
  *
  * - MetricsDisplay:
  *   - Parameters:
  *     - `metrics` (array): List of metrics to display.
- *   - Displays a list of metrics for the active feature.
+ *   - Renders a list of metrics for the active feature.
  *
  * Global Variables:
  * -----------------
- * - activeFeature: The index of the currently selected feature (or null if no feature is selected).
- * - features: Array of feature objects containing icons, titles, descriptions, and metrics.
- * 
+ * - `activeFeature`: The index of the currently selected feature (or null if none is selected).
+ * - `features`: Array of feature objects containing icons, titles, descriptions, and metrics.
+ *
  * Props:
- * -------
+ * ------
  * None.
  *
  * Dependencies:
@@ -45,44 +49,44 @@
  * - React: Core library for component rendering.
  * - framer-motion: For animations and transitions.
  * - react-router-dom: For navigation and routing.
- * - react-icons: For iconography (FaArrowCircleLeft, FaLock, FaUnlock, FaChartBar).
+ * - react-icons: For feature and UI icons (e.g., FaLock, FaUnlock, FaArrowCircleLeft, LiaAtomSolid).
  *
  * Example:
- * -------
+ * --------
  * <Features />
  *
  * Code Author:
  * ------------
  * - Renz Carlo T. Caritativo
- * 
+ *
  * Date Created: 9/12/2024
- * Last Modified: 11/11/2024
+ * Last Modified: 1/22/2025
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaArrowCircleLeft, FaLock, FaUnlock, FaChartBar, FaCog } from 'react-icons/fa';
+import { FaArrowCircleLeft, FaLock, FaUnlock, FaCog } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-
+import { VscTools } from "react-icons/vsc";
+import { LiaAtomSolid } from "react-icons/lia";
 const FeatureCard = ({ icon: Icon, title, description, metrics, isActive, onClick }) => (
     <motion.div
-        className={`
-            bg-secondary2 
-            rounded-lg 
-            shadow-lg 
+        className={` 
+            border-4
+            rounded-2xl 
             overflow-hidden 
             cursor-pointer 
             transition-all 
             duration-300 
-            ${ isActive ? 'ring-4 ring-secondary' : ''
+            ${ isActive ? 'border-primary' : 'border-gray-500'
         }`}
-        whileHover={{ scale: 1.05 }}
+        whileHover={{ scale: 1.025 }}
         onClick={onClick}
     >
-        <div className="p-6">
-            <Icon className={`text-4xl ${isActive ? 'text-secondary' : 'text-gray-500'} mb-4`} />
-            <h3 className="text-xl font-semibold text-secondary mb-2">{title}</h3>
-            <p className="text-sm text-gray-600">{description}</p>
+        <div className="p-5">
+            <Icon className={`text-3xl ${isActive ? 'text-primary' : 'text-gray-500'} mb-4`} />
+            <h3 className={`text-xl font-base font-avantGarde ${isActive ? 'text-primary' : 'text-gray-500'} mb-1`}>{title}</h3>
+            <p className={`text-sm font-base text-gray-500 ${isActive ? 'text-primary' : 'text-gray-500'}`}>{description}</p>
         </div>
     </motion.div>
 );
@@ -91,14 +95,14 @@ const MetricsDisplay = ({ metrics }) => (
     <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="bg-gray-100 rounded-lg p-6 mt-6"
+        exit={{ opacity: 0, y: -100 }}
+        className="bg-gray-100 border-4 rounded-2xl p-6 h-full -z-10"
     >
-        <h4 className="text-lg font-semibold text-secondary mb-4">Metrics:</h4>
-        <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        <h4 className="text-xl font-semibold font-avantGarde text-black mb-4">Calculable Performance Metrics</h4>
+        <ul className="grid grid-cols-1 md:grid-cols-1 gap-4">
             {metrics.map((metric, index) => (
                 <li key={index} className="flex items-center">
-                    <FaCog className="text-secondary mr-2" />
+                    <FaCog className="text-black mr-2" />
                     <span className="text-sm text-gray-700">{metric}</span>
                 </li>
             ))}
@@ -111,15 +115,7 @@ export default function Features() {
     const [activeFeature, setActiveFeature] = useState(null);
 
     const features = [
-        {
-            icon: FaChartBar,
-            title: "Chaos-Theory based Video Encryption and Decryption",
-            description: "Utilizes chaotic systems to generate unpredictable keys for securing video content, enhancing security and robustness against unauthorized access.",
-            metrics: [
-                "Fisher-Yates and Logistics Map Algorithm",
-                "3D ILM - Cosine Map Algorithm",
-            ],
-        },
+        
         {
             icon: FaLock,
             title: "Encryption",
@@ -144,67 +140,90 @@ export default function Features() {
         },
     ];
 
+    const pageAnimation = {
+        initial: {
+            opacity: 0,
+            x: '60vw',
+        },
+        in: {
+            opacity: 1,
+            x: 0,
+            transition: { type: 'spring', stiffness: 50 }
+        },
+        out: {
+            opacity: 0,
+            x: '-100vw',
+            transition: { ease: 'easeInOut', duration: 0.3 }
+        }
+    };
+
+    useEffect(() => {
+        setActiveFeature(0);
+    }, []);
+
     return (
-        <motion.div
-            initial={{ x: '100%', opacity: 0 }} // Start off the screen to the right
-            animate={{ x: 0, opacity: 1 }} // Move into place and fade in
-            exit={{ x: '-100%', opacity: 0 }} // Exit off the screen to the left
-            transition={{ duration: 0.5 }} // Duration of the animation
-            className="min-h-screen p-6 relative h-full w-11/12"
-        >
+        <div className="h-full w-full flex justify-center items-center overflow-hidden">
             <button
                 onClick={() => navigate('/')}
-                className={`
-                    absolute 
-                    top-8 
-                    left-4 
-                    flex 
-                    items-center 
-                    text-black 
-                    hover:text-[#0f0f0f] 
-                    transition-colors 
-                    duration-300 
-                    text-3xl
-                `}
+                className="absolute top-10 left-14 flex items-center text-black hover:text-[#0f0f0f] transition-colors duration-300 text-3xl z-10"
             >
-                <FaArrowCircleLeft 
-                    className={`
-                        mr-2 
-                        text-secondary 
-                        transition-transform 
-                        duration-300 
-                        transform 
-                        hover:-translate-x-2
-                    `} />
+                <FaArrowCircleLeft className="mr-2 text-secondary transition-transform duration-300 transform hover:-translate-x-2" />
             </button>
-
-            <motion.h1
-                initial={{ opacity: 0, y: -50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-4xl md:text-4xl font-bold text-center text-secondary mt-16 mb-12"
+            <motion.div
+                variants={pageAnimation}
+                initial="initial"
+                animate="in"
+                exit="out"
+                className="flex items-center justify-center h-full w-full select-none"
             >
-                Explore Features
-            </motion.h1>
+                <div className="relative h-full w-11/12 p-6 overflow-x-hidden">
+                    <div className='relative top-1/2 transform -translate-y-1/2'>
+                        <motion.h1 
+                            className="mb-4 text-4xl font-bold text-secondary font-avantGarde flex items-center"
+                            initial={{ opacity: 0, y: -50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5 }}
+                        >
+                            <VscTools className="mr-2 text-5xl text-secondary" />
+                            Explore Features
+                        </motion.h1>
+                        <div className="max-w-full mx-auto mb-5 z-10">
+                            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                <div className="flex items-center space-x-3">
+                                    <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <LiaAtomSolid className="w-5 h-5 text-primary0" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium font-avantGarde text-primary0">Chaos-Based Encryption</h4>
+                                        <p className="text-sm text-secondary">
+                                        Utilizes chaotic systems to generate unpredictable keys for securing video content, enhancing security and robustness against unauthorized access.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="max-w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 mb-2">
+                            <div className="grid grid-cols-2 md:grid-cols-1 gap-4 h-full">
+                                {features.map((feature, index) => (
+                                    <FeatureCard
+                                        key={index}
+                                        {...feature}
+                                        isActive={activeFeature === index}
+                                        onClick={() => setActiveFeature(activeFeature === index ? index : index)}
+                                    />
+                                ))}
+                            </div>
 
-            <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    {features.map((feature, index) => (
-                        <FeatureCard
-                            key={index}
-                            {...feature}
-                            isActive={activeFeature === index}
-                            onClick={() => setActiveFeature(activeFeature === index ? null : index)}
-                        />
-                    ))}
+                            <AnimatePresence mode="wait">
+                                {activeFeature !== null && (
+                                    <MetricsDisplay metrics={features[activeFeature].metrics} />
+                                )}
+                            </AnimatePresence>
+                        </div>
+                    </div>
                 </div>
-
-                <AnimatePresence mode="wait">
-                    {activeFeature !== null && activeFeature !== 0 && ( // Check if it's not the first feature (Chaos)
-                        <MetricsDisplay metrics={features[activeFeature].metrics} />
-                    )}
-                </AnimatePresence>
-            </div>
-        </motion.div>
+                
+            </motion.div>
+        </div>
     );
 }

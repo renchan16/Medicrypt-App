@@ -80,7 +80,7 @@ function createWindow() {
     });
 
     mainWindow.loadURL('http://localhost:3000');
-    Menu.setApplicationMenu(null);
+    //Menu.setApplicationMenu(null);
 }
 
 app.whenReady().then(() => {
